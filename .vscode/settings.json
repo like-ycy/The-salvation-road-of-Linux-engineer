@@ -1,5 +1,9 @@
 {
     "files.exclude": {
-        "**/.git": false
+        "**/.vscode": true
+    },
+    "search.exclude": {
+        "**/.git": true,
+        "**/.vscode": true
     }
 }
