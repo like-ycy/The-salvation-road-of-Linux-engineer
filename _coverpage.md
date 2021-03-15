@@ -1,7 +1,5 @@
 ![logo](_media/favicon.ico)
 
-# docsify <small>3.5</small>
-
 > 个人文档
 
 - 个人Python学习 文档
