@@ -20,3 +20,8 @@
     - [文件处理](/python_base/10.文件处理.md)
     - [函数的基本使用](/python_base/11.函数的基本使用.md)
     - [函数的参数](/python_base/12.函数的参数.md)
+    - [名称空间与作用域](/python_base/13.名称空间与作用域.md)
+    - [函数对象和闭包](/python_base/14.函数对象和闭包.md)
+    - [装饰器](/python_base/15.装饰器.md)
+    - [迭代器](/python_base/16.迭代器.md)
+    - [生成器](/python_base/17.生成器.md)
