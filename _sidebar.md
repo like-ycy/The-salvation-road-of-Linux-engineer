@@ -9,3 +9,9 @@
 - Python基础语法
 
     - [文件头注释](/python_base/01.python文件头部.md)
+    - [注释](/python_base/02.注释.md)
+    - [变量](/python_base/03.变量.md)
+    - [基本数据类型](/python_base/04.基本数据类型.md)
+    - [基本运算符](/python_base/05.基本运算符.md)
+    - [数据类型及内置方法](/python_base/06.基本数据类型与内置方法.md)
+    - [垃圾回收机制](/python_base/07.垃圾回收机制.md)
