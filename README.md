@@ -1,3 +1,6 @@
-## Python-Docs
+## Python学习笔记
 
-本人的Python学习过程中关于python的文档总结
+
+
+自学Python的过程中，对Python基础的记录
+
