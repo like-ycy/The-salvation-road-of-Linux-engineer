@@ -9,7 +9,7 @@
 
 自学Python的过程中，对Python基础的记录
 
-学习视频：老男孩教育python
+学习视频：[老男孩python全栈29期](https://www.bilibili.com/video/BV1QE41147hU?p=5)
 
 Tips：文档大多数为复制的知乎《小猿取经》的笔记，也有一些自己的修改，知乎笔记作者也是视频的教学老师
 
