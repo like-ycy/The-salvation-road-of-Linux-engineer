@@ -5,4 +5,4 @@
 - 个人Python学习笔记
 
 [GitHub](https://github.com/like-ycy/Python-Docs)
-[Get Started](README.md)
+[开始阅读](README.md)
