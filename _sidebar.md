@@ -1,11 +1,11 @@
-- 在开始学习Python之前
+- 📘 在开始学习Python之前
 
     - [编程语言介绍](/before_learning_python/1.编程语言介绍.md)
     - [初识Python](/before_learning_python/2.初识Python.md)
     - [Python是解释型的强类型动态语言](/before_learning_python/3.Python是解释型的强类型动态语言.md)
     - [Python的运行方法](/before_learning_python/4.Python的运行方法.md)
 
-- Python基础语法
+- 📘 Python基础语法
 
     - [文件头注释](/python_base/01.python文件头部.md)
     - [注释](/python_base/02.注释.md)
@@ -37,3 +37,7 @@
     - [反射与内置方法](/python_base/28.反射与内置方法.md)
     - [元类](/python_base/29.元类.md)
     - [异常处理](/python_base/30.异常处理.md)
+
+- 📑 一些小知识
+    - [Python中的转义字符](/small_knowledge/Python中的转义字符.md)
+    - [Python中小整数池的内存优化](/small_knowledge/Python中小整数池的内存优化.md)
