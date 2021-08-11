@@ -60,4 +60,12 @@ Tips：文档大多数为复制的知乎[《小猿取经》](https://zhuanlan.zh
 
 
 
+## 📋 TODO
+
+  - 网站主页介绍的完善
+  - 文档内容的丰富度及格式的持续优化
+
 ## 🙋‍ CONTACT
+
+  - [🐙 Github](https://github.com/like-ycy)
+  - [🌐 本人博客：权掌天下的博客](https://like-ycy.github.io/)
