@@ -41,3 +41,6 @@
 - 📑 一些小知识
     - [Python中的转义字符](/small_knowledge/Python中的转义字符.md)
     - [Python中小整数池的内存优化](/small_knowledge/Python中小整数池的内存优化.md)
+    - [深浅拷贝](/small_knowledge/深浅拷贝.md)
+    - [可变与不可变数据类型](/small_knowledge/可变与不可变数据类型.md)
+    - [格式化字符串的四种方式](/small_knowledge/格式化字符串的四种方式.md)
