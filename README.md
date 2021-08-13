@@ -78,3 +78,22 @@ Python学习视频：[老男孩python全栈29期。](https://www.bilibili.com/vi
   - [🐙本人 Github](https://github.com/like-ycy)
   - [🔮 本人博客：权掌天下的博客](https://like-ycy.github.io/)
 
+#### 选项卡的示例，防止忘记语法
+
+
+
+<!-- tabs:start -->
+
+## **Python代码块**
+```python
+print('123')
+```
+#### **French**
+
+Bonjour!
+
+#### **Italian**
+
+Ciao!
+
+<!-- tabs:end -->
