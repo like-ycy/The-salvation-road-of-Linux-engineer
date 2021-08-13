@@ -57,9 +57,9 @@
       },
 
       copyCode: {
-          buttonText: 'Copy',
-          errorText: 'Error',
-          successText: 'OK!'
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'OK!'
       },
 
       'flexible-alerts': {
@@ -71,6 +71,13 @@
         fontsize:'0.9em',
         color:'rgb(90,90,90)',
         language:'chinese'
+      },
+      tabs: {
+        persist    : true,      // default
+        sync       : true,      // default
+        theme      : 'classic', // default
+        tabComments: true,      // default
+        tabHeadings: true       // default
       }
 
     }
@@ -112,6 +119,10 @@
 
   <!-- Markdown 引用样式美化 -->
   <script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>
+
+  <!-- 选项卡插件 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+
 
 </body>
 </html>
