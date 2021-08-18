@@ -23,6 +23,7 @@
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!--收藏夹显示图标-->
   <link rel="shortcut icon" href="https://gitee.com/veal98/images/raw/master/img/20210212163801.png" type="image/x-icon">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
 </head>
 <body>
   <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
@@ -32,7 +33,11 @@
       auto2top: true,
       mergeNavbar: true,
       loadSidebar: true,
-      // subMaxLevel: 2,
+      alias: {
+      '/.*/_sidebar.md': '/_sidebar.md',
+      },
+      subMaxLevel: 3,
+      sidebarDisplayLevel: 1,
       // maxLevel: 4,
       coverpage: true,
       onlyCover: true,
@@ -78,7 +83,26 @@
         theme      : 'classic', // default
         tabComments: true,      // default
         tabHeadings: true       // default
-      }
+      },
+      progress: {
+        position: "top",
+        color: "var(--theme-color,#42b983)",
+        height: "3px",
+      },
+      pagination: {
+      previousText: '上一章节',
+      nextText: '下一章节',
+      crossChapter: true,
+      crossChapterText: true,
+      },
+      // plugins: [
+        // function (hook, vm) {
+          // parse twemoji
+          // hook.doneEach(function() {
+              // twemoji.parse(document);
+          // });
+        // },
+      // ]
 
     }
   </script>
@@ -88,6 +112,15 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+
+  <!-- twemoji -->
+  <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
+
+
 
   <!-- 代码高亮 -->
   <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
