@@ -13,20 +13,21 @@
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/dark.css" title="dark" disabled>
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/buble.css" title="buble" disabled>
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/pure.css" title="pure" disabled>
+  <!-- 字体样式 -->
   <link rel="stylesheet" type="text/css" href="style/myStyle-light.css"/>
-  <!-- alert -->
-  <link rel="stylesheet" href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" type='text/css' media='all' />
+  <!-- copy提示信息 -->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" type='text/css' media='all' / >
+
   <!-- latex -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
-  <!--网页标题左侧显示-->
-  <!-- link rel="icon" href="https://gitee.com/veal98/images/raw/master/img/20210212163801.png" type="image/x-icon"-->
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!--收藏夹显示图标-->
-  <link rel="shortcut icon" href="https://gitee.com/veal98/images/raw/master/img/20210212163801.png" type="image/x-icon">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" /-->
+  <!-- link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"-->
+
+  <!-- 侧边栏的收起小图标是箭头还是别的 -->
+  <!-- link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" /-->
 </head>
 <body>
   <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
+  <!-- 回到顶部 -->
   <a class="to-top">Top</a>
   <script>
     window.$docsify = {
@@ -46,6 +47,7 @@
       repo: 'https://github.com/like-ycy/Python-Docs',
       topMargin: 90,
 
+      // 搜索栏的设置
       search: {
         paths: 'auto',
         placeholder: '🔍 搜索',
@@ -54,6 +56,7 @@
         maxAge: 86400000,
       },
 
+      // 页脚内容
       footer: {
         copy: 'Copyright &copy; 2021 💖 </span>',
         auth: ' <strong>权掌天下</strong>',
@@ -61,22 +64,27 @@
         style: 'text-align: center;',
       },
 
+      // 代码copy提示
       copyCode: {
         buttonText: 'Copy',
         errorText: 'Error',
         successText: 'OK!'
       },
 
+      // copy提醒
       'flexible-alerts': {
         style: 'flat'
       },
 
+      // 字数统计
       count:{
         countable:true,
         fontsize:'0.9em',
         color:'rgb(90,90,90)',
         language:'chinese'
       },
+
+      // 选项卡
       tabs: {
         persist    : true,      // default
         sync       : true,      // default
@@ -84,17 +92,21 @@
         tabComments: true,      // default
         tabHeadings: true       // default
       },
-      progress: {
-        position: "top",
-        color: "var(--theme-color,#42b983)",
-        height: "3px",
-      },
-      pagination: {
-      previousText: '上一章节',
-      nextText: '下一章节',
-      crossChapter: true,
-      crossChapterText: true,
-      },
+
+      // 阅读进度条
+      // progress: {
+        // position: "top",
+        // color: "var(--theme-color,#42b983)",
+        // height: "3px",
+      // },
+
+      // 文章末尾章节提示
+      // pagination: {
+      // previousText: '上一章节',
+      // nextText: '下一章节',
+      // crossChapter: true,
+      // crossChapterText: true,
+      // },
       // plugins: [
         // function (hook, vm) {
           // parse twemoji
@@ -107,20 +119,29 @@
     }
   </script>
   <!-- 插件 -->
+  <!-- 主题的 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+
+  <!-- 代码块右上角显示copy -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+  <!-- 全局搜索 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <!-- 图片缩放 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <!-- 简单emoji -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
-  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+  <!-- 阅读进度条 -->
+  <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script-->
+  <!-- 侧边栏目录收放 -->
+  <!-- script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script-->
+  <!-- 文章底部下页提示 -->
+  <!-- script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script-->
+  <!-- 中英文之间加空格 -->
+  <!-- script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script-->
 
   <!-- twemoji -->
   <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
-
-
 
   <!-- 代码高亮 -->
   <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
@@ -131,6 +152,7 @@
   <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-powershell.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-yaml.min.js"></script>
 
+  <!-- 页脚内容插件 -->
   <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
 
   <!-- 复制提醒 -->
@@ -141,6 +163,7 @@
         "若要转载或引用请务必保留原文链接，并申明来源。如果你觉得本仓库不错，那就来 Github 给个 star 吧 😊",
         "success"); };
   </script>
+  <!-- 不知是不是分复制提醒一起的 -->
   <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
 
   <!-- 置顶插件 -->
