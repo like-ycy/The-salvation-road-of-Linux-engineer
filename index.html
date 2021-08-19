@@ -23,12 +23,12 @@
   <!-- link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"-->
 
   <!-- 侧边栏的收起小图标是箭头还是别的 -->
-  <!-- link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" /-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" / >
 </head>
 <body>
   <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
   <!-- 回到顶部 -->
-  <a class="to-top">Top</a>
+  <a class="to-top">回到顶部</a>
   <script>
     window.$docsify = {
       auto2top: true,
@@ -95,18 +95,18 @@
 
       // 阅读进度条
       // progress: {
-        // position: "top",
+        // position: "footer",
         // color: "var(--theme-color,#42b983)",
         // height: "3px",
       // },
 
       // 文章末尾章节提示
-      // pagination: {
-      // previousText: '上一章节',
-      // nextText: '下一章节',
-      // crossChapter: true,
-      // crossChapterText: true,
-      // },
+      pagination: {
+        previousText: '上一章节',
+        nextText: '下一章节',
+        crossChapter: true,
+        crossChapterText: true,
+      },
       // plugins: [
         // function (hook, vm) {
           // parse twemoji
@@ -115,7 +115,6 @@
           // });
         // },
       // ]
-
     }
   </script>
   <!-- 插件 -->
@@ -131,14 +130,18 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <!-- 简单emoji -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+
   <!-- 阅读进度条 -->
-  <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script-->
+  <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script  -->
+
   <!-- 侧边栏目录收放 -->
-  <!-- script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
   <!-- 文章底部下页提示 -->
-  <!-- script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script-->
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
   <!-- 中英文之间加空格 -->
-  <!-- script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
 
   <!-- twemoji -->
   <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
