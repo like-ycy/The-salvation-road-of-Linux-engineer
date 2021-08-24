@@ -37,6 +37,8 @@
     - [反射与内置方法](/python_base/28.反射与内置方法.md)
     - [元类](/python_base/29.元类.md)
     - [异常处理](/python_base/30.异常处理.md)
+    - [堆栈和队列](/python_base/堆栈和队列.md)
+    - [StringIO&BytesIO](/python_base/StringIO_and_BytesIO.md)
 
 - 📑 一些小知识
     - [Python中的转义字符](/small_knowledge/Python中的转义字符.md)
