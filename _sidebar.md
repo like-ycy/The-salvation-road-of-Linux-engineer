@@ -39,6 +39,14 @@
         - [模块](/Python基础/20.模块.md)
         - [包](/Python基础/21.包.md)
 
+    - 常用模块
+        - [time](/Python常用模块/time模块.md)
+        - [datetime](/Python常用模块/datetime模块.md)
+        - [collection](/Python常用模块/collection模块.md)
+        - [base64](/Python常用模块/base64模块.md)
+        - [hashlib](/Python常用模块/hashlib模块.md)
+        - [pillow](/Python常用模块/pillow模块.md)
+
     - 面向对象编程
 
         - [面向对象编程](/Python基础/23.面向对象编程.md)
