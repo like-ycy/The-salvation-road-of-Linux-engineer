@@ -17,29 +17,43 @@
         - [垃圾回收机制](/Python基础知识/Python基础/07.垃圾回收机制.md)
         - [输入与输出(input/print)](/Python基础知识/Python基础/08.输入与输出.md)
         - [流程控制](/Python基础知识/Python基础/09.流程控制.md)
+
+    - Python进阶
+
+        - [堆栈和队列](/Python基础知识/Python进阶/堆栈和队列.md)
         - [可变与不可变数据类型](/Python基础知识/Python小知识点/可变与不可变数据类型.md)
         - [格式化字符串的四种方式](/Python基础知识/Python小知识点/格式化字符串的四种方式.md)
+        - [Python中的转义字符](/Python基础知识/Python小知识点/Python中的转义字符.md)
+        - [Python中小整数池的内存优化](/Python基础知识/Python小知识点/Python中小整数池的内存优化.md)
+        - [深浅拷贝](/Python基础知识/Python小知识点/深浅拷贝.md)
 
-    - 函数
+    - 函数基础
 
-        - [函数的基本使用](/Python基础知识/Python基础/11.函数的基本使用.md)
-        - [函数的参数](/Python基础知识/Python基础/12.函数的参数.md)
-        - [函数对象和闭包](/Python基础知识/Python基础/14.函数对象和闭包.md)
-        - [装饰器](/Python基础知识/Python基础/15.装饰器.md)
-        - [函数递归](/Python基础知识/Python基础/18.函数递归.md)
-        - [面向过程与函数式](/Python基础知识/Python基础/19.面向过程与函数式.md)
+        - [函数的基本使用](/Python基础知识/函数基础/11.函数的基本使用.md)
+        - [函数的参数](/Python基础知识/函数基础/12.函数的参数.md)
+        - [名称空间与作用域](/Python基础知识/函数基础/13.名称空间与作用域.md)
+
+    - 函数进阶
+
+        - [函数对象和闭包](/Python基础知识/函数进阶/14.函数对象和闭包.md)
+        - [装饰器](/Python基础知识/函数进阶/15.装饰器.md)
+        - [迭代器](/Python基础知识/函数进阶/16.迭代器.md)
+        - [生成器](/Python基础知识/函数进阶/17.生成器.md)
+        - [函数递归](/Python基础知识/函数进阶/18.函数递归.md)
+        - [面向过程与函数式](/Python基础知识/函数进阶/19.面向过程与函数式.md)
 
     - IO编程
 
-        - [文件处理](/Python基础知识/Python基础/10.文件处理.md)
-        - [StringIO&BytesIO](/Python基础知识/Python基础/StringIO_and_BytesIO.md)
+        - [文件处理](/Python基础知识/文件处理/10.文件处理.md)
+        - [StringIO&BytesIO](/Python基础知识/文件处理/StringIO_and_BytesIO.md)
 
     - 模块、包
 
-        - [模块](/Python基础知识/Python基础/20.模块.md)
-        - [包](/Python基础知识/Python基础/21.包.md)
+        - [模块](/Python基础知识/P模块-包/20.模块.md)
+        - [包](/Python基础知识/模块-包/21.包.md)
 
     - 常用模块
+        - [os模块](/Python基础知识/Python常用模块/OS模块.md)
         - [time](/Python基础知识/Python常用模块/time模块.md)
         - [datetime](/Python基础知识/Python常用模块/datetime模块.md)
         - [collection](/Python基础知识/Python常用模块/collection模块.md)
@@ -53,25 +67,23 @@
 
     - 面向对象编程
 
-        - [面向对象编程](/Python基础知识/Python基础/23.面向对象编程.md)
-        - [封装](/Python基础知识/Python基础/24.封装.md)
-        - [继承与派生](/Python基础知识/Python基础/25.继承与派生.md)
-        - [多态与鸭子类型](/Python基础知识/Python基础/26.多态与鸭子类型.md)
-        - [绑定方法与非绑定方法](/Python基础知识/Python基础/27.绑定方法与非绑定方法.md)
-        - [反射与内置方法](/Python基础知识/Python基础/28.反射与内置方法.md)
-        - [元类](/Python基础知识/Python基础/29.元类.md)
+        - [面向对象编程](/Python基础知识/面向对象/面向对象编程.md)
+        - [类和对象](/Python基础知识/面向对象/类和对象.md)
+        - [属性访问](/Python基础知识/面向对象/属性访问.md)
+        - [内置方法](/Python基础知识/面向对象/内置方法.md)
+        - [对象方法/静态方法/类方法](/Python基础知识/面向对象/对象方法-静态方法-类方法.md)
+        - [封装](/Python基础知识/面向对象/封装.md)
+        - [继承与派生](/Python基础知识/面向对象/25.继承与派生.md)
+        - [多态与鸭子类型](/Python基础知识/面向对象/26.多态与鸭子类型.md)
+        - [绑定方法与非绑定方法](/Python基础知识/面向对象/27.绑定方法与非绑定方法.md)
+        - [反射与内置方法](/Python基础知识/面向对象/28.反射与内置方法.md)
+        - [元类](/Python基础知识/面向对象/29.元类.md)
 
     - 错误、调试和测试
 
-        - [异常处理](/Python基础知识/Python基础/30.异常处理.md)
+        - [异常处理](/Python基础知识/错误处理-调试-测试/30.异常处理.md)
 
-- 临时目录
 
-    - [名称空间与作用域](/Python基础知识/Python基础/13.名称空间与作用域.md)
-    - [迭代器](/Python基础知识/Python基础/16.迭代器.md)
-    - [生成器](/Python基础知识/Python基础/17.生成器.md)
-    - [软件开发的目录规范](/Python基础知识/Python基础/22.软件开发的目录规范.md)
-    - [堆栈和队列](/Python基础知识/Python基础/堆栈和队列.md)
-    - [Python中的转义字符](/Python基础知识/Python小知识点/Python中的转义字符.md)
-    - [Python中小整数池的内存优化](/Python基础知识/Python小知识点/Python中小整数池的内存优化.md)
-    - [深浅拷贝](/Python基础知识/Python小知识点/深浅拷贝.md)
+- 软件开发的目录规范
+
+    - [软件开发目录规范](/软件开发的目录规范/软件开发的目录规范.md)
