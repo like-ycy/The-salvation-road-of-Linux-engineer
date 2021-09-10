@@ -66,7 +66,10 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
   - 知识面的广度，暂时先不要考虑深度
   - 先学知识的基本概念，哪怕概念不是很正确，但是能够帮助你快速理解
 
+## 🙋‍ CONTACT
 
+  - [🐙本人 Github](https://github.com/like-ycy)
+  - [🔮 本人博客：权掌天下的博客](https://like-ycy.github.io/)
 
 ## 📋 TODO
 
@@ -74,15 +77,6 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
   - 再加一级子目录（长期优化项目）
   - 基础部分添加练习题
   - 单独加入文件中的问题的处理
-
-
-
-## 🙋‍ CONTACT
-
-  - [🐙本人 Github](https://github.com/like-ycy)
-  - [🔮 本人博客：权掌天下的博客](https://like-ycy.github.io/)
-
-
 
 ## 待补充内容
 
@@ -129,5 +123,6 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
 for循环三角形 (oldboy文件夹代码目录day7)
 
 python单元测试
+
 
 <!-- tabs:end -->
