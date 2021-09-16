@@ -136,3 +136,20 @@
 - 🗂 软件开发的目录规范
 
     - [软件开发目录规范](/软件开发的目录规范/软件开发的目录规范.md)
+
+- 🖥 MySQL数据库
+
+    - [数据库介绍](/Mysql/0数据库介绍.md)
+    - [SQL介绍](/Mysql/1sql介绍.md)
+    - [MySQL介绍](/Mysql/2mysql介绍.md)
+    - [MySQL字段类型](/Mysql/3mysql字段类型.md)
+    - [MySQL基础操作](/Mysql/4mysql基础操作.md)
+    - [MySQL增删改查](/Mysql/5mysql增删改查.md)
+    - [MySQL单表查询](/Mysql/6mysql单表查询.md)
+    - [MySQL多表查询](/Mysql/7mysql多表查询.md)
+    - [MySQL索引](/Mysql/8mysql索引.md)
+    - [MySQL触发器](/Mysql/9mysql触发器.md)
+    - [MySQL存储引擎](/Mysql/10mysql存储引擎.md)
+    - [MySQL事务](/Mysql/11mysql事务.md)
+    - [MySQL权限管理](/Mysql/12mysql权限管理.md)
+    - [Python操作MySQL](/Mysql/13python操作mysql.md)
