@@ -4,5 +4,6 @@
 
 > 运维工程师的救赎之路
 
-[GitHub](https://github.com/like-ycy/Python-Docs)
+[GitHub](https://like-ycy.github.io/The-salvation-road-of-Linux-engineer/#/)
 [开始阅读](README.md)
+
