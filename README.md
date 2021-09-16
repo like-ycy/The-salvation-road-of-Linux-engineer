@@ -12,9 +12,9 @@
 
 本项目文档基于**Python3**
 
-?> Tips：文档部分内容前期复制于知乎[《小猿取经》](https://zhuanlan.zhihu.com/c_1189883314197168128)的笔记，后面进入机构系统学习后也有一些自己的修改。知乎笔记作者也是下面Python学习视频链接的教学老师。
+?> Tips：文档部分内容前期复制于知乎[《小猿取经》](https://zhuanlan.zhihu.com/c_1189883314197168128)的笔记，后面进入机构系统学习后也有一些自己的修改。
 
-?> Tips：文档后期更新的目录规划参考了Barry的 [Python从入门到放弃 汇总篇 - 正在学习的Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html))
+?> Tips：文档目录规划参考了Barry的 [Python从入门到放弃 汇总篇 - 正在学习的Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html))
 
 ## 🐛 目前Bug
 
@@ -37,6 +37,10 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
 [最全python数据分析资料汇总](https://github.com/hi-weijun/PythonDataScience-Collections)
 
 [Python最佳实践指南中文版](https://github.com/like-ycy/Python-Guide-CN)
+
+[C语言中文网MySQL教程](http://c.biancheng.net/mysql/)
+
+[廖雪峰大佬的Python教程](https://www.liaoxuefeng.com/wiki/1016959663602400)
 
 
 
@@ -73,10 +77,12 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
 
 ## 📋 TODO
 
-  - 文档内容的丰富度及格式的持续优化（长期优化项目）
-  - 再加一级子目录（长期优化项目）
-  - 基础部分添加练习题
-  - 单独加入文件中的问题的处理
+  - [ ] 网站整体移除侧边栏，使用顶部菜单栏代替
+  - [ ] 文档内容的丰富度及格式的持续优化（长期优化项目）
+  - [ ] 基础部分添加练习题
+  - [ ] 单独加入文件中的问题的处理
+  - [ ] MySQL文档按照书签中的网站对内容进行完善，并完善实例，因为复制的有些内容比较旧
+  - [ ] “相关推荐项目”把所有参考的链接补上
 
 ## 待补充内容
 
@@ -123,6 +129,5 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
 for循环三角形 (oldboy文件夹代码目录day7)
 
 python单元测试
-
 
 <!-- tabs:end -->
