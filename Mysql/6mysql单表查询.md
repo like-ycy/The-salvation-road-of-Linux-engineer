@@ -23,28 +23,28 @@ SELECT 字段名1，字段名2，… FROM 表名 WHERE 条件表达式;
   ```sql
   # 查询年龄大于20岁的
   select * from user where age>20;
-  
+
   # 将年龄大于20的性别改为w  年龄减少2
   update user set sex='w', age=age-2 where age > 20;
-  
+
   # 查询年龄小于20岁的
   select * from user where age<20;
-  
+
   # 将年龄小于20的性别改为w  年龄减少2
   update user set sex='w', age=age-2 where age < 20;
-  
+
   # 删除年龄大于等于30的数据
   delete from user where age >= 30;
-  
+
   # 删除id 小于等于 5 的数据
   delete from user where id <= 5;
-  
+
   # 查找性别为w的数据
   select * from user where sex='w';
-  
+
   # 查询性别不为w的所有数据
   select * from user where sex != 'w';
-  
+
   select * from user where sex <> 'w';
   ```
 
@@ -65,26 +65,26 @@ SELECT 字段名1，字段名2，… FROM 表名 WHERE 条件表达式;
   ### and
   # 查询年龄为18 并且性别为w的数据
   select * from user where sex='w' and age=18;
-  
+
   ### or
   # 修改性别为w或者m的数据 将年龄+2岁
   update user set age=age+2 where sex='w' or sex='m';
-  
+
   ### between ... and ...
   # 查询年龄在18 -  28之间的数据
   select * from user where age>=18 and age <=28;
   select * from user where age between 18 and 28;
-  
+
   ### not between...and...
   # 查询年龄不在18 -  28之间的数据
   select * from user where age < 18 or age >28;
   select * from user where age not between 18 and 28;
-  
+
   ### in
   # 查询年龄为 18 28 38 的数据
   select * from user where age=18 or age=28 or age=38;
   select * from user where age in(18,28,38);
-  
+
   ### not in
   # 查询年龄不为 18 28 38 的数据
   select * from user where age!=18 and age!=28 and age!=38;
@@ -138,16 +138,16 @@ select * from user where sex='w' order by age;
   ```sql
   # 取出3条数据
   select * from user limit 3;
-  
+
   # 从第3条开始 取出3条
   select * from user limit 3,3;
-  
+
   # 取出年龄最大的数据
   select * from user order by age desc limit 1;
-  
+
   # 取出年龄最小的数据
   select * from user order by age asc limit 1;
-  
+
   # 查询性别为w的 最大的年龄的数据
   select * from user where sex='w' order by age desc limit 1;
   ```
@@ -174,7 +174,7 @@ select * from user where sex='w' order by age;
 
   select * from user where username is null;
 
-+ is not 
++ is not
 
   查询不为空的数据
 
@@ -206,25 +206,25 @@ select * from user where sex='w' order by age;
   ### '%字符'
   # 查询用户名以y结尾的数据
   select * from user where username like '%y';
-  
+
   ### '字符%'
   # 查询用户名以l开头的数据
   select * from user where username like 'l%';
-  
+
   ### '%字符%'
   # 查询包含y的用户名
   select * from user where username like '%y%'
-  
+
   ### '_'
   # 匹配俩位的用户名
   select * from user where username like '__';
-  
+
   ### not like
   # 查询俩个字符以外的数据
   select * from user where username not like '__';
   ```
 
-  
+
 
 ## DISTINCT 去重
 
@@ -313,18 +313,18 @@ select grade,count(*) as count from user group by grade having grade in('python3
   ```sql
   # 查询username中以l作为开头的数据
   select * from user where username regexp '^l';
-  
+
   # 查询username中以y作为结尾的数据
   select * from user where username regexp 'y$';
-  
+
   # 查询username中包含y的数据
   select * from user where username regexp 'y'
-  
+
   # 查询为俩个字符的数据
   select * from user where username regexp '^[a-z]{2}$';
-  
+
   # 查询字母以外的用户名
   select * from user where username regexp '\[^a-z]';
   ```
 
-  
+
