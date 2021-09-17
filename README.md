@@ -84,6 +84,14 @@ Python学习视频：[老男孩python全栈29期](https://www.bilibili.com/video
   - [ ] MySQL文档按照书签中的网站对内容进行完善，并完善实例，因为复制的有些内容比较旧
   - [ ] “相关推荐项目”把所有参考的链接补上
 
+## 🙏 特别鸣谢
+
+[C语言中文网MySQL教程](http://c.biancheng.net/mysql/)
+
+[廖雪峰大佬的Python教程](https://www.liaoxuefeng.com/wiki/1016959663602400)
+
+[W3school在线教程](https://www.w3school.com.cn/)
+
 ## 待补充内容
 
 <!-- tabs:start -->
