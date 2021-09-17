@@ -3,9 +3,9 @@ a {
 }
 body{
     word-spacing:1px; /*更改默认的词间距*/
-    letter-spacing:1px;/*更改默认的字符间距*/ 
+    letter-spacing:1px;/*更改默认的字符间距*/
     background:rgb(51, 51, 51);
-    font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;   
+    font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
     line-height: 1.5;
 
 }
@@ -60,7 +60,7 @@ section.cover .cover-main {
     background: rgb(68,68,68);
     white-space: normal;
     color: rgb(173, 141, 229);
-    
+
 }
 /* 搜索框 */
 .search {
@@ -92,7 +92,7 @@ section.cover .cover-main {
 
 .sidebar ul li.active > a {
     color: rgb(66, 185, 163);
-} 
+}
 
 /* 侧边栏标题 */
 .sidebar > h1 a{
@@ -185,7 +185,7 @@ section.cover.has-mask .mask {
 .markdown-section pre>code {
     color: #c0c3c1 !important;
     font-family: 'Inconsolata', consolas,"PingFang SC", "Microsoft YaHei", monospace !important;
-    background-color: #282c34 !important;    
+    background-color: #282c34 !important;
     font-size: 15px !important;
     white-space: pre !important;
     line-height: 1.5 !important;

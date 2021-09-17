@@ -81,7 +81,7 @@ section.cover .cover-main {
     background: rgb(247, 247, 247);
     white-space: normal;
     color: rgb(173, 141, 229);
-    
+
 }
 
 /* 搜索框 */
@@ -117,7 +117,7 @@ section.cover .cover-main {
 }
 .sidebar ul li.active > a {
     color: rgb(66, 185, 163);
-} 
+}
 
 /* 侧边栏标题 */
 .sidebar > h1 a{
@@ -165,7 +165,7 @@ h1 span{
     background-image:url("https://gitee.com/veal98/images/raw/master/img/圆点.png");
     background-size: 12px 12px;
 	background-repeat:no-repeat;
-	background-position:0px 8px; 
+	background-position:0px 8px;
 	padding-left:20px;
 } */
 
@@ -237,7 +237,7 @@ section.cover.has-mask .mask {
 .markdown-section pre>code {
     color: #c0c3c1 !important;
     font-family: 'Inconsolata', consolas,"PingFang SC", "Microsoft YaHei", monospace !important;
-    background-color: #282c34 !important;    
+    background-color: #282c34 !important;
     font-size: 15px !important;
     white-space: pre !important;
     line-height: 1.5 !important;
