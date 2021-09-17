@@ -543,7 +543,6 @@ mysql> SELECT * FROM tb_emp7;
 + 实例
 
   ```sql
-  drop trigger if exists t1;  
   create trigger t2
   after delete on `order`
   for each row
@@ -551,9 +550,9 @@ mysql> SELECT * FROM tb_emp7;
   update goods set goods_num=goods_num+old.order_num where goods_id=old.goods_id;
   end;
   ```
-
+  
   删除触发器：drop trigger if exists t1;  
-
+  
 + 删除刚才所下的订单
 
   ```sql
@@ -570,7 +569,6 @@ mysql> SELECT * FROM tb_emp7;
 + 实例
 
   ```sql
-  drop trigger if exists t2;  
   create trigger t3
   after update on `order`
   for each row
@@ -581,7 +579,7 @@ mysql> SELECT * FROM tb_emp7;
   update goods set goods_num=goods_num-new.order_num where goods_id=new.goods_id;
   end;
   ```
-
+  
 + 修改订单数量
 
   ```sql
