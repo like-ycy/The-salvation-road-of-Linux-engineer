@@ -1,184 +1,197 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>Python-Docs</title>
-  <meta name="referrer" content="never">
-  <link rel="icon" href="_media/favicon.ico">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Python个人学习文档">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <!-- 主体设置 -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Python-Docs</title>
+    <meta name="referrer" content="never" />
+    <link rel="icon" href="_media/favicon.ico" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Python个人学习文档" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <!-- 主体设置 -->
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css"
+    />
 
-  <!-- 字体样式 -->
-  <link rel="stylesheet" type="text/css" href="style/myStyle-light.css"/>
-  <!-- copy提示信息 -->
-  <link rel="stylesheet" href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" type='text/css' media='all' / >
+    <!-- 字体样式 -->
+    <link rel="stylesheet" type="text/css" href="style/myStyle-light.css" />
+    <!-- copy提示信息 -->
+    <link rel="stylesheet"
+    href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css"
+    type='text/css' media='all' / >
 
-  <!-- latex -->
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" /-->
-  <!-- link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"-->
+    <!-- latex -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" /-->
+    <!-- link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"-->
 
-  <!-- 侧边栏的收起小图标是箭头还是别的 -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" / >
+    <!-- 侧边栏的收起小图标是箭头还是别的 -->
+    <link rel="stylesheet"
+    href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css"
+    / >
+  </head>
+  <body>
+    <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
+    <!-- 回到顶部 -->
+    <a class="to-top">回到顶部</a>
+    <script>
+      window.$docsify = {
+        auto2top: true,
+        mergeNavbar: true,
+        loadSidebar: true,
+        // alias: {
+        // '/.*/_sidebar.md': '/_sidebar.md',
+        // },
+        // subMaxLevel: 2,
+        sidebarDisplayLevel: 0,
+        // maxLevel: 2,
+        coverpage: true,
+        onlyCover: true,
+        name: "Python_Docs",
+        nameLink:
+          "https://like-ycy.github.io/The-salvation-road-of-Linux-engineer/#/",
+        repo: "https://github.com/like-ycy/The-salvation-road-of-Linux-engineer",
+        //stopMargin: 90,
 
-</head>
-<body>
-  <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
-  <!-- 回到顶部 -->
-  <a class="to-top">回到顶部</a>
-  <script>
-    window.$docsify = {
-      auto2top: true,
-      mergeNavbar: true,
-      loadSidebar: true,
-      // alias: {
-      // '/.*/_sidebar.md': '/_sidebar.md',
-      // },
-      // subMaxLevel: 2,
-      sidebarDisplayLevel: 0,
-      // maxLevel: 2,
-      coverpage: true,
-      onlyCover: true,
-      name: 'Python_Docs',
-      nameLink: 'https://like-ycy.github.io/The-salvation-road-of-Linux-engineer/#/',
-      repo: 'https://github.com/like-ycy/The-salvation-road-of-Linux-engineer',
-      //stopMargin: 90,
+        // 搜索栏的设置
+        search: {
+          paths: "auto",
+          placeholder: "🔍 搜索",
+          noData: "😒 找不到结果",
+          depth: 6,
+          maxAge: 86400000,
+        },
 
-      // 搜索栏的设置
-      search: {
-        paths: 'auto',
-        placeholder: '🔍 搜索',
-        noData: '😒 找不到结果',
-        depth: 6,
-        maxAge: 86400000,
-      },
+        // 页脚内容
+        footer: {
+          copy: "Copyright &copy; 2021 💖 </span>",
+          auth: " <strong>权掌天下</strong>",
+          pre: "<hr/>",
+          style: "text-align: center;",
+        },
 
-      // 页脚内容
-      footer: {
-        copy: 'Copyright &copy; 2021 💖 </span>',
-        auth: ' <strong>权掌天下</strong>',
-        pre: '<hr/>',
-        style: 'text-align: center;',
-      },
+        // 代码copy提示
+        copyCode: {
+          buttonText: "Copy",
+          errorText: "Error",
+          successText: "OK!",
+        },
 
-      // 代码copy提示
-      copyCode: {
-        buttonText: 'Copy',
-        errorText: 'Error',
-        successText: 'OK!'
-      },
+        // copy提醒
+        "flexible-alerts": {
+          style: "flat",
+        },
 
-      // copy提醒
-      'flexible-alerts': {
-        style: 'flat'
-      },
+        // 字数统计
+        count: {
+          countable: true,
+          fontsize: "0.9em",
+          color: "rgb(90,90,90)",
+          language: "chinese",
+        },
 
-      // 字数统计
-      count:{
-        countable:true,
-        fontsize:'0.9em',
-        color:'rgb(90,90,90)',
-        language:'chinese'
-      },
+        // 选项卡
+        tabs: {
+          persist: true, // default
+          sync: true, // default
+          theme: "classic", // default
+          tabComments: true, // default
+          tabHeadings: true, // default
+        },
 
-      // 选项卡
-      tabs: {
-        persist    : true,      // default
-        sync       : true,      // default
-        theme      : 'classic', // default
-        tabComments: true,      // default
-        tabHeadings: true       // default
-      },
-
-      // 阅读进度条
-      // progress: {
+        // 阅读进度条
+        // progress: {
         // position: "footer",
         // color: "var(--theme-color,#42b983)",
         // height: "3px",
-      // },
-
-      // 文章末尾章节提示
-      pagination: {
-        previousText: '上一章节',
-        nextText: '下一章节',
-        crossChapter: true,
-        crossChapterText: true,
-      },
-      // plugins: [
-        // function (hook, vm) {
-          // parse twemoji
-          // hook.doneEach(function() {
-              // twemoji.parse(document);
-          // });
         // },
-      // ]
-    }
-  </script>
-  <!-- 插件 -->
-  <!-- 主题的 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
 
-  <!-- 代码块右上角显示copy -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+        // 文章末尾章节提示
+        pagination: {
+          previousText: "上一章节",
+          nextText: "下一章节",
+          crossChapter: true,
+          crossChapterText: true,
+        },
+        // plugins: [
+        // function (hook, vm) {
+        // parse twemoji
+        // hook.doneEach(function() {
+        // twemoji.parse(document);
+        // });
+        // },
+        // ]
+      };
+    </script>
+    <!-- 插件 -->
+    <!-- 主题的 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
 
-  <!-- 全局搜索 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <!-- 代码块右上角显示copy -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+    <!-- 全局搜索 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
     <!-- 图片缩放 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  <!-- 简单emoji -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+    <!-- 简单emoji -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
 
-  <!-- 阅读进度条 -->
-  <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script  -->
+    <!-- 阅读进度条 -->
+    <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script  -->
 
-  <!-- 侧边栏目录收放 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+    <!-- 侧边栏目录收放 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 
-  <!-- 文章底部下页提示 -->
-  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+    <!-- 文章底部下页提示 -->
+    <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
 
-  <!-- 中英文之间加空格 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+    <!-- 中英文之间加空格 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
 
-  <!-- twemoji -->
-  <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
+    <!-- twemoji -->
+    <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
 
-  <!-- 代码高亮 -->
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-java.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-css.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-powershell.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-yaml.min.js"></script>
+    <!-- 代码高亮 -->
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-java.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-css.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-powershell.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-yaml.min.js"></script>
 
-  <!-- 页脚内容插件 -->
-  <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
+    <!-- 页脚内容插件 -->
+    <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
 
-  <!-- 复制提醒 -->
-  <script src="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
-  <script>
-    document.body.oncopy = function () {
-      swal("复制成功 🎉",
-        "若要转载或引用请务必保留原文链接，并申明来源。如果你觉得本仓库不错，那就来 Github 给个 star 吧 😊",
-        "success"); };
-  </script>
-  <!-- 不知是不是分复制提醒一起的 -->
-  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+    <!-- 复制提醒 -->
+    <script src="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script>
+      document.body.oncopy = function () {
+        swal(
+          "复制成功 🎉",
+          "若要转载或引用请务必保留原文链接，并申明来源。如果你觉得本仓库不错，那就来 Github 给个 star 吧 😊",
+          "success"
+        );
+      };
+    </script>
+    <!-- 不知是不是分复制提醒一起的 -->
+    <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
 
-  <!-- 置顶插件 -->
-  <script src="style/jquery-1.11.3.min.js"></script>
-  <script src="style/jquery.toTop.min.js"></script>
-  <script>
-    $('.to-top').toTop();
-  </script>
+    <!-- 置顶插件 -->
+    <script src="style/jquery-1.11.3.min.js"></script>
+    <script src="style/jquery.toTop.min.js"></script>
+    <script>
+      $(".to-top").toTop();
+    </script>
 
-  <!-- Markdown 引用样式美化 -->
-  <script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>
+    <!-- Markdown 引用样式美化 -->
+    <script src="https://unpkg.com/docsify-plugin-flexible-alerts"></script>
 
-  <!-- 选项卡插件 -->
-  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
-</body>
+    <!-- 选项卡插件 -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+  </body>
 </html>
