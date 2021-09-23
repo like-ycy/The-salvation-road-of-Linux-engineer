@@ -282,6 +282,201 @@ CSS 选择器用于“查找”（或选取）要设置样式的 HTML 元素。
 
   
 
+## CSS3选择器
+
+### 1、关系选择器
+
++ div > p 选择div的子元素p
+
++ div+p   选择紧贴在div后面的p元素
+
++ div ~ p 选择div后面的所有同级元素p
+
++ div p   div里面所有的p元素
+
++ 实例
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+      <style>
+          ul li{
+          ul>li{
+          ul+li{
+          ul~li{
+              border-bottom: 1px solid red;
+          }
+  
+      </style>
+  </head>
+  <body>
+      <ul>
+          <li>我是li标签</li>
+          <li>我是li标签</li>
+          <li>我是li标签</li>
+          <ol>
+              <li>ol里面的li</li>
+              <li>ol里面的li</li>
+              <li>ol里面的li</li>
+          </ol>
+      </ul>
+      <li>外部的li1</li>
+      <li>外部的li2</li>
+      <li>外部的li3</li>
+  </body>
+  </html>
+  ```
+
+### 2、属性选择器
+
++ [attr]  选择具有attr属性的元素
+
++ [attr=value] 选择attr属性等于value的元素
+
++ [attr^=value] 选择attr属性以value作为开头的元素
+
++ [attr$=value] 选择attr属性以value作为结尾的元素
+
++ [attr*=value] 选择attr属性包含value的元素
+
++ 实例
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+      <style>
+          /*选择input标签具有name属性的元素*/
+          /*input[name]{*/
+          /*input[name=username]{*/
+          /*input[name^=u]{*/
+          /*input[name$=d]{*/
+          input[name*=s]{
+              border:10px dotted green;
+              color:red;
+          }
+      </style>
+  </head>
+  <body>
+  <p><input type="text" name="username"></p>
+  <p><input type="password" name="password"></p>
+  <p><input type="text"></p>
+  <p><input type="text" value="123456"></p>
+  </body>
+  </html>
+  ```
+
+### 3、结构性伪类选择器
+
++ :first-letter    设置对象内第一个字符的样式
+
++ :first-line   设置对象内第一行的样式
+
++ :before  设置在对象前发生的内容
+
++ :after  设置在对象后发生的内容
+
+  实例
+
+  ```css
+  span:before{
+  span:after{
+      content: 'before';
+      display: block;
+      border:1px solid red;
+      width: 300px;
+      height: 300px;
+  }
+  <span>span标签</span>
+  ```
+
++ :first-of-type  匹配同类型中的第一个同级兄弟元素
+
++ :last-of-type  匹配同类型中的最后一个同级兄弟元素
+
++ :first-child  匹配父元素的第一个子元素
+
++ :last-child  匹配父元素的最后一个子元素
+
++ :nth-child(n)  匹配父元素的第n个子元素
+
+  nth-child(2n)  代表偶数行
+
+  nth-child(2n+1)  代表奇数行
+
++ :nth-last-child(n)  匹配父元素的倒数第n个子元素
+
++ 区别：
+
+  type匹配的第一个/最后一个元素 无论前面是否有其他同级兄弟元素  都不会受影响
+
+  child匹配的第一个/最后一个元素   那么第一个/最后一个必须为匹配的元素
+
++ :not(e)  匹配当前不包含e选择器的元素
+
+  ```css
+  ul li:not(:last-child){
+      color:red;
+  }
+  ```
+
+### 4、状态伪类选择器
+
++ :link  设置超链接未被访问之前的样式
+
++ :visited 设置超链接访问后的样式
+
++ :hover  设置鼠标悬停时候的样式
+
++ :active  设置激活时候的样式
+
++ :focus  设置获取焦点时候的样式
+
++ :enabled  匹配可用状态的元素
+
++ :disabled 匹配处于禁用状态的元素
+
++ :checked 匹配处于选中状态的元素
+
+  ```
+  input:checked+span:after{
+      content: '你被选择了';
+  }
+  <p><input type="radio" name="sex" value="1">radio<span></span></p>
+  ```
+
++ :selection  设置对象被选择时的样式
+
+### 5、important 应用优先权
+
++ 实例
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+      <style>
+          p{
+              color:red !important;
+          }
+          p{
+              color:green;
+          }
+      </style>
+  </head>
+  <body>
+  <p>样式</p>
+  </body>
+  </html>
+  ```
+
 
 
 
