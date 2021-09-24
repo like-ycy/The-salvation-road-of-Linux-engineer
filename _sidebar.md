@@ -176,3 +176,8 @@
   - [JavaScript 数据类型](/JS基础/2JavaScript数据类型.md)
   - [JavaScript 运算符](/JS基础/3JavaScript运算符.md)
   - [JavaScript 流程控制](/JS基础/4JavaScript流程控制.md)
+  - [JavaScript 数组](/JS基础/5JavaScript数组.md)
+  - [JavaScript 字符串](/JS基础/6JavaScript字符串.md)
+  - [JavaScript 函数](/JS基础/7JavaScript函数.md)
+  - [JavaScript 对象](/JS基础/8JavaScript对象.md)
+  - [JavaScript 日期对象](/JS基础/9JavaScript日期对象.md)
