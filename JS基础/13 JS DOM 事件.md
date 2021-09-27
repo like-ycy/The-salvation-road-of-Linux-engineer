@@ -407,4 +407,103 @@
 
 
 
+### 13、事件监听
 
++ 方法
+
+  addEventListener()
+
++ 作用
+
+  多个相同事件不会被覆盖
+
++ 参数
+
+  + event 事件
+  + 函数(功能)
+
++ 实例
+
+  ```javascript
+  var but = document.getElementById('button');
+  // console.log(but)
+  /*but.onclick = function () {
+      console.log('点击1')
+  }
+  // but.onclick = function () {
+  but.onmousemove = function () {
+      console.log('点击2')
+  }*/
+  
+  // 事件类型没有on
+  but.addEventListener('click',function () {
+      console.log('click1')
+  })
+  but.addEventListener('click',function () {
+      console.log('click2')
+  })
+  but.addEventListener('mousemove',function () {
+      // console.log('mousemove')
+      test();
+  })
+  function test() {
+      console.log('mousemove')
+  }
+  ```
+
+
+
+### 14、节点操作
+
++ 创建节点
+
+  document.createElement('节点名称')
+
++ 创建文本内容
+
+  document.createTextNode('内容')
+
++ 添加文本内容
+
+  p.appendChild(text)
+
++ 从父元素中移除子元素
+
+  parent.removeChild(child)
+
+  ```js
+  var ul = document.getElementsByTagName('ul')[0];
+  var li = document.getElementsByTagName('li')[0];
+  ul.removeChild(li)
+  ```
+
++ 节点替换
+
+  节点.replaceChild(new, old)
+
+  ```js
+  var ul = document.getElementsByTagName('ul')[0];
+  var li = document.getElementsByTagName('li')[0];
+  // ul.removeChild(li)
+  ul.replaceChild(p,li);
+  ```
+
++ 获取第一个子节点
+
+  节点.parentNode.firstChild
+
+  ```js
+  var li = document.getElementsByTagName('li')[2];
+  console.log(li.parentNode.firstChild)
+  ```
+
++ 获取最后一个子节点
+
+  节点.parentNode.lastChild
+
+  ```js
+  var li = document.getElementsByTagName('li')[2];
+  console.log(li.parentNode.lastChild)
+  ```
+
+  
