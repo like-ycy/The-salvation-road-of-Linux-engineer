@@ -379,46 +379,141 @@ def register(req):
       return HttpResponse('index')
   ```
 
-- **redirect** 
+### 3、httpresponse属性
+
++ content 返回的数据
++ status_code   状态码
+
+```python
+def test_reponse(req):
+    r = HttpResponse()
+    r. content = '测试响应属性'
+    r.status_code = 404
+    return r
+```
+
+
+
+### 4、方法
+
++ set_cookie()  设置cookie
++ delete_cookie()  删除cookie
+
+
+
+### 5、重定向 HttpResponseRedirect
+
++ 作用
+
+  服务器间的跳转
+
++ 方法
+
+  HttpResponseRedirect
+
+  redirect（简写  推荐）
+
++ 导入
 
   ```python
-  # 返回重定向信息
-  def my_view(request):
-      ...
-      return redirect('/some/url/')
-  
-  # 重定向的地址也可以是一个完整的URL：
-  def my_view(request):
-      ...
-      return redirect('http://www.baidu.com/')　
+  from django.http import JsonResponse, HttpResponseRedirect
+  from django.shortcuts import render, HttpResponse, redirect
+  ```
+
++ 重定向
+
+  路由地址
+
+  ```python
+  from django.urls import path
+  from . import views
+  urlpatterns = [
+      path('', views.index, name='index'),
+      path('test_reponse/', views.test_reponse, name='test_reponse'),
+      path('redirect_view/', views.redirect_view, name='redirect_view'),
+      path('args/<name>/<int:age>/', views.args, name='args'),
+  ]
+  ```
+
+  视图函数
+
+  ```python
+  def test_reponse(req):
+      r = HttpResponse()
+      r. content = '测试响应属性'
+      r.status_code = 404
+      return r
+  def args(req, name, age):
+      return HttpResponse('返回多个参数')
+  # 重定向视图函数
+  def redirect_view(req):
+      # return HttpResponse('测试重定向')
+      return HttpResponseRedirect('/test_reponse/')
+      return HttpResponseRedirect('/args/lucky/18/')
+      return redirect('/test_reponse/')
+      return redirect('/args/lucky/18/')
   ```
 
 **重定向转态码301与302的区别（了解）**
 
   ```
-  一、301和302的异同。
-     1、相同之处：
-     301和302状态码都表示重定向，具体点说就是浏览器在拿到服务器返回的这个状态码后会自动跳转到一个新的URL地址（浏览器会从响应头Location中获取新地址），用户看到的效果都是输入地址A后瞬间跳转到了另一个地址B
-     
-     2、不同之处：
-  　　301表示旧地址A的资源已经被永久地移除了，即这个资源不可访问了。搜索引擎在抓取新内容的同时也将旧的网址转换为重定向之后的地址；
-  　　302表示旧地址A的资源还在，即这个资源仍然可以访问，这个重定向只是临时地从旧地址A跳转到地址B，搜索引擎会抓取新的内容、并且会保存旧的网址。 从SEO层面考虑，302要好于301
-  
-  二、重定向原因：
-     1、网站调整（如改变网页目录结构）；
-     2、网页被移到一个新地址；
-     3、网页扩展名改变(如应用需要把.php改成.Html或.shtml)。
-        这种情况下，如果不做重定向，则用户收藏夹或搜索引擎数据库中旧地址只能让访问客户得到一个404页面错误信息，访问流量白白丧失；再者某些注册了多个域名的网站，也需要通过重定向让访问这些域名的用户自动跳转到主站点等。
+一、301和302的异同。
+   1、相同之处：
+   301和302状态码都表示重定向，具体点说就是浏览器在拿到服务器返回的这个状态码后会自动跳转到一个新的URL地址（浏览器会从响应头Location中获取新地址），用户看到的效果都是输入地址A后瞬间跳转到了另一个地址B
+   
+   2、不同之处：
+　　301表示旧地址A的资源已经被永久地移除了，即这个资源不可访问了。搜索引擎在抓取新内容的同时也将旧的网址转换为重定向之后的地址；
+　　302表示旧地址A的资源还在，即这个资源仍然可以访问，这个重定向只是临时地从旧地址A跳转到地址B，搜索引擎会抓取新的内容、并且会保存旧的网址。 从SEO层面考虑，302要好于301
+
+二、重定向原因：
+   1、网站调整（如改变网页目录结构）；
+   2、网页被移到一个新地址；
+   3、网页扩展名改变(如应用需要把.php改成.Html或.shtml)。
+      这种情况下，如果不做重定向，则用户收藏夹或搜索引擎数据库中旧地址只能让访问客户得到一个404页面错误信息，访问流量白白丧失；再者某些注册了多个域名的网站，也需要通过重定向让访问这些域名的用户自动跳转到主站点等。
   ```
 
-##  jsonResponse
+### 6、reverse 反向解析
+
++ 作用
+
+  通过namespace以及path中name进行反向构造路由地址
+
++ 导入
+
+  ```python
+  from django.urls import reverse
+  ```
+
++ 构造路由地址
+
+  ```python
+  # 路由构造视图函数
+  def reverse_view(req):
+      # 构造无参路由
+      url = reverse("App:index")
+      url = reverse("App:test_reponse")
+      # 构造带参路由
+      url = reverse('App:args', kwargs={'name':'lukcy','age':18})
+      url = reverse('App:args', args=['lukcy',18])
+      return HttpResponse(url)
+  ```
+
++ 组合使用
+
+  ```python
+  # 重定向视图函数
+  def redirect_view(req):
+      return redirect(reverse('App:args', kwargs={'name':'lukcy','age':18}))
+  ```
+
+## jsonResponse
 
 向前端返回一个json格式字符串的两种方式
 
 方式一：
 
 ```python
-Copyimport json
+Copimport json
 
 def my_view(request):
     data=['egon','kevin']
@@ -428,7 +523,7 @@ def my_view(request):
 方式二：
 
 ```python
-Copyfrom django.http import JsonResponse
+from django.http import JsonResponse
 
 def my_view(request):
     data=['egon','kevin']
@@ -441,7 +536,7 @@ def my_view(request):
 urls.py
 
 ```python
-Copyfrom django.urls import re_path
+from django.urls import re_path
 from app01 import views
 
 urlpatterns = [
@@ -452,7 +547,7 @@ urlpatterns = [
 Views.py
 
 ```python
-Copyfrom django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse
 
 def login(request):
     if request.method == 'GET':
@@ -484,7 +579,7 @@ def login(request):
 在templates目录下新建login.html
 
 ```html
-Copy<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -497,7 +592,7 @@ method="post"代表在提交表单时会以POST方法提交表单数据
 action="/login/" 代表表单数据的提交地址为http://127.0.0.1:8001/login/,可以简写为action="/login/",或者action=""
 -->
 <form action="http://127.0.0.1:8001/login/" method="post">
-    {% csrf_token %} <!--强调：必须加上这一行，后续我们会详细介绍-->
+    {% csrf_token %}
     <p>用户名：<input type="text" name="name"></p>
     <p>年龄：<input type="text" name="age"></p>
     <p>
@@ -508,70 +603,6 @@ action="/login/" 代表表单数据的提交地址为http://127.0.0.1:8001/login
     </p>
     <p><input type="submit" value="提交"></p>
 
-</form>
-</body>
-</html>
-```
-
-## 案例二、form表单上传文件
-
-urls.py
-
-```python
-Copyfrom django.urls import path,register_converter,re_path
-from app01 import views
-
-urlpatterns = [
-    re_path(r'^register/$',views.register),
-]
-```
-
-views.py
-
-```python
-Copyfrom django.shortcuts import render,HttpResponse
-
-def register(request):
-    if request.method == 'GET':
-        return render(request,'register.html')
-    elif request.method == 'POST':
-        print(request.body)
-
-        # 从request.POST中获取用户名
-        name=request.POST.get('name') 
-        # 从request.FILES获取文件对象
-        file_obj=request.FILES.get('header_img') 
-        
-        # 上传的文件存放于templates文件夹下
-        with open('templates/header.png','wb') as f: 
-            for line in file_obj:
-                f.write(line)
-
-        return HttpResponse('注册成功')
-```
-
-在templates目录下新建register.html
-
-```python
-Copy<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>注册页面</title>
-</head>
-<body>
-
-<form action="" method="POST" enctype="multipart/form-data" >
-    {% csrf_token %}
-    <p>
-        用户名:<input type="text" name="name">
-    </p>
-    <p>
-        头像:<input type="file" name="header_img">
-    </p>
-    <p>
-        <input type="submit" value="提交">
-    </p>
 </form>
 </body>
 </html>
