@@ -56,16 +56,17 @@ cookie是浏览器保存在用户电脑上的一小段文本，通俗的来讲�
       res.set_cookie('name', 'lucky')
       return res
 
+- 设置cookie并设置过期时间
 
-  # 设置cookie并设置过期时间
+  ```python
   def set_cookie_lifetime(req):
-      res = HttpResponse('设置cookie并设置过期时间')
-      # 设置过期时间为2分钟
-      res.set_cookie('name', 'lucky', max_age=120)
-      return res
+        res = HttpResponse('设置cookie并设置过期时间')
+        # 设置过期时间为2分钟
+        res.set_cookie('name', 'lucky', max_age=120)
+        return res
   ```
 
-
+  
 
 ### 1.3、获取cookie
 
@@ -85,10 +86,9 @@ cookie是浏览器保存在用户电脑上的一小段文本，通俗的来讲�
 
   ```python
   path('look_cookie/', test_cookie.look_cookie, name='look_cookie'),
-  ```
-
+  
   视图
-
+  
   ```python
   # 查看cookie
   def look_cookie(req):
