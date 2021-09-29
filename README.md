@@ -12,7 +12,7 @@
 
 ?> Tips：文档 《Python 基础知识》前期复制于知乎[《小猿取经》](https://zhuanlan.zhihu.com/c_1189883314197168128)的笔记，后面进入机构系统学习后也有一些自己的修改。
 
-?> Tips：《Python 基础知识、并发、网络》文档目录规划参考了 Barry 的 [Python 从入门到放弃 汇总篇 - 正在学习的 Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html))
+?> Tips：《Python 基础知识、并发、网络、Django》文档目录规划参考了 Barry 的 [Python 从入门到放弃 汇总篇 - 正在学习的 Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html))
 
 ## 🐛 目前 Bug
 
