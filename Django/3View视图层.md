@@ -1,6 +1,6 @@
 # View 视图
 
-一个视图函数（类），简称视图，是一个简单的Python 函数（类），它接受Web请求并且返回Web响应。
+一个视图函数（类），简称视图，是一个Python 函数（类），它接受Web请求并且返回Web响应。
 
 其中，函数view我们称之为FBV（function base views），类view我们称之为CBV（class base views）
 
@@ -108,7 +108,7 @@ def index(request):
   re_path(r'^args/(?P<name>\w+)/(?P<age>\d{2})/$', views.args, name='args'),
   ```
 
-  参数限定类型 如果类型不匹配则为404  参数匹配成功类型为str
+  参数限定类型，如果类型不匹配则为404，参数匹配成功类型为str
 
 ### 限制请求类型
 
@@ -513,7 +513,7 @@ def test_reponse(req):
 方式一：
 
 ```python
-Copimport json
+Coimport json
 
 def my_view(request):
     data=['egon','kevin']
@@ -529,6 +529,56 @@ def my_view(request):
     data=['egon','kevin']
     return JsonResponse(data,safe=False)
     #默认safe=True代表只能序列化字典对象，safe=False代表可以序列化字典以外的对象
+```
+
+
+
+## 类视图
+
+### 1、概述
+
+**CBV（class base views）** 就是在视图里使用类处理请求。
+
+Python是一个面向对象的编程语言，如果只用函数来开发，有很多面向对象的优点就错失了（继承、封装、多态）。所以Django在后来加入了Class-Based-View。可以让我们用类写View。这样做的优点主要下面两种：
+
+1. 提高了代码的复用性，可以使用面向对象的技术，比如Mixin（多继承）
+2. 可以用不同的函数针对不同的HTTP方法处理，而不是通过很多if判断，提高代码可读性
+
+### 2、视图定义
+
+```python
+from django.shortcuts import HttpResponse
+from django.views import View   # 导入视图类
+
+
+
+class RestfulApIView(View):
+    def get(self, req):
+        return HttpResponse('get')
+
+    def post(self, req):
+        return HttpResponse('post')
+
+    def put(self, req):
+        return HttpResponse('put')
+
+
+    def delete(self, req):
+        return HttpResponse('delete')
+```
+
+路由
+
+```python
+from django.urls import path
+from .views import index, cbv
+from django.views.decorators.csrf import csrf_exempt
+
+urlpatterns = [
+
+    path('', index.index, name='index'),
+    path('restful/', csrf_exempt(cbv.RestfulApIView.as_view()), name='RestfulApIView')
+]
 ```
 
 ## 案例一
