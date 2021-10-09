@@ -180,7 +180,7 @@ def test_tem(req):
   {% for k in info %}
       <li>{{ k }}</li>
   {% endfor %}
-
+  
   {% for k,v in info.items %}
       <li>{{ k }}====={{ v }}</li>
   {% endfor %}
@@ -377,7 +377,7 @@ def test_tem(req):
   </head>
   <body>
   {% block body %}
-
+  
   {% endblock %}
   </body>
   </html>
@@ -483,7 +483,7 @@ path('args/<name>/<age>/', index.args, name='args'),
         </button>
         <a class="navbar-brand" href="#">Brand</a>
       </div>
-
+  
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
@@ -524,7 +524,7 @@ path('args/<name>/<age>/', index.args, name='args'),
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-
+  
       <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
     <ol class="carousel-indicators">
@@ -532,7 +532,7 @@ path('args/<name>/<age>/', index.args, name='args'),
       <li data-target="#carousel-example-generic" data-slide-to="1"></li>
       <li data-target="#carousel-example-generic" data-slide-to="2"></li>
     </ol>
-
+  
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
       <div class="item active">
@@ -549,7 +549,7 @@ path('args/<name>/<age>/', index.args, name='args'),
       </div>
       ...
     </div>
-
+  
     <!-- Controls -->
     <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
       <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -728,21 +728,21 @@ value|date:'Y-m-d'
   ```python
   from django import template
   register = template.Library()  # 实例化对象
-
-
+  
+  
   # 自定义过滤器
   # 如果起别名 则使用  @register.filter('sum_filter')
   @register.filter
   # @register.filter('sum_filter')
   def sum_filter(x, y):
       return x + y
-
-
+  
+  
   # 自定义标签
   # @register.simple_tag()
   @register.simple_tag
   def sum_tag(x, y):
-      return x + y
+       return x + y
   ```
 
 + 模板中使用
