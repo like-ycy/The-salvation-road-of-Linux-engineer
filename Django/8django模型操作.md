@@ -41,12 +41,12 @@
           'PORT': '3306',
           'USER': 'root',
           'PASSWORD': '123456',
-
+  
           'OPTIONS': {
               "init_command": "SET storage_engine=INNODB", #设置创建表的存储引擎为INNODB
           }
       }
-
+  
   }
   ```
 
@@ -161,47 +161,43 @@ class User(models.Model): # 必须继承models.Model的子类
 
   ```python
   from django.db import models
-
-
-  # 继承模型管理器类
+  
   class MyManager(models.Manager):
       # 重写查询方法
       def get_queryset(self):
           # 重写了父类中的get_queryset方法  并增加了过滤功能 过滤掉isdelete为True的数据
           return super().get_queryset().filter(isDelete=False)
           # return super().get_queryset()
-
-
-  # Create your models here.
+         
   class User(models.Model):
       # 自定义模型管理器对象
       objects = models.Manager()
       o = models.Manager()   # 可以有多个模型管理器
       my_obj = MyManager()  # 自定义添加过滤功能的模型管理器
-      ...
+  
       # 注册时间
       registerTime = models.DateTimeField(auto_now_add=True)
       def __str__(self):
-          return self.username
+          return self.usernam
       class Meta:
           db_table = 'user'  # 更改表名称为user
           # ordering = ['-age', 'id']
           # ordering = ['-age']  # 按照年龄降序
   ```
-
+  
   > 如果自定义了管理器类，那么将没有objects属性
-
+  
   views.py
-
+  
   ```python
   def select(req):
       # 使用自定义模型管理器
       # u = User.objects.all()
       # u = User.o.all()
-
+  
       # 使用自定义模型管理器并重写了查询方法
       # u = User.my_obj.all()  # 等同于  u = User.objects.filter(isDelete=False)
-
+  
       u = User.objects.filter(isDelete=False)
       print(u.query)
       for o in u:
@@ -252,7 +248,7 @@ class User(models.Model): # 必须继承models.Model的子类
   ```python
   #数据添加第二种方法
   u = User(3, '张三','123456') # 第一位的数字为数据库表的主键，必须给，否则报错
-
+  
   u = User(username='李四', userpass='123456')
   u.save()
   return HttpResponse('数据添加')
@@ -285,7 +281,7 @@ class User(models.Model): # 必须继承models.Model的子类
             # 重写了父类中的get_queryset方法  并增加了过滤功能 过滤掉isdelete为True的数据
             return super().get_queryset().filter(isDelete=False)
             # return super().get_queryset()
-
+  
         # 重写create方法
         def create(self, username='', userpass='', sex=True,age=18,info='lucky的个人简介', icon='./lucky.jpg', isDelete=False):
             u = self.model()
@@ -297,7 +293,7 @@ class User(models.Model): # 必须继承models.Model的子类
             u.icon = icon
             u.isDelete = isDelete
             return u
-
+  
   # Create your models here.
   class User(models.Model):
       # 自定义模型管理器对象
@@ -823,9 +819,7 @@ print(u[0:10:2])
 
   ```python
   from django.db import models
-
-
-  # Create your models here.
+  
   class User(models.Model):
       # 用户名
       username = models.CharField(max_length=12)
@@ -843,12 +837,12 @@ print(u[0:10:2])
       isDelete = models.BooleanField(default=False)
       # 注册时间
       registerTime = models.DateTimeField(auto_now_add=True)
-
+  
       # 类方法用于添加数据
       def __str__(self):
           return self.username
       class Meta:
-          db_table = 'user'  # 更改表名称为user
+           db_table = 'user'  # 更改表名称为user
   ```
 
   身份证模型类

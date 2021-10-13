@@ -44,8 +44,7 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
 
   ```python
   from django.db import models
-
-
+  
   # 创建班级模型
   class Grade(models.Model):
       gname = models.CharField(max_length=10, default='python36')
@@ -56,8 +55,8 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
           return self.gname
       class Meta:
           db_table = 'grade'
-
-
+  
+  
   # 创建学生模型
   class Student(models.Model):
       sname = models.CharField(max_length=10, default='张三')
@@ -68,7 +67,7 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
       # sgrade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True)
       # sgrade = models.ForeignKey(Grade, on_delete=models.PROTECT)
       sgrade = models.ForeignKey(Grade, on_delete=models.SET_DEFAULT, default=1)
-
+  
       def __str__(self):
           return self.sname
       class Meta:
@@ -96,13 +95,12 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
   ```python
   from django.contrib import admin
   from App.models import Grade, Student
-
-
+  
   # class StudentInfo(admin.StackedInline):  # 竖着
   class StudentInfo(admin.TabularInline):  # 横着
       model = Student
       extra = 2
-
+  
   @admin.register(Grade) # 使用装饰器的方式去注册应用
   class GradeAdmin(admin.ModelAdmin):
       inlines = [StudentInfo]
@@ -121,9 +119,9 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
           ('组一', {'fields':['gboynum', 'ggirlnum']}),
           ('组二', {'fields':['gname', 'gnum']})
       ]
-
-
-
+  
+  
+  
   @admin.register(Student)
   class StudentAdmin(admin.ModelAdmin):
       def show_sex(self):
@@ -131,18 +129,15 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
               return '男'
           else:
               return '女'
-
+  
       show_sex.short_description = '性别'
       list_display = ['pk', 'sname', 'sage', show_sex, 'sgrade']
-
-
-  # Register your models here.
-  # admin.site.register(Grade, GradeAdmin)
-  # admin.site.register(Student, StudentAdmin)
+  
+    # Register your models here.
+    # admin.site.register(Grade, GradeAdmin)
+    # admin.site.register(Student, StudentAdmin)
   ```
-
-
-
+  
 ## 二、邮件发送
 
 [更多邮件配置可以查看Django官方文档](https://docs.djangoproject.com/zh-hans/3.2/topics/email/)
@@ -153,6 +148,7 @@ admin是后台可视化界面管理系统，方便模型的操作与维护
 
 ### 2、发送邮件
 
+  ```
 ```python
 def test_send_mail(req):
     from django.core.mail import send_mail
@@ -164,7 +160,7 @@ def test_send_mail(req):
         fail_silently=False,
     )
     return HttpResponse('发送邮件')
-```
+  ```
 
 ### 3、群发
 
@@ -276,13 +272,13 @@ msg = EmailMessage('主体', '<b>邮件内容</b>', settings.EMAIL_HOST_USER, ['
   </head>
   <body>
   首页
-
+  
   <ol>
       {% for s in page.object_list   %}
           <li>{{ s.sname }}</li>
       {% endfor %}
   </ol>
-
+  
   <nav aria-label="Page navigation">
     <ul class="pagination pagination-lg">
       <li>
@@ -293,7 +289,7 @@ msg = EmailMessage('主体', '<b>邮件内容</b>', settings.EMAIL_HOST_USER, ['
         {% for index in page.paginator.page_range %}
             <li {% if index == page.number %}class="active"{% endif %}><a href="{% url 'App:index' %}?page={{ index }}">{{ index }}</a></li>
         {% endfor %}
-
+  
   {#    <li><a href="#">2</a></li>#}
       <li>
         <a {% if page.has_next %}href="{% url 'App:index' %}?page={{ page.next_page_number }}"{% endif %} aria-label="Next">
@@ -1108,7 +1104,7 @@ CREATE TABLE `auth_user` (
 
   ```python
   from django.contrib.auth import logout
-
+  
   # 退出登录
   def user_logout(req):
       logout(req)
@@ -1355,24 +1351,25 @@ bootstrap官网：https://www.bootcss.com/
   from datetime import datetime
   from PIL import Image
   from django.shortcuts import redirect, render
-
-
+  
+  
   # 文件类型限制
   def allowed_file(suffix):
+      if suffix in settings.ALLOWED_FILES:
           return True
       else:
           return False
       # return suffix in settings.ALLOWED_FILES
-
-
+  
+  
   # 图片重命名
   def rename_file(suffix):
       # 获取当前时间
       nowTime = datetime.now().strftime("%Y%m%d_%H%M%S")
       # 格式为 "20211013_161620.jpg"
       return nowTime + '.' + suffix
-
-
+  
+  
   # 图片缩放
   def image_zoom_rename(path, perfix='django_', w=200, h=150):
       # 打开图片
@@ -1387,8 +1384,8 @@ bootstrap官网：https://www.bootcss.com/
       # 保存图片
       img2.save(newFile)
       return True
-
-
+  
+  
   # 上传单个文件
   def uploadOne(request):
       if request.method == 'POST':
@@ -1422,34 +1419,33 @@ bootstrap官网：https://www.bootcss.com/
               messages.error(request, '文件上传失败！')
       return render(request, 'upload_file.html')
 
-  ```
-
 ### 6、多文件上传
 
 - views.py
 
+
   ```python
-  # 上传多个文件
-  def uploadMany(request):
-      if request.method == 'POST':
-          # 获取文件上传对象
-          fileList = request.FILES.getlist('file')
-          print(fileList)
-          try:
-              for file in fileList:
-                  # 拼接文件保存路径
-                  path = os.path.join(settings.MEDIA_ROOT, file.name)
-                  print(path)
-                  with open(path, 'wb') as fw:
-                      if file.multiple_chunks():
-                          for ff in file.chunks():
-                              fw.write(ff)
-                      else:
-                          fw.write(file.read())
-              messages.success(request, '文件上传成功！')
-          except:
-              messages.error(request, '文件上传失败！')
-      return render(request, 'upload_many.html')
+# 上传多个文件
+def uploadMany(request):
+    if request.method == 'POST':
+        # 获取文件上传对象
+        fileList = request.FILES.getlist('file')
+        print(fileList)
+        try:
+            for file in fileList:
+                # 拼接文件保存路径
+                path = os.path.join(settings.MEDIA_ROOT, file.name)
+                print(path)
+                with open(path, 'wb') as fw:
+                    if file.multiple_chunks():
+                        for ff in file.chunks():
+                            fw.write(ff)
+                    else:
+                        fw.write(file.read())
+            messages.success(request, '文件上传成功！')
+        except:
+            messages.error(request, '文件上传失败！')
+    return render(request, 'upload_many.html')
   ```
 
 - upload_many.html
@@ -1467,7 +1463,7 @@ bootstrap官网：https://www.bootcss.com/
           <br>
           <button  type="submit" class="btn btn-success">上传</button>
       </form>
-
+  
   {% endblock %}
   ```
 
