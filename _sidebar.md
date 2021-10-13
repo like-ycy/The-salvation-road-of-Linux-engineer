@@ -198,3 +198,4 @@
   - [Django模型简介](/Django/6django模型简介.md)
   - [Django模型常用字段和参数](/Django/7django模型-常用字段和参数.md)
   - [Django模型操作](/Django/8django模型操作.md)
+  - [Django高级应用](/Django/9django高级应用.md)
