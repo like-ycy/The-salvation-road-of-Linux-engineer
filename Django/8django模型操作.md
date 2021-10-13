@@ -41,12 +41,12 @@
           'PORT': '3306',
           'USER': 'root',
           'PASSWORD': '123456',
-  
+
           'OPTIONS': {
               "init_command": "SET storage_engine=INNODB", #设置创建表的存储引擎为INNODB
           }
       }
-  
+
   }
   ```
 
@@ -161,8 +161,8 @@ class User(models.Model): # 必须继承models.Model的子类
 
   ```python
   from django.db import models
-  
-  
+
+
   # 继承模型管理器类
   class MyManager(models.Manager):
       # 重写查询方法
@@ -170,8 +170,8 @@ class User(models.Model): # 必须继承models.Model的子类
           # 重写了父类中的get_queryset方法  并增加了过滤功能 过滤掉isdelete为True的数据
           return super().get_queryset().filter(isDelete=False)
           # return super().get_queryset()
-  
-  
+
+
   # Create your models here.
   class User(models.Model):
       # 自定义模型管理器对象
@@ -198,10 +198,10 @@ class User(models.Model): # 必须继承models.Model的子类
       # 使用自定义模型管理器
       # u = User.objects.all()
       # u = User.o.all()
-  
+
       # 使用自定义模型管理器并重写了查询方法
       # u = User.my_obj.all()  # 等同于  u = User.objects.filter(isDelete=False)
-  
+
       u = User.objects.filter(isDelete=False)
       print(u.query)
       for o in u:
@@ -252,7 +252,7 @@ class User(models.Model): # 必须继承models.Model的子类
   ```python
   #数据添加第二种方法
   u = User(3, '张三','123456') # 第一位的数字为数据库表的主键，必须给，否则报错
-  
+
   u = User(username='李四', userpass='123456')
   u.save()
   return HttpResponse('数据添加')
@@ -285,7 +285,7 @@ class User(models.Model): # 必须继承models.Model的子类
             # 重写了父类中的get_queryset方法  并增加了过滤功能 过滤掉isdelete为True的数据
             return super().get_queryset().filter(isDelete=False)
             # return super().get_queryset()
-    
+
         # 重写create方法
         def create(self, username='', userpass='', sex=True,age=18,info='lucky的个人简介', icon='./lucky.jpg', isDelete=False):
             u = self.model()
@@ -297,7 +297,7 @@ class User(models.Model): # 必须继承models.Model的子类
             u.icon = icon
             u.isDelete = isDelete
             return u
-  
+
   # Create your models here.
   class User(models.Model):
       # 自定义模型管理器对象
@@ -575,7 +575,7 @@ class User(models.Model): # 必须继承models.Model的子类
   u = User.objects.filter(username__iendswith='Y')
   ```
 
-+ null 
++ null
 
   查询数据为null
 
@@ -588,7 +588,7 @@ class User(models.Model): # 必须继承models.Model的子类
   u = User.objects.exclude(username__isnull=True)
   ```
 
-+ in  
++ in
 
   是否包含范围内
 
@@ -787,7 +787,7 @@ print(u[0:10:2])
   ```
 
 
-## 七、模型对应关系 
+## 七、模型对应关系
 
 ### 1、概述
 
@@ -823,8 +823,8 @@ print(u[0:10:2])
 
   ```python
   from django.db import models
-  
-  
+
+
   # Create your models here.
   class User(models.Model):
       # 用户名
@@ -843,7 +843,7 @@ print(u[0:10:2])
       isDelete = models.BooleanField(default=False)
       # 注册时间
       registerTime = models.DateTimeField(auto_now_add=True)
-  
+
       # 类方法用于添加数据
       def __str__(self):
           return self.username
@@ -919,4 +919,408 @@ print(u[0:10:2])
   print(idcard.user)
   print(idcard.user.sex)
   ```
+
+### 3、一对多模型关系
+
+- 说明
+
+  使用ForeignKey创建一对多模型关系
+
+- 位置
+
+  放在多的一方
+
+- 创建模型
+
+  models.py
+
+  班级模型类
+
+  ```python
+  from django.db import models
+
+  # 创建班级模型
+  class Grade(models.Model):
+      gname = models.CharField(max_length=10)
+      gnum = models.SmallIntegerField(default=30)
+      gboynum = models.SmallIntegerField(default=15)
+      ggirlnum = models.SmallIntegerField(default=15)
+
+      def __str__(self):
+          return self.gname
+      class Meta:
+          db_table = 'grade'
+  ```
+
+  学生模型类
+
+  ```python
+  from django.db import models
+
+  # 创建学生模型类
+  class Student(models.Model):
+      sname = models.CharField(max_length=10)
+      sage = models.SmallIntegerField(default=18)
+      ssex = models.BooleanField(default=True)
+
+      # 一对多关系模型，从表随着主表的删除而删除
+      sgrade = models.ForeignKey(Grade, on_delete=models.CASCADE)
+      # sgrade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True)
+      # sgrade = models.ForeignKey(Grade, on_delete=models.PROTECT)
+      # sgrade = models.ForeignKey(Grade, on_delete=models.SET_DEFAULT, default=1)
+
+      def __str__(self):
+          return self.sname
+
+      class Meta:
+          db_table = 'student'
+  ```
+
+- 路由
+
+  ```python
+  # 一对多模型关系路由
+      path('addgrade/', onetomany.addGrade),
+      path('addstudent/', onetomany.addStudent),
+      path('showstudent/', onetomany.showStudent),
+      path('showgrade/', onetomany.showGrade),
+  ```
+
+- 视图函数
+
+  添加主表grade数据
+
+  ```python
+  from django.http import HttpResponse
+  from App.models import Grade, Student
+
+  # 添加班级数据
+  def addGrade(request):
+      Grade(gname='python35', gnum=25, gboynum=20, ggirlnum=5).save()
+      Grade(gname='python36', gnum=21, gboynum=18, ggirlnum=3).save()
+      Grade(gname='python37', gnum=10, gboynum=10, ggirlnum=0).save()
+      return HttpResponse('添加班级数据')
+  ```
+
+  添加从表student数据
+
+  ```python
+  from django.http import HttpResponse
+  from App.models import Grade, Student
+
+  # 添加学生数据
+  def addStudent(request):
+      # g36 = Grade.objects.filter(gname='python36')[0]
+      # print(g36)
+      # Student(sname='张三', sage=20, ssex=True, sgrade=g36).save()
+      # Student(sname='李四', sage=37, ssex=False, sgrade=g36).save()
+      # Student(sname='李俊', sage=38, ssex=False, sgrade=g36).save()
+      # Student(sname='王五', sage=16, ssex=True, sgrade=g36).save()
+      g35 = Grade.objects.filter(gname='python35')[0]
+      Student(sname='张龙', sage=20, ssex=True, sgrade=g35).save()
+      Student(sname='赵虎', sage=37, ssex=False, sgrade=g35).save()
+      Student(sname='王朝', sage=38, ssex=False, sgrade=g35).save()
+      Student(sname='马汉', sage=16, ssex=True, sgrade=g35).save()
+      return HttpResponse('添加学生数据')
+  ```
+
+- 查询数据
+
+  主查从（班级查所含学生）
+
+  ```python
+  from App.models import Grade, Student
+
+  # 查询班级里所包含的学生（主查从）
+  def showStudent(request):
+      # g36 = Grade.objects.filter(gname='python36')[0]
+      # student = g36.student_set.all()
+      # print(student)
+      g35 = Grade.objects.filter(gname='python35')[0]
+      student = g35.student_set.all()
+      print(student)
+      return HttpResponse('主查从，查看班级里的学生')
+  ```
+
+  从查主（学生查所在班级）
+
+  ```python
+  from App.models import Grade, Student
+
+  # 查询学生所在的班级（从查主）
+  def showGrade(request):
+      # stu_obj = Student.objects.filter(sname='李俊')[0]
+      stu_obj = Student.objects.filter(sname='张龙')[0]
+      grade_name = stu_obj.sgrade.gname
+      print(grade_name)
+      return HttpResponse('从查主，查看学生所在班级')
+  ```
+
+- 删除
+
+  删除从表student数据，主表不受影响
+
+  ```python
+  # 删除student表的数据
+  def delStudent(request):
+      s = Student.objects.filter(sname='张龙')
+      s.delete()
+      return HttpResponse('删除从表student的数据')
+  ```
+
+  删除主表grade数据（从表根据on_delete策略的变化而变化）
+
+  ```python
+  # 删除grade表的数据
+  def delGrade(request):
+      g = Grade.objects.filter(gname='python35')[0]
+      g.delete()
+      return HttpResponse('删除主表grade的数据')
+  ```
+
+### 4、多对多
+
+- 说明
+
+  使用ManyToManyField创建多对多模型关系
+
+- 原理
+
+  底层是用两个外键实现的，会生成中间表，存储id
+
+- 关系
+
+  放在哪张表都可以
+
+- 创建模型类
+
+  User模型类
+
+  ```python
+  from django.db import models
+
+  # 用户模型
+  class User(models.Model):
+      # 用户名
+      username = models.CharField(max_length=12)
+      # 密码
+      userpass = models.CharField(max_length=64, default='123456')
+      # 性别
+      sex = models.BooleanField(default=True)
+      # 年龄
+      age = models.SmallIntegerField(default=18, db_column='u_age')
+      # 个人简介
+      info = models.CharField(max_length=200, default='个人简介')
+      # 头像
+      icon = models.CharField(max_length=60, default='default.jpg')
+      # 是否删除
+      isDelete = models.BooleanField(default=False)
+      # 注册时间
+      registerTime = models.DateTimeField(auto_now_add=True)
+
+      # 类方法用于添加数据
+      def __str__(self):
+          return self.username
+      class Meta:
+          db_table = 'user'  # 更改表名称为user
+
+  ```
+
+  博客Posts模型类
+
+  ```python
+  # 博客模型
+  class Posts(models.Model):
+      title = models.CharField(max_length=20)
+      article = models.CharField(max_length=200)
+      createTime = models.DateTimeField(auto_now_add=True)
+
+      # 外键，多对多
+      users = models.ManyToManyField(User)
+
+      def __str__(self):
+          return self.title
+      class Meta:
+          db_table = 'posts'
+  ```
+
+ - 路由
+
+    ```python
+    from .views import manytomany
+
+    # 多对多模型关系路由
+        path('addmanyuser/', manytomany.addUSer),
+        path('addpost/', manytomany.addPost),
+        path('addonecollect/', manytomany.addOneCollect),
+        path('addmanycollect/', manytomany.addManyCollect),
+        path('show_userposts/', manytomany.show_Users_Posts),
+        path('show_postusers/', manytomany.show_Posts_Users),
+        path('delonecollect/', manytomany.delOneCollect),
+        path('delmanycollect/', manytomany.delManyCollect),
+    ```
+
+- 添加数据
+
+  添加用户数据User
+
+  ```python
+  from django.http import HttpResponse
+  from App.models.manytomany import PostUser, Posts
+
+  # 添加用户数据
+  def addUSer(request):
+      PostUser(username='张龙', userpass=123456, sex=False).save()
+      PostUser(username='赵虎', userpass='zhaohu1123@', sex=True).save()
+      PostUser(username='李俊', userpass='blackboy', sex=False, age=38, info='I am a blackboy').save()
+      return HttpResponse('多对多模型添加数据')
+  ```
+
+  添加博客数据Posts
+
+  ```python
+  # 添加博客数据
+  def addPost(request):
+      Posts(title='使用jenkins共享库对流水线进程扩展', article='共享库这并不是一个全新的概念，其实具有编程能力的同学应该清楚一些。例如在编程语言Python中，我们可以将Python代码写到一个文件中，当代码数量增加，我们可以将代码打包成模块然后再以import的方式使用此模块中的方法。').save()
+      Posts(title='Nginx 动态DNS解析方案: resolver', article='nginx resolver 存在一定解析失败的概率问题').save()
+      Posts(title='Dockerfile文件全面详解', article='Docker 可以通过读取 Dockerfile 中的指令自动构建镜像。Dockerfile 是一个文本文档，其中包含了用户创建镜像的所有命令和说明。').save()
+      Posts(title='PLEG is not healthy？幕后黑手居然是它！', article='PLEG 全称叫 Pod Lifecycle Event Generator，即 Pod 生命周期事件生成器。实际上它只是 Kubelet 中的一个模块，主要职责就是通过每个匹配的 Pod 级别事件来调整容器运行时的状态，并将调整的结果写入缓存，使 Pod 的缓存保持最新状态。先来聊聊 PLEG 的出现背景。在 Kubernetes 中，每个节点上都运行着一个守护进程 Kubelet 来管理节点上的容器，调整容器的实际状态以匹配 spec 中定义的状态。').save()
+      return HttpResponse('多对多模型关系，添加博客数据')
+  ```
+
+- 收藏功能（将数据添加到中间表中）
+
+  添加单个收藏
+
+  ```python
+  # 单个收藏
+  def addOneCollect(request):
+      u1 = PostUser.objects.filter(username='张龙')[0]
+      p1 = Posts.objects.first()
+      p1.users.add(u1)
+      return HttpResponse('单用户添加单个收藏')
+  ```
+
+  添加多个收藏
+
+  ```python
+  # 多个收藏
+  def addManyCollect(request):
+      u1 = PostUser.objects.filter(username='赵虎')[0]
+      u2 = PostUser.objects.filter(username='李俊')[0]
+      p1 = Posts.objects.filter(title='使用jenkins共享库对流水线进程扩展')[0]
+      p2 = Posts.objects.filter(title='PLEG is not healthy？幕后黑手居然是它！')[0]
+      p1.users.add(u1, u2)
+      p2.users.add(u1, u2)
+      return HttpResponse('多个用户收藏多个博客')
+  ```
+
+- 多对多数据查询
+
+  查询用户收藏了哪些博客
+
+  ```python
+  # 查询用户收藏了哪些博客
+  def show_Users_Posts(request):
+      user = PostUser.objects.first()
+      # user = PostUser.objects.filter(username='赵虎')[0]
+      # user = PostUser.objects.filter(username='李俊')[0]
+      post = user.posts_set.all()
+      print(post)
+      return HttpResponse('查询用户收藏了哪些博客')
+  ```
+
+  查询博客被哪些用户收藏了
+
+  ```python
+  # 查询博客被哪些用户收藏了
+  def show_Posts_Users(request):
+      # 标题太长，不全打了，使用contains包含查询
+      post = Posts.objects.filter(title__contains='PLEG is not healthy')[0]
+      # post = Posts.objects.filter(title__contains='jenkins')[0]
+      user = post.users.all()
+      print(user)
+      return HttpResponse('查询博客被哪些用户收藏了')
+  ```
+
+- 取消收藏
+
+  删除单条数据
+
+  ```python
+  # 取消单条
+  def delOneCollect(request):
+      u1 = PostUser.objects.filter(username='李俊')[0]
+      p1 = Posts.objects.filter(title__contains='jenkins')[0]
+      p1.users.remove(u1)
+      return HttpResponse('删除单条数据 / 取消单个收藏 ')
+  ```
+
+  删除多条数据
+
+  ```python
+  # 取消多条
+  def delManyCollect(request):
+      u1 = PostUser.objects.filter(username='张龙')[0]
+      u2 = PostUser.objects.filter(username='赵虎')[0]
+      p1 = Posts.objects.filter(title__contains='jenkins')[0]
+      p1.users.remove(u1, u2)
+      return HttpResponse('删除多条数据 / 取消多个收藏')
+  ```
+
+
+
+
+## 八、模型类继承
+
+### 1、普通继承
+
+```python
+from django.db import models
+
+
+class A(models.Model):
+    name = models.CharField(max_length=10, default='name')
+    age = models.SmallIntegerField(default=18)
+
+
+class B(A):
+    class Meta:
+        db_table = 'b'
+
+
+class C(A):
+    class Meta:
+        db_table = 'c'
+```
+
+> 如果此刻进行数据亏迁移：则A类也会创建出模型
+>
+> 但是这并不是我们的本意，我们只是把A类当做基类，并不需要去创建A表
+
+### 2、将父类进行抽象化
+
+使用 abstract = True 参数将父类进行抽象化，不会创建A表
+
+```python
+from django.db import models
+
+
+class A(models.Model):
+    name = models.CharField(max_length=10, default='name')
+    age = models.SmallIntegerField(default=18)
+    class Meta:
+        # 抽象类
+        abstract = True
+
+
+class B(A):
+    class Meta:
+        db_table = 'b'
+
+
+class C(A):
+    class Meta:
+        db_table = 'c'
+```
 
