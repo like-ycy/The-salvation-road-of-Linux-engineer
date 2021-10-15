@@ -1318,3 +1318,60 @@ class C(A):
         db_table = 'c'
 ```
 
+## 八、模型自关联
+
++ 概述
+
+  自关联就是1张数据表    主键和外键都在一张表上  一般用于 菜单、商品类别、三级联动
+
++ 创建
+
+  | ｉＤ | 类别名称 | parent_id |
+  | ---- | -------- | --------- |
+  | 1    | 服装     |           |
+  | 2    | 食品     |           |
+  | 3    | 数码产品 |           |
+  | ４   | 男装     | １        |
+  | ５   | 女装     | １        |
+
+  拆分
+
+  父类别表
+
+  | ｉＤ | 类别名称 |
+  | ---- | -------- |
+  | 1    | 服装     |
+  | 2    | 食品     |
+  | 3    | 数码产品 |
+
+  子类别表
+
+  | ｉＤ | 类别名称 | parent_id |
+  | ---- | -------- | --------- |
+  | １   | 男装     | １        |
+  | ２   | 女装     | １        |
+
++ 操作
+
+  ```python
+  from .models import GoodsType
+  # 自关联查询
+  def show(req):
+      # 查询子类别
+      g_obj = GoodsType.objects.filter(parent_id__isnull=True)
+      # fz = g_obj.first()
+      # print(fz)
+      # 通过服装拿到子类别
+      # son_list = fz.son_list.all()
+      # print(son_list)
+      # 删除类别
+      sm = g_obj.last()
+      sm.delete()
+      return HttpResponse('自关联查询')
+  ```
+
++ 注意
+
+  如果删除的父类没有子类别 则正常删除
+
+  如果父类存在子类别 在删除父类的时候 会抛出异常
