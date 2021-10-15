@@ -1467,6 +1467,156 @@ def uploadMany(request):
   {% endblock %}
   ```
 
-
-
 > 可以结合登录注册制作一个人中心，登录后点击右上角的头像即打开个人中心，展示自己的用户名，性别，头像信息，修改密码选项
+
+
+
+### 7、使用模块类上传
+
++ models.py
+
+  不使用 upload_to，上传到 settings.py 中的 MEDIA_ROOT指定的目录
+
+  ```python
+  from django.contrib.auth.models import AbstractUser
+  from django.db import models
+  # Create your models here.
+      
+  class Upload(models.Model):
+      # 不指定路径则为settings.py MEDIA_ROOT
+      img = models.ImageField(max_length=200)
+      file = models.FileField(max_length=200)
+      class Meta:
+          db_table = 'upload'
+  ```
+
+  指定upload_to，则上传到 settings.py 中的 MEDIA_ROOT指定的目录之后再次拼接路径
+
+  ```python
+  from django.db import models
+  
+  class Upload(models.Model):
+      # 上传到settings.py MEDIA_ROOT路径/年/月/日
+      # img = models.ImageField(max_length=200, upload_to='%Y/%m/%d/')
+      # file = models.FileField(max_length=200, upload_to='%Y/%m/%d/')
+      img = models.ImageField(max_length=200, upload_to='test/')
+      file = models.FileField(max_length=200, upload_to='test/')
+      class Meta:
+          db_table = 'upload'
+  ```
+
+   > 使用 upload_to 指定目录，将文件名存入数据库表中，会将 upload_to 指定的路径 + 文件名一起存储在表中
+   >
+   > ```python
+   > mysql> select * from upload;
+   > +----+-------------------------------+-----------------------------+
+   > | id | img                           | file                        |
+   > +----+-------------------------------+-----------------------------+
+   > |  1 | 20210922083503.jpg            | 面试问题.txt                |
+   > |  2 | 2021/10/14/20210922083503.jpg | 2021/10/14/面试问题.txt     |
+   > |  3 | test/20210922083503.jpg       | test/面试问题.txt           |
+   > +----+-------------------------------+-----------------------------+
+   > 
+   > ```
+
++ 注意
+
+  如果使用了ImageField，需要安装pillow
+
++ views.py
+
+  ```python
+  def upload_one(req):
+      if req.method == 'POST':
+          img = req.FILES.get('img')
+          file = req.FILES.get('file')
+          up = Upload(img=img, file=file)
+          # 对图片重命名
+          # up.img.name = random.randint(1232)
+          up.save()
+          print(up.img)
+          print(up.img.name)
+          print(up.img.url)
+          messages.success(req, '上传成功')
+      return render(req, 'own_center/upload.html')
+  ```
+  
+
+- models_upload.html
+
+  ```html
+  {% extends 'common/base.html' %}
+  {% block title %}
+      文件上传
+  {% endblock %}
+  {% block content %}
+      <h1>模型类单文件上传</h1>
+      <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="file" name="img" accept="image/*" required>
+          <br>
+          <br>
+          <br>
+          <input type="file" name="file" required>
+          <br>
+          <button type="submit" class="btn btn-success">上传</button>
+      </form>
+  
+  {% endblock %}
+  ```
+
+  > 作业：
+  >
+  > 完成如果上传的是文件   保存到upload/file/y/m/d/中  如果是图片则保存到 upload/image/y/m/d/
+  >
+  > file.content_type   获取文件上传类型
+  >
+  > 我这里是用了 upload_to 的设置，去限制了图片和文件分别存储的目录，因为前端文件中对选项也做了限制，第一个选项只能选择图片类型
+  >
+  > - 模型类
+  >
+  >   models.py
+  >
+  > ```python
+  > from django.db import models
+  > 
+  > # 使用 upload_to
+  > class Upload(models.Model):
+  >     # 上传到settings.py MEDIA_ROOT路径/年/月/日
+  >     # img = models.ImageField(max_length=200, upload_to='%Y/%m/%d/')
+  >     # img = models.ImageField(max_length=200, upload_to='test/')
+  >     # file = models.FileField(max_length=200, upload_to='test/')
+  >     # file = models.FileField(max_length=200, upload_to='%Y/%m/%d/')
+  >     img = models.ImageField(max_length=200, upload_to='images/%Y/%m/%d/')
+  >     file = models.FileField(max_length=200, upload_to='file/%Y/%m/%d/')
+  > 
+  > 
+  >     class Meta:
+  >         db_table = 'upload'
+  > ```
+  >
+  > - 视图文件
+  >
+  >   views.py
+  >
+  >   ```python
+  >   from django.contrib import messages
+  >   from django.shortcuts import render
+  >   from App.models.models_upload_file import Upload
+  >     
+  >     def uploadOne(request):
+  >         if request.method == 'POST':
+  >             img = request.FILES.get('img')
+  >             file = request.FILES.get('file')
+  >             # 图片类型存到images目录下，文件存到file目录下
+  >             # if img.content_type != 'image/jpeg':
+  >             #     messages.error(request, '类型不允许')
+  >             up = Upload(img=img, file=file)
+  >             up.save()
+  >             # print(up.img)
+  >             # print(up.img.url)
+  >             messages.success(request, '上传成功')
+  >         return render(request, 'file_upload/models_upload.html')
+  > 
+
+ 
