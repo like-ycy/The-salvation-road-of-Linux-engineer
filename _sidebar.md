@@ -205,6 +205,6 @@
 
 - Django REST framework
 
-  - [web应用模式](/Django%20REST%20Framework/0web应用模式.md)
-  - [Api接口及设计规范](/Django%20REST%20Framework/1%20Api接口及设计规范.md)
-  - [Django REST Framework](/Django%20REST%20Framework/1%20Api接口及设计规范.md)
+  - [web应用模式](/Django_REST_Framework/0web应用模式.md)
+  - [Api接口及设计规范](/Django_REST_Framework/1Api接口及设计规范.md)
+  - [Django REST Framework](/Django_REST_Framework/2django_rest_framework.md)
