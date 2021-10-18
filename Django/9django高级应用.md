@@ -352,20 +352,20 @@ python类
 
   ```python
   from django.utils.deprecation import MiddlewareMixin
-  from django.shortcuts import HttpResponse, redirect
-
-
-  class MyMiddle(MiddlewareMixin):
-      def process_request(self, req):
-          print(req.path)
-          print(req.method)
-          print(req.META['REMOTE_ADDR'])
-          if req.META['REMOTE_ADDR'] == '127.0.0.1':
-              return HttpResponse('您被拦截了')
-
-      def process_exception(self, req, exception):
-          print(exception)
-          return redirect('/a/')
+    from django.shortcuts import HttpResponse, redirect
+  
+  
+    class MyMiddle(MiddlewareMixin):
+        def process_request(self, req):
+            print(req.path)
+            print(req.method)
+            print(req.META['REMOTE_ADDR'])
+            if req.META['REMOTE_ADDR'] == '127.0.0.1':
+                return HttpResponse('您被拦截了')
+  
+        def process_exception(self, req, exception):
+            print(exception)
+            return redirect('/a/')
   ```
 
 + settings.py
@@ -1237,8 +1237,8 @@ bootstrap官网：https://www.bootcss.com/
   from django.contrib.auth.backends import ModelBackend
   from django.db.models import Q
   from App.models import User
-
-
+  
+  
   class MyBackend(ModelBackend):
       def authenticate(self, request, username=None, password=None, **kwargs):
           try:
@@ -1252,9 +1252,9 @@ bootstrap官网：https://www.bootcss.com/
 - settings.py
 
   ```
-  AUTHENTICATION_BACKENDS = ['App.auth.MyBackend']
+   AUTHENTICATION_BACKENDS = ['App.auth.MyBackend']
   ```
-
+  
 - views.py
 
   ```python
@@ -1603,7 +1603,7 @@ def uploadMany(request):
   >   from django.contrib import messages
   >   from django.shortcuts import render
   >   from App.models.models_upload_file import Upload
-  >     
+  >             
   >     def uploadOne(request):
   >         if request.method == 'POST':
   >             img = request.FILES.get('img')
