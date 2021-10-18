@@ -1,0 +1,16 @@
+# 🚀 MySQL 数据库
+
+  * [数据库介绍](/Mysql基础/0数据库介绍.md)
+  * [SQL 介绍](/Mysql基础/1sql介绍.md)
+  * [MySQL 介绍](/Mysql基础/2mysql介绍.md)
+  * [MySQL 字段类型](/Mysql基础/3mysql字段类型.md)
+  * [MySQL 基础操作](/Mysql基础/4mysql基础操作.md)
+  * [MySQL 增删改查](/Mysql基础/5mysql增删改查.md)
+  * [MySQL 单表查询](/Mysql基础/6mysql单表查询.md)
+  * [MySQL 多表查询](/Mysql基础/7mysql多表查询.md)
+  * [MySQL 索引](/Mysql基础/8mysql索引.md)
+  * [MySQL 触发器](/Mysql基础/9mysql触发器.md)
+  * [MySQL 存储引擎](/Mysql基础/10mysql存储引擎.md)
+  * [MySQL 事务](/Mysql基础/11mysql事务.md)
+  * [MySQL 权限管理](/Mysql基础/12mysql权限管理.md)
+  * [Python 操作 MySQL](/Mysql基础/13python操作mysql.md)
