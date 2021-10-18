@@ -84,6 +84,10 @@ Python 学习视频：[老男孩 python 全栈 29 期](https://www.bilibili.com/
 
 [W3school 在线教程](https://www.w3school.com.cn/)
 
+[RESTful API中文网](http://restful.p2hp.com/)
+
+[菜鸟教程](https://www.runoob.com/)
+
 ## 待补充内容
 
 <!-- tabs:start -->
