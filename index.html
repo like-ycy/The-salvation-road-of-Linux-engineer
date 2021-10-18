@@ -1,60 +1,73 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Python-Docs</title>
-    <meta name="referrer" content="never" />
+    <title>LOVEYCY' NoteBook - By Mr Wang</title>
     <link rel="icon" href="_media/favicon.ico" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="description" content="Python个人学习文档" />
+    <meta name="description" content="Description" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"> -->
     <meta
       name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"
     />
-    <!-- 主体设置 -->
+    <!-- 默认主题样式 -->
     <link
       rel="stylesheet"
-      href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css"
+      href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"
+    />
+    <!-- 侧边栏的收起小图标是箭头还是别的 -->
+    <!-- <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css"
+    /> -->
+
+    <!-- 新版样式文件 -->
+    <!-- <link rel="styleshseet" href="/style/index.css" /> -->
+    <!-- <link
+      rel="stylesheet"
+      href="https://wugenqiang.js.org/src/css/iconfont.css"
+    /> -->
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/custom.css"
+    /> -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/css/me.css"
     />
 
-    <!-- 字体样式 -->
-    <link rel="stylesheet" type="text/css" href="style/myStyle-light.css" />
     <!-- copy提示信息 -->
     <link rel="stylesheet"
     href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css"
     type='text/css' media='all' / >
 
-    <!-- latex -->
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" /-->
-    <!-- link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"-->
-
-    <!-- 侧边栏的收起小图标是箭头还是别的 -->
-    <link rel="stylesheet"
-    href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css"
-    / >
+    <!-- 旧版字体样式 -->
+    <link rel="stylesheet" type="text/css" href="/style/myStyle-light.css" />
   </head>
+
   <body>
     <div id="app">🏃‍🏃‍🏃‍💨加载中</div>
+
     <!-- 回到顶部 -->
-    <a class="to-top">回到顶部</a>
+    <!-- <a class="to-top">回到顶部</a> -->
+
     <script>
       window.$docsify = {
-        auto2top: true,
-        mergeNavbar: true,
-        loadSidebar: true,
-        // alias: {
-        // '/.*/_sidebar.md': '/_sidebar.md',
-        // },
-        // subMaxLevel: 2,
-        sidebarDisplayLevel: 0,
-        // maxLevel: 2,
-        coverpage: true,
-        onlyCover: true,
-        name: "Python_Docs",
+        name: "loveycy", //侧边栏顶部文档标题名称
         nameLink:
-          "https://like-ycy.github.io/The-salvation-road-of-Linux-engineer/#/",
-        repo: "https://github.com/like-ycy/The-salvation-road-of-Linux-engineer",
-        //stopMargin: 90,
+          "https://like-ycy.github.io/The-salvation-road-of-Linux-engineer/#/", //击文档标题的时候跳转到README
+        repo: "https://github.com/like-ycy/The-salvation-road-of-Linux-engineer", //在页面右上角添加 GitHub 图标
+        // themeColor: "#007be8", //主题颜色
+        auto2top: true, //当路线改变时,滚动到屏幕的顶部
+        loadNavbar: true, //_navbar.md如果为真，则从_navbar.md文件加载navbar ，否则从指定的路径加载
+        mergeNavbar: true, //Navbar将在小屏幕上与侧边栏合并
+        maxLevel: 6, //最大的内容表级别
+        externalLinkTarget: "_blank", //外链打开方式：_blank表示在新标签页中打开
+        coverpage: true,
+        subMaxLevel: 2,
+        onlyCover: true,
+        topMargin: 90, //调整top
 
         // 搜索栏的设置
         search: {
@@ -66,9 +79,15 @@
         },
 
         // 页脚内容
+        // footer: {
+        //   copy: "Copyright &copy; 2021 💖 </span>",
+        //   auth: " <strong>权掌天下</strong>",
+        //   pre: "<hr/>",
+        //   style: "text-align: center;",
+        // },
         footer: {
-          copy: "Copyright &copy; 2021 💖 </span>",
-          auth: " <strong>权掌天下</strong>",
+          copy: '<div class = "over" >完结</div><br/><br/><span id="sitetime"></span><br/>',
+          auth: '<a href="https://like-ycy.github.io/" target="_blank">🏷️ 权掌天下 Blog</a><br/><span>Copyright &copy; 2019 - 至今</span>',
           pre: "<hr/>",
           style: "text-align: center;",
         },
@@ -85,14 +104,6 @@
           style: "flat",
         },
 
-        // 字数统计
-        count: {
-          countable: true,
-          fontsize: "0.9em",
-          color: "rgb(90,90,90)",
-          language: "chinese",
-        },
-
         // 选项卡
         tabs: {
           persist: true, // default
@@ -102,13 +113,6 @@
           tabHeadings: true, // default
         },
 
-        // 阅读进度条
-        // progress: {
-        // position: "footer",
-        // color: "var(--theme-color,#42b983)",
-        // height: "3px",
-        // },
-
         // 文章末尾章节提示
         pagination: {
           previousText: "上一章节",
@@ -116,56 +120,45 @@
           crossChapter: true,
           crossChapterText: true,
         },
-        // plugins: [
-        // function (hook, vm) {
-        // parse twemoji
-        // hook.doneEach(function() {
-        // twemoji.parse(document);
-        // });
-        // },
-        // ]
+
+        // 字数统计
+        count: {
+          countable: true,
+          position: "top",
+          margin: "10px",
+          float: "right",
+          fontsize: "0.9em",
+          color: "rgb(90,90,90)",
+          language: "chinese",
+          localization: {
+            words: "",
+            minute: "",
+          },
+          isExpected: true,
+        },
       };
     </script>
-    <!-- 插件 -->
-    <!-- 主题的 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
 
-    <!-- 代码块右上角显示copy -->
-    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
-
-    <!-- 全局搜索 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-    <!-- 图片缩放 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-    <!-- 简单emoji -->
-    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
-
-    <!-- 阅读进度条 -->
-    <!-- script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script  -->
+    <!-- Docsify v4 默认主题样式 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 
     <!-- 侧边栏目录收放 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+    <!-- <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script> -->
 
     <!-- 文章底部下页提示 -->
     <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
 
-    <!-- 中英文之间加空格 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+    <!-- 字数统计 -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
 
-    <!-- twemoji -->
-    <!-- script src="//cdn.jsdelivr.net/gh/TaQini/docsify-twemoji@master/twemoji.min.js"></script -->
+    <!-- 全局搜索 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 
-    <!-- 代码高亮 -->
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-sql.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-html.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-xml.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-django.min.js"></script>
+    <!-- 图片缩放 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 
-    <!-- 页脚内容插件 -->
-    <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
+    <!-- 代码块右上角显示copy -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
 
     <!-- 复制提醒 -->
     <script src="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
@@ -179,14 +172,53 @@
       };
     </script>
 
-    <!-- 字数统计 -->
-    <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+    <!-- 简单emoji -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
 
-    <!-- 置顶插件 -->
-    <script src="style/jquery-1.11.3.min.js"></script>
-    <script src="style/jquery.toTop.min.js"></script>
+    <!-- 侧边栏目录收放 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
+    <!-- 文章底部下页提示 -->
+    <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+    <!-- 中英文之间加空格 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+
+    <!-- 代码高亮 -->
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-sql.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-html.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-xml.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs/components/prism-django.min.js"></script>
+
+    <!-- mouse click -->
+    <script src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/click_heart.js"></script>
+
+    <!-- 页脚内容插件 -->
+    <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
+
+    <!-- 回到顶部插件 -->
+    <!-- <script src="/style/jquery-1.11.3.min.js"></script>
+    <script src="/style/jquery.toTop.min.js"></script>
     <script>
       $(".to-top").toTop();
+    </script> -->
+
+    <!-- 回到顶部功能 -->
+    <script src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/jquery.goup.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $.goup({
+          trigger: 100,
+          bottomOffset: 52,
+          locationOffset: 25,
+          title: "回到顶部",
+          titleAsText: true,
+        });
+      });
     </script>
 
     <!-- Markdown 引用样式美化 -->
@@ -194,5 +226,84 @@
 
     <!-- 选项卡插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+
+    <!-- 访问量统计 -->
+    <script
+      async
+      src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/js/busuanzi.pure.mini.js"
+    ></script>
+
+    <!-- 实现离线化 -->
+    <script>
+      if (typeof navigator.serviceWorker !== "undefined") {
+        navigator.serviceWorker.register("/style/sw.js");
+      }
+    </script>
+
+    <!-- 添加网站运行时间统计 -->
+    <script language="javascript">
+      function siteTime() {
+        window.setTimeout("siteTime()", 1000);
+        var seconds = 1000;
+        var minutes = seconds * 60;
+        var hours = minutes * 60;
+        var days = hours * 24;
+        var years = days * 365;
+        var today = new Date();
+        var todayYear = today.getFullYear();
+        var todayMonth = today.getMonth() + 1;
+        var todayDate = today.getDate();
+        var todayHour = today.getHours();
+        var todayMinute = today.getMinutes();
+        var todaySecond = today.getSeconds();
+        /* Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+        year - 作为date对象的年份，为4位年份值
+        month - 0-11之间的整数，做为date对象的月份
+        day - 1-31之间的整数，做为date对象的天数
+        hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+        minutes - 0-59之间的整数，做为date对象的分钟数
+        seconds - 0-59之间的整数，做为date对象的秒数
+        microseconds - 0-999之间的整数，做为date对象的毫秒数 */
+        var t1 = Date.UTC(2020, 08, 03, 05, 32, 55);
+        var t2 = Date.UTC(
+          todayYear,
+          todayMonth,
+          todayDate,
+          todayHour,
+          todayMinute,
+          todaySecond
+        );
+        var diff = t2 - t1;
+        var diffYears = Math.floor(diff / years);
+        var diffDays = Math.floor(diff / days - diffYears * 365);
+        var diffHours = Math.floor(
+          (diff - (diffYears * 365 + diffDays) * days) / hours
+        );
+        var diffMinutes = Math.floor(
+          (diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+            minutes
+        );
+        var diffSeconds = Math.floor(
+          (diff -
+            (diffYears * 365 + diffDays) * days -
+            diffHours * hours -
+            diffMinutes * minutes) /
+            seconds
+        );
+        document.getElementById("sitetime").innerHTML =
+          " 本站已安全运行 " +
+          diffYears +
+          " 年 " +
+          diffDays +
+          " 天 " +
+          diffHours +
+          " 小时 " +
+          diffMinutes +
+          " 分 " +
+          diffSeconds +
+          " 秒 ";
+      }
+      siteTime();
+    </script>
   </body>
 </html>
