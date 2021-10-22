@@ -108,14 +108,39 @@ python manage.py migrate
 
 ## 2、接口规划
 
-```bash
-5个接口:
-    添加1条数据   post /api/student/
-    获取所有数据  get /api/student/
-    获取1条数据   get /api/student/1/
-    更新1条数据   put /api/student/1/
-    删除1条数据   delete /api/student/1/
+后面的 Serializer 和 ModelSerializer 的文档，都是根据一下接口来进行数据验证
+
+十大接口就是我们在学习drf框架时，学到的接口规范，我们知道通过两条url路径就可以实现10个接口，完成10种不同的功能，不同的请求
+
+先来介绍一下，实现的是哪十大接口
+
 ```
+get请求
+	实现查看单条数据   get /api/student/1/
+	实现查看所有数据   get /api/student/
+	
+post请求
+	实现增加一条数据   post /api/student/1/
+	实现增加多条数据   post /api/student/
+	
+delete请求
+	实现删除一条数据   delete /api/student/1/
+	实现删除多条数据   delete /api/student/
+	
+put请求
+	实现整体将一条数据进行修改   put /api/student/1/
+	实现整体将多条数据进行修改   put /api/student/
+
+patch请求
+	实现将一条数据的局部数据修改   patch /api/student/1/
+	实现将多条数据的局部数据修改   patch /api/student/
+```
+
+- **(重点)单查群查接口：**序列化类提供序列化对象，**many参数控制着操作的数据是一条还是多条**
+- **(正常)单删群删接口：**后台操作删除字段即可，**前台提供pk就是单删，提供pks就是群删**
+- **(重点)单增群增接口：**根据数据判断是单增还是群增，对应序列化类要设置many，而序列化类只需要通过data即可
+- **(正常)单局部改：**序列化类参数**instance=修改的对象, data=修改的数据, partial=是否能局部修改**，单整体修改就是partial=False(默认就是False)
+- **(了解)群改：**前台提供的数据，后台要转化成要修改的对象们和用来更新的数据们，**ModelSerializer设置list_serializer_class关联自己的ListSerializer，重写update方法，完成群改**
 
 
 
