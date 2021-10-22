@@ -1,4 +1,4 @@
-# 序列化器 - serializer
+# 序列化器 - Serializer
 
 Django REST framework 是用于构建 Web API 的强大而灵活的工具包。
 
@@ -444,14 +444,14 @@ class StudentView2(View):
         # sers/students/2/    path("/students/(?P<pk>)\d+/", views.StudentView.as_view()),
         pk = 5
         try:
-            student = Student.objects.get(pk=pk)
+            i = Student.objects.get(pk=pk)
         except Student.DoesNotExist:
             return JsonResponse({"errors": "当前学生不存在！"}, status=400)
 
         # 1、接收客户端传入的数据
         # data = json.dumps(request.body)
         # 使用模拟数据
-        instance = {
+        data = {
             "name": "xiaohu",
             "age": 18,
             "sex": True,
@@ -461,9 +461,9 @@ class StudentView2(View):
 
         # 实例化对象
         # 添加数据
-        # serializer = StudentSerializer2(data=instance)
+        # serializer = StudentSerializer2(data=data)
         #更新数据
-        serializer = StudentSerializer2(instance=student, data=instance)
+        serializer = StudentSerializer2(instance=instance, data=data)
         # 配合下面的保存数据，在不传入 instance 时 为添加数据，往数据库中新增
         # 如果传入 instance 参数，则为更新数据
 
