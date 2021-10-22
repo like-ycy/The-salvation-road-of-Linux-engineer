@@ -102,6 +102,8 @@ Python 学习视频：[老男孩 python 全栈 29 期](https://www.bilibili.com/
 
 [菜鸟教程](https://www.runoob.com/)
 
+[W3Cschool DRF中文教程](https://www.w3cschool.cn/lxraw/)
+
 ## 待补充内容
 
 <!-- tabs:start -->
