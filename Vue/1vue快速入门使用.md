@@ -39,7 +39,7 @@ github：https://github.com/vuejs/vue-next/tags
 
 ​                  https://cdn.jsdelivr.net/npm/vue@next/dist/
 
-![image-20211026090915341](Untitled.assets/image-20211026090915341.png)
+![image-20211026090915341](1vue快速入门使用.assets/image-20211026090915341.png)
 
 ```html
 <!DOCTYPE html>
@@ -118,27 +118,27 @@ github：https://github.com/vuejs/vue-next/tags
 
 1. 官网地址：https://v3.cn.vuejs.org/guide/installation.html#%E5%8F%91%E5%B8%83%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E
 
-![image-20210623113308133](Untitled.assets/image-20210623113308133.png)
+![image-20210623113308133](1vue快速入门使用.assets/image-20210623113308133.png)
 
 2. 下载回来的压缩包，复制到ubuntu或者开发的系统下用户家目录下进行解压，然后打开谷歌浏览器，在地址栏上输入`chrome://extensions/`，勾选开发者模式。
 
-   ![image-20210623113528225](Untitled.assets/image-20210623113528225.png)
+   ![image-20210623113528225](1vue快速入门使用.assets/image-20210623113528225.png)
 
 3. 选择左边的加载已解压的扩展程序，就是刚才复制到ubuntu下的扩展目录，接着点击当前目录右上角的打开。
 
-   ![image-20210623113705560](Untitled.assets/image-20210623113705560.png)
+   ![image-20210623113705560](1vue快速入门使用.assets/image-20210623113705560.png)
 
 4. 完成了步骤以后，就可以看到谷歌浏览器已经成功安装了。效果如下：
 
-   ![image-20210623114020457](Untitled.assets/image-20210623114020457.png)
+   ![image-20210623114020457](1vue快速入门使用.assets/image-20210623114020457.png)
 
 5. 在使用vue的页面时，vue图标效果如下：
 
-   ![image-20210623114059300](Untitled.assets/image-20210623114059300.png)
+   ![image-20210623114059300](1vue快速入门使用.assets/image-20210623114059300.png)
 
 6. 最后！！！注意！当前vue插件的目录绝对不能删除！！删了这个目录，则插件也没有了。所以自己找一个保存文件的目录把插件放进去再安装到谷歌浏览器中。
 
-![image-20210728172733628](Untitled.assets/image-20210728172733628.png)
+![image-20210728172733628](1vue快速入门使用.assets/image-20210728172733628.png)
 
 ## 1.3 vue.js的M-V-VM思想
 
@@ -150,7 +150,7 @@ MVVM 是Model-View-ViewModel 的缩写，它是一种基于前端开发的架构
 
 `ViewModel ` 指代的是vue.js中我们编写代码时的创建vue实例对象vm了，它是vue.js的核心，负责连接 View 和 Model，保证视图和数据的一致性，所以前面代码中，data选项里面的数据被显示中p标签中就是vm对象自动完成的。vm对象会时刻的监控View和Model的变化，并**保持双方数据的一致性**！！！有时候，这个特性也叫双向数据绑定
 
-![2011-05-03 14h43_20](Untitled.assets/201105031754285061.png)
+![2011-05-03 14h43_20](1vue快速入门使用.assets/201105031754285061.png)
 
 编写代码，让我们更加清晰的了解MVVM：
 
