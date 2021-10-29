@@ -11,10 +11,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"
     />
-    <!-- 默认主题样式 -->
+    <!-- docsify主题样式 -->
     <link
       rel="stylesheet"
-      href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"
+      href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css"
     />
     <!-- 侧边栏的收起小图标是箭头还是别的 -->
     <!-- <link
@@ -32,10 +32,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/custom.css"
     /> -->
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/css/me.css"
-    />
+    /> -->
 
     <!-- copy提示信息 -->
     <link rel="stylesheet"
@@ -43,7 +43,7 @@
     type='text/css' media='all' / >
 
     <!-- 旧版字体样式 -->
-    <link rel="stylesheet" type="text/css" href="/style/myStyle-light.css" />
+    <link rel="stylesheet" type="text/css" href="style/myStyle-light.css" />
   </head>
 
   <body>
@@ -140,7 +140,7 @@
     </script>
 
     <!-- Docsify v4 默认主题样式 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
 
     <!-- 侧边栏目录收放 -->
     <!-- <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script> -->
@@ -236,7 +236,7 @@
     <!-- 实现离线化 -->
     <script>
       if (typeof navigator.serviceWorker !== "undefined") {
-        navigator.serviceWorker.register("/style/sw.js");
+        navigator.serviceWorker.register("style/sw.js");
       }
     </script>
 
