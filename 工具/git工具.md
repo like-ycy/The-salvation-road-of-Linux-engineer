@@ -16,7 +16,7 @@ git在苹果下很不友好的，使用mac的同学，需要基于brew来进行�
 
 ## 1. 使用git管理代码版本
 
-源码托管平台：github，gitee，gitlab，codepan
+源码托管平台：github，gitee，gitlab，coding
 
 本项目使用git管理项目代码，代码库放在gitee码云平台。（注意，公司中通常放在gitlab私有服务器中）
 
@@ -38,15 +38,17 @@ git在苹果下很不友好的，使用mac的同学，需要基于brew来进行�
 ## 1.2 Git与svn区别
 
 SVN 都是**集中式**控制管理的，也就是有一个SVN中央服务器，开发者需要在本地安装SVN客户端，才能都把代码提交到中央服务器。
-Git 是**分布式**的版本控制工具，也就是说没有中央服务器，每个节点的地位平等。
+Git 是**分布式**的版本控制工具，也就是说不依赖于中央服务器，每个节点的地位平等。
 
-**SVN**
+SVN
 
 ![1553208721216](git%E5%B7%A5%E5%85%B7.assets/1553208721216.png)
 
-**Git**
+Git
 
 ![1553208738888](git%E5%B7%A5%E5%85%B7.assets/1553208738888.png)
+
+
 
 ## Git的windows下安装
 
@@ -78,8 +80,6 @@ https://git-scm.com/download
 
 ![1553220208875](git%E5%B7%A5%E5%85%B7.assets/1553220208875.png)
 
-
-
 ![1553220240618](git%E5%B7%A5%E5%85%B7.assets/1553220240618.png)
 
 注意：**openssl  一定选它**
@@ -95,11 +95,11 @@ https://git-scm.com/download
 
 
 
-## Git工作区、暂存区和版本库
+## Git的基本使用
 
-![image-20210903183522507](git%E5%B7%A5%E5%85%B7.assets/image-20210903183522507.png)
+## 工作区、暂存区和版本库
 
-
+![image-20210903183522507](git%E5%B7%A5%E5%85%B7.assets/1553208888303.png)
 
 ### 1、工作区介绍
 
@@ -122,69 +122,115 @@ cd进入到自己希望存储代码的目录路径，并创建本地仓库.git
 新创建的本地仓库.git是个空仓库
 
   cd ~/Desktop
-  cd pro
-  git init .  # 如果没有声明目录,则自动把当前目录作为git仓库
+  mkdir api
+  cd api
+  git init  # 如果没有声明目录,则自动把当前目录作为git仓库
 ```
 
 初始化创建仓库
 
-![image-20210708102628558](git%E5%B7%A5%E5%85%B7.assets/image-20210708102628558.png)
+![image-20211104113404437](git%E5%B7%A5%E5%85%B7.assets/image-20211104113404437.png)
 
 #### 在ubuntu下可以通过Ctrl+H快捷键，直观地显示隐藏目录，可以看到.git仓库目录的结构：
 
 ```bash
 branches/   分支管理目录
-config      当前项目代码仓库的配置信息
+config      当前项目代码仓库的配置信息[当前开发者配置的账户信息]
 description 当前项目的描述
 HEAD        当前项目仓库的当前版本信息
+index       当前项目仓库中的add暂存库存储的索引版本信息
 hooks/      当前项目仓库的钩子目录[可以利用这个目录下面的文件实现自己拉去代码到服务器]
-info        仓库相关信息
-objects     仓库版本信息
-refs        引用信息
+info        当前项目仓库的记录相关信息
+logs/       当前项目仓库的日志相关信息[可以看版本历史]
+objects     仓库版本存储信息[记录代码版本历史信息的]
+refs        仓库版本引用信息[记录版本号信息的]
 ```
 
-
-
-#### 第一次使用git一般都有配置git的用户名和邮箱。
-
-```
-# 针对当前目录所在的.git/config进行配置，只针对当前.git仓库
-git config user.name 'python35'
-git config user.email '649641514@qq.com'
-
-# 针对当前操作系统用户家目录下.gitconfig文件进行全局配置，将来在当前系统下所有git管理代码就会使用该身份。
-git config --global user.name 'python35'
-git config --global user.email '649641514@qq.com'
-```
-
-如果不设置，会在提交代码版本库的时候出现以下提示：
-
-![image-20210708102859425](git%E5%B7%A5%E5%85%B7.assets/image-20210708102859425.png)
-
-添加版本记录.
+在api项目目录下创建index.html文件，并使用`git add .` 把修改状态保存到暂存区。
 
 ```bash
-git add .    # . 表示当前目录
-git commit -m "版本历史的介绍或者描述信息"
+# 新增一个并写入内容
+touch index.html
+echo "index.html的第一行内容" > index.html
 
-# 上面的命令可以合并为：
-git commit -a -m "版本描述信息"
+# 查看修改状态
+git status
+
+# 使用git记录修改状态到暂存区
+git add .
+
 ```
 
-![image-20210708103046913](git%E5%B7%A5%E5%85%B7.assets/image-20210708103046913.png)
+![image-20211104114533371](git%E5%B7%A5%E5%85%B7.assets/image-20211104114533371.png)
 
-![image-20210708103104516](git%E5%B7%A5%E5%85%B7.assets/image-20210708103104516.png)
+修改了文件以后，如果没有执行`git add`，文件/目录的验证，在查看状态`git status`中是属于红色的
+
+![image-20211104114519627](git%E5%B7%A5%E5%85%B7.assets/image-20211104114519627.png)
+
+执行了`git add .`以后，则表示git对当前仓库中的文件进行了状态记录和跟踪，此时文件的颜色在`git status`查看状态，就成了绿色。
+
+![image-20211104114602274](git%E5%B7%A5%E5%85%B7.assets/image-20211104114602274.png)
+
+如果需要把`git add .` 中保存在暂存区中的状态取消暂存，可以采用以下命令取消暂存。
+
+```bash
+git rm -rf --cached .   # . 表示当前目录下所有文件和子目录
+```
+
+保存版本
+
+```bash
+git commit -m "fix: add index.html"
+# git commit -m "debug: index.html"
+```
+
+当然，因为当前仓库是新仓库，我们的git也是新安装的。所以在提交的时候，如果之前没有录入账户信息，则会提示需要我们录入账户信息。
+
+![image-20211104120233411](git%E5%B7%A5%E5%85%B7.assets/image-20211104120233411.png)
+
+#### 第一次使用git需要配置git账户的用户名和邮箱。
+
+```bash
+# 针对当前目录所在仓库进行配置，直接采用如下命令：
+git config user.name '用户名'
+git config user.email '邮箱地址'
+
+
+# 针对当前操作系统进行全局配置，将来在当前系统下所有git管理代码的仓库就会使用该身份。
+git config --global user.name '用户名'
+git config --global user.email '邮箱地址'
+```
+
+如果不设置，则无法提交代码版本到仓库中。 所以可以按以下命令添加账户信息。
+
+```bash
+git config user.name  "moluo"
+git config user.email "649641514@qq.com"
+```
+
+ 提交版本历史到git版本仓库中。
+
+```bash
+git commit -m "fix: add index.html"
+
+# 当然，如果一开始就已经设置了账户信息，则 add 和 commit 这2个命令可以合并为：
+# git commit -a -m "fix:add index.html"
+```
+
+![image-20211104120727228](git%E5%B7%A5%E5%85%B7.assets/image-20211104120727228.png)
+
+
 
 #### 查看仓库状态
 
-```
+```bash
 git status
 
-git status –s # 简约显示
+# git status –s # 简约显示
 ```
 
-- 红色表示新建文件或者新修改的文件,都在工作区. git add 执行之前的效果
-- 绿色表示文件在暂存区，git add 执行以后的效果
+- 红色表示新建文件或者新修改的文件,都在工作区，没有执行 git add之前的效果，表示git没有跟踪当前文件的状态
+- 绿色表示文件的修改状态已经记录在了暂存区，是执行了git add 以后的效果，表示git已经跟踪了当前文件的状态
 
 ![image-20210708103456564](git%E5%B7%A5%E5%85%B7.assets/image-20210708103456564.png)
 
@@ -194,43 +240,25 @@ git status –s # 简约显示
 
 **针对与文件所处的不同分区，文件所处的状态:**
 
-(1)未追踪, 文件第一次出现在工作区, 版本库还没有存储该文件的状态(绿色)
+(1)未追踪, 文件第一次出现在工作区, 版本库还没有存储该文件的状态(红色)
 
-(2)已追踪, 只要第一次,git add了文件, 文件就是已追踪
+(2)已追踪, 只要第一次,git add了文件, 文件就是已追踪（绿色）
 
-(3)未修改, 文件在工作区未被编辑
+(3)未修改, 文件在工作区未被编辑（没有显示）
 
 (4)已修改, 文件在工作区被修改（红色）
 
-(5)未暂存, 文件已修改, 但是没有add到暂存区
+(5)未暂存, 文件已修改, 但是没有add到暂存区（红色）
 
 (6)已暂存, 已经将修改的文件add到暂存区（绿色）
 
-(7)未提交, 已暂存的文件, 没有commit提交. 处于暂存区（红色）
+(7)未提交, 已暂存的文件, 没有commit提交. 处于暂存区（绿色）
 
-(8)已提交, 提交到版本库的文件修改,只有commit以后才会有仓库的版本号生成
-
-
-
-#### 添加文件到暂存区
-
-```
-  # 添加项目中所有文件或目录[.git所在的目录下进行以下命令操作]
-  git add .
-  或者
-  # 添加指定文件
-  git add 文件1 文件2 文件3
-```
+(8)已提交, 提交到版本库的文件修改，只有commit以后才会有仓库的版本号生成
 
 
 
-#### 提交到本地版本库
-
-```
- git commit -m "版本描述"
-```
-
-从暂存区中恢复文件/目录修改
+### 从暂存区中恢复文件/目录修改
 
 ```bash
 git restore 文件   # 注意，只能回滚曾经被git跟踪过版本的文件，对于新增文件是没有办法回滚的
@@ -240,56 +268,73 @@ git restore 文件   # 注意，只能回滚曾经被git跟踪过版本的文件
 
 
 
-#### 查看历史版本[查看日志]
+### 查看历史版本[查看日志]
 
-```
-git log   或者   git reflog
- 
-分页展示日志
-  git log –p 
-  退出按【q】键
-  ctrl+f 向下分页
-  ctrl+b 向上分页
+```bashgit log   
+git log   
 
-显示指定日期之后的日志   git log --after  '2018-11-6'
-显示指定日期之前的日志   git log --before '2018-11-6'
-
-指定显示指定开发者的日志  git log --author 'lisi'
+也可以查看简单版本的日志信息：git reflog
 ```
 
+![image-20211104121758920](git%E5%B7%A5%E5%85%B7.assets/image-20211104121758920.png)
+
+#### 分页展示日志
+
+```bash
+git log –p 
+# 退出按【q】键
+# ctrl+f 下一页
+# ctrl+b 上一页
+
+# 该可以按时间范围，查看日志
+# 显示指定日期之后的日志
+git log --after  '2018-11-6'
+# 显示指定日期之前的日志
+git log --before '2018-11-6'
+
+# 指定显示指定开发者的日志
+git log --author 'moluo'
+```
 
 
-**回退版本**
 
-- **方案一：**
+### 版本回滚
 
-  - `HEAD`表示当前最新版本
+**方案一：**
 
-  - `HEAD^`表示当前最新版本的前一个版本
+- `HEAD`表示当前最新版本
 
-  - `HEAD^^`表示当前最新版本的前两个版本，**以此类推...**
+- `HEAD^`表示当前最新版本的前一个版本
 
-  - `HEAD~1`表示当前最新版本的前一个版本
+- `HEAD^^`表示当前最新版本的前两个版本，**以此类推...**
 
-  - `HEAD~10`表示当前最新版本的前10个版本，**以此类推...**
+- `HEAD~1`表示当前最新版本的前一个版本
 
-    ```
-    git reset --hard HEAD^  # 目前在2.25.1版本中有问题，执行失败!!
-    ```
+- `HEAD~10`表示当前最新版本的前10个版本，**以此类推...**
 
-
+  ```
+  git reset --hard HEAD^  # 目前在2.25.1版本中有问题，执行失败!!
+  ```
 
 **方案二：当版本非常多时可选择的方案**
 
 - 通过每个版本的版本号回退到指定版本
 
   ```
-    git reset --hard 版本号
+  git reset --hard 版本号
   ```
 
 
 
-## 分支的管理
+## 分支管理
+
+所谓的分支，表示通过git实现代码的复制版本管理。
+
+在git中可以通过`git branch` 把原有的代码进行版本复制，每复制一个版本出来，就多出一个分支。
+
+![image-20211104123044083](git%E5%B7%A5%E5%85%B7.assets/image-20211104123044083.png)
+
+### 分支管理的常用命令
 
 ```bash
 git branch # 查看当前项目的所有分支
@@ -297,654 +342,42 @@ git branch <分支名称>      # 在当前所在分支中，新建一个分支�
 git checkout <分支名称>    # 切换分支，如果分支不存在，则报错
 git checkout -b <分支名称> # 新建分支并切换到该分支
 git branch -d <分支名称>   # 删除指定分支，注意：必须先退出当前分支 
-git merge <分支名称>       # 把指定分支下的代码合并当前所在分支，
-
+git merge <分支名称>       # 把指定分支下的代码合并当前所在分支，[注意：必须先切换到当前分支，要保留的分支]
 ```
 
-合并代码过程中如果出现针对同一个文件，出现不同版本的修改，就会出现冲突。
-
-我们就需要根据git的提示，打开冲突的所有文件，进行代码的冲突解决。
-
-![image-20210903190705610](git%E5%B7%A5%E5%85%B7.assets/image-20210903190705610.png)
-
-```
-一般原则就是：保留先提交的，后提交的代码让步，要保留则写在下方或者不保留则删除掉。
-```
-
-![image-20210903190803376](git%E5%B7%A5%E5%85%B7.assets/image-20210903190803376.png)
-
-![image-20210903190919816](git%E5%B7%A5%E5%85%B7.assets/image-20210903190919816.png)
-
-注意：
-
-```
-公司一般使用git管理项目,往往会搭建一个gitlab自己内部管理代码,也有公司选择使用码云的企业版仓库来管理
-
-使用git开发项目时，有时候不一定通过https协议提交代码的。也有的公司是通过ssh协议提交,此时需要生成ssh公钥和提交公钥给仓库。[码云这些官网都会有详细的提示说明]
-
-生成SSH公钥【必须安装git bash才可以使用这个命令，而且还要把git bash添加到系统变量里面】
-  ssh-keygen -t rsa -C "lisi@163.com"
-
-参考：https://gitee.com/help/articles/4180
-```
-
-
-
-# 2. 在gitee平台创建工程
-
-1） 创建私有项目库
-
-![image-20210906153341474](git%E5%B7%A5%E5%85%B7.assets/image-20210906153341474.png)
-
-![image-20210906153359617](git%E5%B7%A5%E5%85%B7.assets/image-20210906153359617.png)
-
-选择git-flow自定义分支模型。
-
-上面设置就表示创建空空仓库，后面的界面:
-
-![image-20210708111504048](git%E5%B7%A5%E5%85%B7.assets/image-20210708111504048.png)
-
-![image-20210906154121174](git%E5%B7%A5%E5%85%B7.assets/image-20210906154121174.png)
-
-根据上面的命令提示，我们采用HTTPS协议连接gitee码云仓库
-
-![image-20210708112152299](git%E5%B7%A5%E5%85%B7.assets/image-20210708112152299.png)
-
-### 解决版本冲突
-
-当多人开发时，如果出现2个以上的提交记录中对同一个文件的同一行位置有改动，则出现冲突问题！
-
-这种往往就是开发者提交之前，没有拉去线上的最新代码版本的情况。
-
-![image-20210708115635458](git%E5%B7%A5%E5%85%B7.assets/image-20210708115635458.png)
-
-修改冲突位置的代码即可。
-
-![image-20210708115816463](git%E5%B7%A5%E5%85%B7.assets/image-20210708115816463.png)
-
-修改后的效果如下：
-
-![image-20210708115859235](git%E5%B7%A5%E5%85%B7.assets/image-20210708115859235.png)
-
-再次执行add，commit，push即可。所以今后的开发中，一定要先pull，然后再push。
-
-### 分支管理
-
-在开发中为了方便本地与线上运营的项目代码进行分离，方便项目的新功能的开发管理以及项目的版本迭代，我们一般可以使用git提供的分支管理来进行代码的版本管理。所谓的分支，就是把代码复刻成多个不同的版本，在不同的版本下面进行代码的编写，当有需要的时候，可以衍生新的子版本或者把子版本和原有版本进行合并。
-
-1）列出当前项目的所有分支
-
-master是git默认的主分支，是默认提供的。
+### 分支的创建和切换
 
 ```bash
 git branch
-* master    # 表示当前本地开发者看到的版本的分支
-  1.0
-  2.0
+git branch feature/user
+git branch
+
+git checkout feature/user
+git branch
+
+touch user.html
+echo "用户相关的功能" > user.html
+git add .
+git commit -m "fix: add user.html"
+
+git branch
 ```
 
-3）创建并切换分支到dev
+
+
+![image-20211104124537579](git%E5%B7%A5%E5%85%B7.assets/image-20211104124537579.png)
+
+如果在新分支中，有内容修改但是没有进行状态跟踪，没保存到暂存区，则切换分支，就会出现以下提示：
+
+![image-20211104124738264](git%E5%B7%A5%E5%85%B7.assets/image-20211104124738264.png)
+
+此时，我们可以取消本次操作也可以保存修改内容。
 
 ```bash
-# 新建分支
-git branch 1.0        # 创建代码分支1.0, 1.0是自定义，也可以是dev等其他单词
-git checkout 1.0      # 切换本地分支代码
+# 取消修改
+git restore .
 
-# 这里是上面两句代码的简写
-git checkout -b dev
-
-# 同步分支到线上服务器
-git push -u origin 1.0:1.0
+# 保存修改
+# git add .
+# git commit -m "描述信息"
 ```
-
-![image-20210708121307869](git%E5%B7%A5%E5%85%B7.assets/image-20210708121307869.png)
-
-### 使用ssh连接git仓库
-
-1. 生成ssh秘钥。
-
-https://gitee.com/help/articles/4181#article-header0
-
-```bash
-# 生成ssh私钥
-ssh-keygen -t rsa -C "git账号"
-# 查看公钥
-cat 秘钥地址.pub
-
-# 例如我的码云是 649641514@qq.com
-ssh-keygen -t rsa -C "649641514@qq.com"
-cat /home/moluo/.ssh/id_rsa.pub # 把公钥进行复制到码云平台上 https://gitee.com/profile/sshkeys
-
-# 切换项目的连接地址
-git remote remove origin # 删除仓库地址
-git remote add origin git@gitee.com:mooluo_admin/fuguang35.git  # 新仓库地址
-```
-
-
-
-![SSH生成](git%E5%B7%A5%E5%85%B7.assets/170141_5aa5bc98_551147.png) 
-
-例子：
-
-![image-20210708123023607](git%E5%B7%A5%E5%85%B7.assets/image-20210708123023607.png)
-
-![image-20210708123348356](git%E5%B7%A5%E5%85%B7.assets/image-20210708123348356.png)
-
-![image-20210708123505051](git%E5%B7%A5%E5%85%B7.assets/image-20210708123505051.png)
-
-![image-20210708123534335](git%E5%B7%A5%E5%85%B7.assets/image-20210708123534335.png)
-
-![image-20210708123918334](git%E5%B7%A5%E5%85%B7.assets/image-20210708123918334.png)
-
-![image-20210708123909409](git%E5%B7%A5%E5%85%B7.assets/image-20210708123909409.png)
-
-拉去远程分支的内容到本地
-
-```bash
-git pull origin dev
-```
-
-
-
-# 3. redis
-
-window系统的redis是微软团队根据官方的linux版本高仿的
-
-官方原版: https://redis.io/
-
-中文官网:http://www.redis.cn
-
-## 3.1 redis下载和安装
-
-下载地址： https://github.com/MicrosoftArchive/redis/releases
-
- ![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213315530-199992307.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213337245-1919434508.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213351947-466120029.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213613576-1092651557.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213732137-1070050780.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213836094-663215847.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120213850621-1280736381.png)
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120214101037-1456534345.png)
-
- 
-
-![img](git%E5%B7%A5%E5%85%B7.assets/867021-20190120214000974-189830387.png)
-
-使用以下命令启动redis服务端
-
-```
-redis-server C:/tool/redis/redis.windows.conf
-```
-
-![1553244955947](git%E5%B7%A5%E5%85%B7.assets/1553244955947.png)
-
-关闭上面这个cmd窗口就关闭redis服务器服务了。
-
-
-
-**redis作为windows服务启动方式**
-
-```
-redis-server --service-install redis.windows.conf
-```
-
-
-
-启动服务：redis-server --service-start
-停止服务：redis-server --service-stop
-
-
-
-启动内置客户端连接redis服务：
-
-![img](../../../Oldboy_Python_Projects/%25E7%25AC%2594%25E8%25AE%25B0/assets/867021-20190120215300667-1673204066.png)
-
-
-
-## 3.2 redis的配置
-
-redis 安装成功以后,window下的配置文件保存在软件 安装目录下,如果是mac或者linux,则默认安装/etc/redis/redis.conf
-
-### 3.2.1 redis的核心配置选项
-
-- 绑定ip：如果需要远程访问，可将此⾏注释，或绑定⼀个真实ip
-
-  > bind 127.0.0.1
-
-- 端⼝，默认为6379
-
-  > port 6379
-
-- 是否以守护进程运⾏[这里的配置主要是linux和mac下面需要配置的]
-
-  - 如果以守护进程运⾏，则不会在命令⾏阻塞，类似于服务
-  - 如果以⾮守护进程运⾏，则当前终端被阻塞
-  - 设置为yes表示守护进程，设置为no表示⾮守护进程
-  - 推荐设置为yes
-
-  > daemonize yes
-
-- 数据⽂件
-
-  > dbfilename dump.rdb
-
-- 数据⽂件存储路径
-
-  > dir .
-
-- ⽇志⽂件
-
-  > logfile "C:/tool/redis/redis-server.log"
-
-- 数据库，默认有16个
-
-  > database 16
-
-- 主从复制，类似于双机备份。
-
-  > slaveof
-
-
-
-### 3.2.2 Redis的使用
-
-Redis 是一个高性能的key-value数据格式的内存缓存，NoSQL数据库。
-
-NOSQL：not only sql，泛指非关系型数据库。
-
-关系型数据库: (mysql, oracle, sql server, sqlite)
-
-```
-1. 数据存放在表中，表之间有关系。
-2. 通用的SQL操作语言。
-3. 大部分支持事务。
-```
-
-非关系型数据库[ redis，hadoop，mangoDB]:
-
-```
-1. 没有数据表的概念，不同的nosql数据库存放数据位置不同。
-2. nosql数据库没有通用的操作语言。
-3. 基本不支持事务。   redis支持简单事务
-```
-
-redis：
-内存型(数据存放在内存中)的非关系型(nosql)key-value(键值存储)数据库，
-支持数据的持久化(注: 数据持久化时将数据存放到文件中，每次启动redis之后会先将文
-件中数据加载到内存)，经常用来做缓存(用来缓存一些经常用到的数据，提高读写速度)。
-
-redis是一款基于CS架构的数据库，所以redis有客户端，也有服务端。
-
-其中，客户端可以使用python等编程语言，也可以终端命令行工具
-
-![1553246999266](git%E5%B7%A5%E5%85%B7.assets/1553246999266.png)
-
-redis客户端连接服务器:
-
-```
-redis-cli -h `redis服务器ip` -p `redis服务器port`
-```
-
-
-
-
-
-## 3.3 redis数据类型
-
-```
-1. string类型:
-	字符串类型是 Redis 中最为基础的数据存储类型，它在 Redis 中是二进制安全的，也就是byte类型
-	最大容量是512M。
-2. hash类型:
-		hash用于存储对象，对象的结构为属性、值，值的类型为string。
-		key:{
-            域:值[这里的值只能是字符串]，
-            域:值，            
-            域:值，
-            域:值，
-            ...
-		}
-3. list类型:
-		列表的元素类型为string。
-		key:[ 值1，值2,值3..... ]
-4. set类型:
-	无序集合，元素为string类型，元素唯一不重复，没有修改操作。
-	{值1,值4,值3,值5}
-5. zset类型:
-	有序集合，元素为string类型，元素唯一不重复，没有修改操作。
-```
-
-### 3.4 string
-
-如果设置的键不存在则为添加，如果设置的键已经存在则修改
-
-- 设置键值
-
-  > set key value
-
-- 例1：设置键为`name`值为`xiaoming`的数据
-
-  > set name xiaoming
-
-![1553478355927](git%E5%B7%A5%E5%85%B7.assets/1553478355927.png)
-
-- 设置键值及过期时间，以秒为单位
-
-  > setex key seconds value
-
-- 例2：设置键为`aa`值为`aa`过期时间为3秒的数据
-
-  > setex name 20 xiaoming
-
-
-
-关于设置保存数据的有效期
-
-```
-# setex 添加保存数据到redis，同时设置有效期
-格式：
-	setex key time value
-# expire 给已有的数据重新设置有效期
-格式：
-	expire key time
-```
-
-
-
-- 设置多个键值
-
-  > mset key1 value1 key2 value2 ...
-
-- 例3：设置键为`a1`值为`python`、键为`a2`值为`java`、键为`a3`值为`c`
-
-  > mset a1 python a2 java a3 c
-
-
-
-- 追加值
-
-  > append key value
-
-- 例4：向键为`a1`中追加值`haha`
-
-  > append a1 haha
-
-
-
-- 获取：根据键获取值，如果不存在此键则返回`nil`
-
-  > get key
-
-- 例5：获取键`name`的值
-
-  > get name
-
-- 根据多个键获取多个值
-
-  > mget key1 key2 ...
-
-- 例6：获取键`a1、a2、a3`的值
-
-  > mget a1 a2 a3
-
-
-
-### 3.5 键操作
-
-- 查找键，参数⽀持正则表达式
-
-  > keys pattern
-
-- 例1：查看所有键
-
-  > keys *
-
-- 例2：查看名称中包含`a`的键
-
-  > keys a*
-
-- 判断键是否存在，如果存在返回`1`，不存在返回`0`
-
-  > exists key1
-
-- 例3：判断键`a1`是否存在
-
-  > exists a1
-
-- 查看键对应的`value`的类型
-
-  > type key
-
-- 例4：查看键`a1`的值类型，为redis⽀持的五种类型中的⼀种
-
-  > type a1
-
-- 删除键及对应的值
-
-  > del key1 key2 ...
-
-- 例5：删除键`a2、a3`
-
-  > del a2 a3
-
-- 查看有效时间，以秒为单位
-
-  > ttl key
-
-- 例7：查看键`bb`的有效时间
-
-  > ttl bb
-
-
-
-### 3.6 hash
-
-结构：
-
-```
-键key:{
-   	域field:值value
-}
-```
-
-
-
-- 设置单个属性
-
-  > hset key field value
-
-- 例1：设置键 `user`的属性`name`为`xiaohong`
-
-  > hset user name xiaohong
-
-- 设置多个属性
-
-  > hmset key field1 value1 field2 value2 ...
-
-- 例2：设置键`u2`的属性`name`为`xiaohong`、属性`age`为`11`
-
-  > hmset u2 name xiaohongage 11
-
-- 获取指定键所有的属性
-
-  > hkeys key
-
-- 例3：获取键u2的所有属性
-
-  > hkeys u2
-
-- 获取⼀个属性的值
-
-  > hget key field
-
-- 例4：获取键`u2`属性`name`的值
-
-  > hget u2 name
-
-- 获取多个属性的值
-
-  > hmget key field1 field2 ...
-
-- 例5：获取键`u2`属性`name`、`age`的值
-
-  > hmget u2 name age
-
-
-
-- 获取所有属性的值
-
-  > hvals key
-
-- 例6：获取键`u2`所有属性的值
-
-  > hvals u2
-
-- 删除属性，属性对应的值会被⼀起删除
-
-  > hdel key field1 field2 ...
-
-- 例7：删除键`u2`的属性`age`
-
-  > hdel u2 age
-
-### 3.7 list
-
-列表的元素类型为string
-
-按照插⼊顺序排序
-
-- 在左侧插⼊数据
-
-  > lpush key value1 value2 ...
-
-- 例1：从键为`a1`的列表左侧加⼊数据`a 、 b 、c`
-
-  > lpush a1 a b c
-
-- 在右侧插⼊数据
-
-  > rpush key value1 value2 ...
-
-- 例2：从键为`a1`的列表右侧加⼊数据`0、1`
-
-  > rpush a1 0 1
-
-- 在指定元素的前或后插⼊新元素
-
-  > linsert key before或after 现有元素 新元素
-
-- 例3：在键为`a1`的列表中元素`b`前加⼊`3`
-
-  > linsert a1 before b 3
-
-
-
-设置指定索引位置的元素值
-
-- 索引从左侧开始，第⼀个元素为0
-
-- 索引可以是负数，表示尾部开始计数，如`-1`表示最后⼀个元素
-
-  > lset key index value
-
-- 例5：修改键为`a1`的列表中下标为`1`的元素值为`z`
-
-  > lset a 1 z
-
-
-
-- 删除指定元素
-
-  - 将列表中前`count`次出现的值为`value`的元素移除
-  - count > 0: 从头往尾移除
-  - count < 0: 从尾往头移除
-  - count = 0: 移除所有
-
-  > lrem key count value
-
-  ![1553479815621](git%E5%B7%A5%E5%85%B7.assets/1553479815621.png)
-
-- 例6.1：向列表`a2`中加⼊元素`a、b、a、b、a、b`
-
-  > lpush a2 a b a b a b
-
-
-
-- 例6.2：从`a2`列表右侧开始删除2个`b`
-
-  > lrem a2 -2 b
-
-- 例6.3：查看列表`a2`的所有元素
-
-  > lrange a2 0 -1
-
-
-
-### 3.8 set
-
-- 添加元素
-
-  > sadd key member1 member2 ...
-
-- 例1：向键`a3`的集合中添加元素`zhangsan`、`lisi`、`wangwu`
-
-  > sadd a3 zhangsan sili wangwu
-
-
-
-- 返回所有的元素
-
-  > smembers key
-
-- 例2：获取键`a3`的集合中所有元素
-
-  > smembers a3
-
-
-
-- 删除指定元素
-
-  > srem key value
-
-- 例3：删除键`a3`的集合中元素`wangwu`
-
-  > srem a3 wangwu
-
-
-
-
-
-### 3.9 redis的几个站点地址
-
-中文官网： http://www.redis.cn/
-
-英文官网：https://redis.io
-
-参考命令：http://doc.redisfans.com/
-
-
-
-##### 针对redis中的内容扩展
-
-flushall 清空数据库中的所有数据
-
-```
-针对各种数据类型它们的特性，使用场景如下:
-字符串string: 用于保存一些项目中的普通数据，只要键值对的都可以保存，例如，保存 session,定时记录状态
-哈希hash：用于保存项目中的一些字典数据，但是不能保存多维的字典，例如，商城的购物车
-列表list：用于保存项目中的列表数据，但是也不能保存多维的列表，例如，队列，秒杀，医院的挂号
-无序集合set:用于保存项目中的一些不能重复的数据，可以用于过滤，例如，投票海选的时候，过滤候选人
-有序集合zset：用于保存项目中一些不能重复，但是需要进行排序的数据，分数排行榜.
-
-```
-
-
-
