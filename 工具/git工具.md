@@ -381,3 +381,167 @@ git restore .
 # git add .
 # git commit -m "描述信息"
 ```
+
+### 分支合并
+
+```bash
+# 此处拿修改debug为例子。
+# 切换到master主分支
+git checkout master
+# 新建分支，debug/index，表示修改bug
+git branch debug/index
+# 查看当前仓库下所有分支
+git branch
+
+# 切换分支
+git checkout debug/index
+# 模拟修改debug的过程
+echo "修改一个重大的bug" >> index.html
+# 把当前仓库下修改的所有内容添加到暂存区
+git add .
+# 提交代码版本
+git commit -m "debug: index.html"
+
+# 合并代码前，必须先切换回到要合并的主分支
+git checkout master
+# 进行分支代码合并
+git merge debug/index   # 这里表示把debug/index分支的内容合并到master分支中
+# 删除子分支
+git branch -d debug/index
+```
+
+
+
+![image-20211104124913139](git%E5%B7%A5%E5%85%B7.assets/image-20211104124913139.png)
+
+![image-20211104125222654](git%E5%B7%A5%E5%85%B7.assets/image-20211104125222654.png)
+
+#### 分支合并过程中的代码冲突解决
+
+合并代码过程中如果出现针对同一个文件出现不同版本的修改，就会出现版本冲突。
+
+![image-20211105090152174](git%E5%B7%A5%E5%85%B7.assets/image-20211105090152174.png)
+
+我们就需要根据git的提示，打开冲突的所有文件，诸个进行代码的冲突解决。
+
+```
+解决冲突的原则就是：
+	保留先提交的，后提交的代码让步，
+	如果后提交的代码要保留则写在冲突位置的下方，如果后提交的代码不保留则删除掉即可。
+```
+
+根据上面的解决冲突原则，对冲突的代码文件进行调整。调整完成以后，再次记录状态、提交代码版本
+
+```bash
+git add .
+git commit -m "fix: merge"
+```
+
+![image-20211105090701452](git%E5%B7%A5%E5%85%B7.assets/image-20211105090701452.png)
+
+
+
+
+
+# 在gitee平台创建工程
+
+注意：公司一般使用git管理项目, 往往会搭建一个gitlab自己内部管理代码, 也有少部分的公司选择使用码云的企业版仓库来进行代码版本管理。
+
+1） 创建git项目代码库
+
+![image-20211105092322602](git%E5%B7%A5%E5%85%B7.assets/image-20211105092322602.png)
+
+选择git-flow自定义分支模型。
+
+上面的设置没有勾选初始化仓库，和没有设置模板，这个操作就表示创建空白仓库，后面的界面:
+
+![image-20210906154121174](git%E5%B7%A5%E5%85%B7.assets/image-20210906154121174.png)
+
+根据上面的命令提示，我们采用HTTPS协议连接gitee码云仓库
+
+```bash
+# 打开fuguang工程项目，并根据上面浏览器中的新仓库的提示，设置开发者身份
+cd /home/moluo/Desktop/fuguang
+# 初始化本地仓库
+git init
+git config user.name "mooluo"
+git config user.email "649641514@qq.com"
+# 开发中总会有类似.idea这样没有任何用处的文件或目录，对于这些东西我们可以设置让git上传下载的时候忽略它们。
+touch .gitignore  # 在素材中自己根据实际情况情况调整文件中需要忽略的内容
+git add .
+git commit -m "fix: add api project"
+# 表示接下来的操作中，git通过https协议与远程的git仓库上传下载代码版本[每次上传代码必须填写账号密码]
+git remote add origin https://gitee.com/mooluo_admin/fuguang36.git
+# 表示接下来的操作中，git通过ssh协议与远程的git仓库上传下载代码版本[可以设置免密登录操作，不需要填写账号密码]
+# git remote add origin git@gitee.com:mooluo_admin/fuguang36.git
+git push origin master
+```
+
+![image-20211105094158017](git%E5%B7%A5%E5%85%B7.assets/image-20211105094158017.png)
+
+
+
+## ssh连接git仓库实现免密操作
+
+**1. 生成ssh秘钥**
+
+https://gitee.com/help/articles/4181#article-header0
+
+```bash
+# 生成ssh私钥
+# ssh-keygen -t rsa -C "git账号"
+# 查看公钥
+# cat 秘钥地址.pub
+
+# 例如我的码云是 649641514@qq.com
+ssh-keygen -t rsa -C "649641514@qq.com"
+cat /home/moluo/.ssh/id_rsa.pub # 把公钥进行复制到码云平台上 https://gitee.com/profile/sshkeys
+
+# 更换git仓库的连接地址
+git remote remove origin # 删除仓库地址
+git remote add origin git@gitee.com:mooluo_admin/fuguang36.git  # 新仓库地址
+```
+
+
+
+![SSH生成](git%E5%B7%A5%E5%85%B7.assets/170141_5aa5bc98_551147.png) 
+
+例子：
+
+![image-20210708123023607](git%E5%B7%A5%E5%85%B7.assets/image-20210708123023607.png)
+
+![image-20210708123348356](git%E5%B7%A5%E5%85%B7.assets/image-20210708123348356.png)
+
+![image-20210708123505051](git%E5%B7%A5%E5%85%B7.assets/image-20210708123505051.png)
+
+![image-20210708123534335](git%E5%B7%A5%E5%85%B7.assets/image-20210708123534335.png)
+
+![image-20210708123918334](git%E5%B7%A5%E5%85%B7.assets/image-20210708123918334.png)
+
+SSH首次远程连接服务端时，都会提示是否记录主机的指纹信息，输入yes即可。
+
+![image-20210708123909409](git%E5%B7%A5%E5%85%B7.assets/image-20210708123909409.png)
+
+
+
+## 拉取项目版本到本地
+
+如果远程的git仓库在本地没有任何的备份，属于第一次拉取代码，需要不仅拉取代码信息，还要拉取git历史版本.git。
+
+```bash
+# git clone <仓库地址>
+git clone https://gitee.com/mooluo_admin/fuguang36.git
+```
+
+如果远程的git仓库在本地已经有了一个备份，属于非第一次拉取代码，则使用`git pull`进行拉取即可。
+
+```bash
+# 一般需要指定远程git仓库地址 和 分支名称
+# git pull origin <分支名称>
+# git pull origin master
+
+# 如果远程主机的变量为origin，如果本次所在的分支和远程git仓库中的分支名称有对应，则可以简写
+cd <项目根目录>
+git pull
+```
+
