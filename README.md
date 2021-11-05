@@ -1,4 +1,4 @@
-# 📚 Python 学习笔记main
+# 📚 Python 学习笔记 main
 
 !> 🙏 本人水平有限，仓库中的知识仅为自我学习的记录，如果不爱，请别伤害
 
@@ -10,15 +10,14 @@
 
 本项目文档基于**Python3**
 
-
 ## 说明
-文档 《Python 基础知识》前期复制于知乎[《小猿取经》](https://zhuanlan.zhihu.com/c_1189883314197168128)的笔记，后面进入机构系统学习后也有一些自己的修改。
+文档 《Python 基础知识》前期复制于知乎 [《小猿取经》](https://zhuanlan.zhihu.com/c_1189883314197168128) 的笔记，后面进入机构系统学习后也有一些自己的修改。
 
-《Python 基础知识、并发、网络、Django》文档目录规划参考了 Barry 的 [Python 从入门到放弃 汇总篇 - 正在学习的 Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html))
+《Python 基础知识、并发、网络、Django》文档目录规划参考了 Barry 的 [Python 从入门到放弃 汇总篇 - 正在学习的 Barry - 博客园](https://www.cnblogs.com/XuChengNotes/p/11246438.html)
 
 ## 🐛 目前 Bug
 
-- 右上角顶部菜单栏 没有固定在右上角，会随着页面的滚动而滚动，不方便切换菜单页，但是在本地测试时没问题，而且1号文字也有紫色背景
+- 右上角顶部菜单栏 没有固定在右上角，会随着页面的滚动而滚动，不方便切换菜单页，但是在本地测试时没问题，而且 1 号文字也有紫色背景
 - 添加顶部提示，说明网站目前更换结构的测试阶段
 - 文章底部 章节提示
 - 回到顶部 图标是否要更换，摇摆中
@@ -33,7 +32,7 @@
 - 2020.10 停止 Python 学习，换了个工作
 - 2021.02 开始逐步更新本文档
 - 2021.08 进入某机构系统学习 Python 课程，后续文档也会根据学习情况进行完善
-- 。。。。半年学习中。。。
+- 。半年学习中。
 
 ## 👍 相关推荐项目
 
@@ -79,7 +78,7 @@ Python 学习视频：[老男孩 python 全栈 29 期](https://www.bilibili.com/
 ## 📋 TODO
 
 - [ ] 网站整体移除侧边栏，使用顶部菜单栏代替，并尝试启动更多目录层级查看效果
-- [ ] 将所有css、js文件本地化
+- [ ] 将所有 css、js 文件本地化
 - [ ] 文档内容的丰富度及格式的持续优化（长期优化项目）
 - [ ] 基础部分添加练习题
 - [ ] 单独加入文件中的问题的处理
@@ -98,11 +97,11 @@ Python 学习视频：[老男孩 python 全栈 29 期](https://www.bilibili.com/
 
 [W3school 在线教程](https://www.w3school.com.cn/)
 
-[RESTful API中文网](http://restful.p2hp.com/)
+[RESTful API 中文网](http://restful.p2hp.com/)
 
 [菜鸟教程](https://www.runoob.com/)
 
-[W3Cschool DRF中文教程](https://www.w3cschool.cn/lxraw/)
+[W3Cschool DRF 中文教程](https://www.w3cschool.cn/lxraw/)
 
 ## 待补充内容
 
