@@ -20,7 +20,7 @@ NOSQL：not only sql，泛指非关系型数据库。
 
 泛指那些不使用SQL语句进行数据操作的数据库，所有数据库中只要不使用SQL语句的都是非关系型数据库。
 
-典型：Redis、MongoDB、hbase、 Hadoop、elasticsearch、图数据库。。。。
+典型：Redis、MongoDB、hbase、 Hadoop、elasticsearch、图形数据库。。。。
 
 特点：
 
@@ -1158,7 +1158,7 @@ zpopmax key [count]
 4) "93"
 ```
 
-## 3.7 业务场景
+## 4 业务场景
 
 ```
 针对各种数据类型它们的特性，使用场景如下:
@@ -1193,7 +1193,7 @@ pip install aioredis
 
 
 
-## 3. 8 python操作redis
+## 5 python操作redis
 
 这2个模块提供给开发者的使用方式都是一致的。都是以redis命令作为函数名，命令后面的参数作为函数的参数。只有一个特殊：del，del在python属于关键字，所以改成delete即可。
 
@@ -1201,23 +1201,60 @@ pip install aioredis
 
 ```python
 from redis import Redis, StrictRedis
+
 if __name__ == '__main__':
-    redis = StrictRedis(host="127.0.0.1",port=6379, db=1)
-    # 字符串操作
-    # 设置一个字符串
-    # 终端命令: set name xioaming
-    # redis.set("name", "xiaoming")
+    # 连接redis的写法有2种：
+    redis = Redis.from_url(url="redis://:123456@127.0.0.1:6379/0")
+    # redis = Redis(host="127.0.0.1", port=6379, password="123456", db=0)
 
-    # 设置一个指定时间有效的数据
-    # 终端命令: setex name 30 xiaoming
-    # redis.setex("name",30,"xiaoming")
+    # # 字符串操作
+    # # set name xiaoming
+    # redis.set("name", "xiaohong")
+    #
+    # # get name
+    # ret = redis.get("name")
+    # # redis中最基本的数据类型是字符串，但是这种字符串是bytes，所以对于python而言，读取出来的字符串数据还要decode才能使用
+    # print(ret.decode())
+    #
+    # ret = redis.get("username")
+    # print(ret) # 不存在的数据结果是None
 
-    # 设置有一个集合user，成员有：xiaoming，xiaoli
-    # 终端命令:  sadd user xiaoming xiaoli
-    # redis.sadd("user", "xiaoming", "xiaoli")
 
-    # 删除集合user的一个成员
-    # 终端命令: srem user xiaoming
-    redis.srem("user", "xiaoming")
+    # # 设置有效期
+    # # setex key seconds value
+    # mobile = "13312345678"
+    # # redis.setex(f"code_{mobile}", 5, "333333")
+    #
+    # # 提取数据
+    # code_bytes = redis.get(f"code_{mobile}")
+    # if code_bytes: # 判断只有获取到数据才需要decode解码
+    #     print(code_bytes.decode())
+
+    # 设置字典，单个成员
+    # hset user name xiaoming
+    # redis.hset("user", "name", "xiaoming")
+
+    # 设置字典，多个成员
+    # hset user name xiaohong age 12 sex 1
+    # data = {
+    #     "name": "xiaohong",
+    #     "age": 12,
+    #     "sex": 1
+    # }
+    # redis.hset("user", mapping=data)
+
+    # 获取字典所有成员，字典的所有成员都是键值对，而键值对也是bytes类型，所以需要推导式进行转换
+    # ret = redis.hgetall("user")
+    # print(ret)  # {b'name': b'xiaohong', b'age': b'12', b'sex': b'1'}
+    # data = {key.decode(): value.decode() for (key, value) in ret.items()}
+    # print(data)
+
+    # 获取所有的key
+    ret = redis.keys("*")
+    print(ret)
+
+    # 删除key
+    if len(ret) > 0:
+        redis.delete(ret[0])
 ```
 
