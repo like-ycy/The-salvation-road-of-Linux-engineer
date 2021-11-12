@@ -30,7 +30,8 @@
   - [工具](/directories/tools.md?id=🧰-工具)
 
 - 项目
-  - [项目](/directories/projects.md?id=📁-项目)
+  - [项目开发流程](/directories/projects.md?id=📁-项目开发流程)
+  - [浮光在线](/directories/projects.md?id=浮光在线)
 <!-- - [<span class="iconfont icon-wodeguanzhu"></span> 关于本站](关于/) -->
 <!-- - [⛷ 生信交流群](https://mp.weixin.qq.com/s/rWAl_jRxay-IVUM1S_19LA) -->
 <!-- - [<span class="iconfont icon-csdn"></span> CSDN](https://wugenqiang.blog.csdn.net/) -->
