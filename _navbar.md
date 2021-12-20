@@ -46,6 +46,7 @@
   - [项目开发流程](/docs/项目/README.md?id=项目开发流程)
   - [软件开发的目录规范](/docs/项目/README.md?id=软件开发的目录规范)
   - [浮光在线](/docs/项目/README.md?id=浮光在线)
+  - [Hippo运维平台](/docs/项目/README.md?id=Hippo运维平台)
 
 <!-- - [<span class="iconfont icon-wodeguanzhu"></span> 关于本站](关于/) -->
 <!-- - [⛷ 生信交流群](链接) -->
