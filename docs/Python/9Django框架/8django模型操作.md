@@ -53,7 +53,7 @@
 ##### 如果想打印orm转换过程中的sql，需要在settings中进行配置日志：
 
 ```python
-CopyLOGGING = {
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
@@ -89,7 +89,6 @@ models.py
 ```python
 from django.db import models
 
-# Create your models here.
 class User(models.Model): # 必须继承models.Model的子类
     # 用户名
     username = models.CharField(max_length=12)

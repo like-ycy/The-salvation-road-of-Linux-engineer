@@ -25,8 +25,6 @@ REST_FRAMEWORK = {
 
 
 ```python
-# 
-#Student.objects.all()
 class Hom5APIView(ListAPIView):
 	pagination_class = None
 ```
