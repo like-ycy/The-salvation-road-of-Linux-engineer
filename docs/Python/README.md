@@ -159,6 +159,8 @@
   + [Flask路由](/docs/Python/12Flask/3flask路由.md)
   + [Flask请求](/docs/Python/12Flask/4flask请求.md)
 
+## FastAPI
+
 ## 实例
 
   + [Python实现图片验证码](/docs/Python/11实例/python实现图片验证码.md)
