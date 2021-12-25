@@ -14,17 +14,11 @@
 
 * Python
 
-  + [初识Python](/docs/Python/README.md?id=初识Python)
-  + [Python基础](/docs/Python/README.md?id=Python基础)
-  + [Python函数](/docs/Python/README.md?id=Python函数)
-  + [Python进阶](/docs/Python/README.md?id=Python进阶)
-  + [Python常用模块](/docs/Python/README.md?id=Python常用模块)
-  + [Python面向对象](/docs/Python/README.md?id=Python面向对象)
-  + [Python网络编程](/docs/Python/README.md?id=Python网络编程)
-  + [Python并发编程](/docs/Python/README.md?id=Python并发编程)
+  + [Python基础](/docs/Python/README.md?id=Python)
   + [Django框架](/docs/Python/README.md?id=Django框架)
   + [DRF框架](/docs/Python/README.md?id=DRF框架)
   + [Flask](/docs/Python/README.md?id=Flask)
+  + [FastAPI](/docs/Python/README.md?id=FastAPI)
   + [实例](/docs/Python/README.md?id=实例)
 
 * 数据库
