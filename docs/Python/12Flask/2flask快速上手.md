@@ -7,11 +7,12 @@ from flask import Flask
 
 app = Flask (__name__)
 
-def hello_world () :
+@app.route("/")
+def hello_world() :
     return "<p>Hello, World!</p>"
 
 if __name__ == '__main__':
-    app.run ()
+    app.run()
 ```
 
 那么，这些代码是什么意思呢？
@@ -37,12 +38,20 @@ $ flask run
 
 `flask run` 默认使用 127.0.0.1 和 5000 端口，以及 debug=False 模式来运行项目
 
-也可以手动指定监听 ip 和端口，修改启动方法
+1、可以手动指定监听 ip 和端口，修改启动方法
 
 ```bash
 if __name__ == '__main__':
      app.run (host="0.0.0.0",port=5000, debug=True)
 ```
+
+2、或者执行命令运行
+
+```bash
+flask run --host=0.0.0.0 --port=5000
+```
+
+
 
 ## 调试模式
 
@@ -62,20 +71,20 @@ if __name__ == '__main__':
 
 ```bash
 from flask import Flask
-app = Flask (__name__)
+app = Flask(__name__)
 
 # 注册配置
 settings = {
     "DEBUG": True
 }
-app.config.update (settings)
+app.config.update(settings)
 
 @app.route ("/")
-def index () :
+def index() :
     return "hello, flask!!!"
 
 if __name__ == '__main__':
-    app.run ()
+    app.run()
 ```
 
 ## Flask 加载配置的方式
@@ -84,29 +93,29 @@ flask 支持通过字典、模块、对象对项目配置进行扩展
 
 ```python
 from flask import Flask
-app = Flask (__name__)
+app = Flask(__name__)
 
 # 方法一：字典
 settings = {
     "DEBUG": True
 }
-app.config.update (settings)
+app.config.update(settings)
 
 # 方法二：对象
-class Config (object) :
+class Config(object) :
     DEBUG = True
 
-app.config.from_object (Config) # 对象
+app.config.from_object(Config) # 对象
 
 # 方法三：模块
 import settings
-app.config.from_object (settings) # 模块
+app.config.from_object(settings) # 模块
 
 # 路由和视图
-@app.route ("/")
-def index () :
+@app.route("/")
+def index() :
     return "<h1>hello, flask!!!</h1>"
 
 if __name__ == '__main__':
-    app.run (host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
 ```

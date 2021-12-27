@@ -237,3 +237,195 @@ if __name__ == '__main__':
     # obj = request.files['the_file_name']
     # obj.save('/var/www/uploads/' + secure_filename(f.filename))
 ```
+
+
+
+# Flask响应
+
+flask默认支持2种响应方式:
+
+数据响应: 默认响应html文本,也可以返回 JSON格式,或其他格式
+
+页面响应: 重定向
+
+​                  url_for  视图之间的跳转
+
+响应的时候,flask也支持自定义http响应状态码
+
+## 响应html文本
+
+```python
+from flask import Flask,make_response, Response
+
+app = Flask(__name__)
+
+app.config.update({
+    "DEBUG": True
+})
+
+
+@app.route("/")
+def index():
+    # 默认返回的就是HTML代码，在flask内部调用视图时，得到的返回值会被flask判断类型，
+    # 如果类型不是response对象，则视图的返回值会被作为response对象的实例参数返回客户端
+    # return "<h1>hello</h1>", 400, {"company": "python"}
+    # return make_response("<h1>hello</h1>", 400, {"company": "python"})
+    return Response(f"默认首页", 201, {"company": "python"})
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+
+## 返回JSON数据
+
+在 Flask 中可以直接使用 **jsonify** 生成一个 JSON 的响应
+
+```python
+from flask import Flask, jsonify
+from decimal import Decimal
+app = Flask(__name__)
+
+app.config.update({
+    "DEBUG": True,
+    "JSONIFY_PRETTYPRINT_REGULAR": False,
+})
+
+
+@app.route("/")
+def index():
+    # """返回json格式数据，返回json字典"""
+    # data = {"name":"xiaoming","age":16}
+    # return data
+
+    # """返回json格式数据，返回各种json数据，包括列表"""
+    data = [
+        {"id": 1, "username": "liulaoshi", "age": 18},
+        {"id": 2, "username": "liulaoshi", "age": 17},
+        {"id": 3, "username": "liulaoshi", "age": 16},
+        {"id": 4, "username": "小明", "age": Decimal(15)},
+    ]
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run()
+```
+
+flask中返回json 数据,都是flask的jsonify方法返回就可以了，直接return只能返回字典格式的json数据。
+
+
+
+# 重定向
+
+## 重定向到站点地址
+
+```python
+from flask import Flask, redirect
+
+# 应用实例对象
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    """页面跳转"""
+    """
+    301: 永久重定向，页面已经没有了，站点没有了，永久转移了。
+    302：临时重定向，一般验证失败、访问需要权限的页面进行登录跳转时，都是属于临时跳转。
+    """
+    # redirect函数就是response对象的页面跳转的封装
+    # response = redirect("http://www.qq.com", 302)
+
+    # redirect的原理，最终还是借助Resonse对象来实现：
+    response = "", 302, {"Location": "http://www.163.com"}
+    return response
+
+if __name__ == '__main__':
+    # 启动项目的web应用程序
+    app.run(host="0.0.0.0", port=5000, debug=True)
+```
+
+
+
+## 重定向到自己写的视图函数
+
+可以直接填写自己 url 路径
+
+也可以使用 url_for 生成指定视图函数所对应的 url
+
+`from flask import url_for`
+
+```python
+@app.route("/info")
+def info():
+    return "info"
+
+@app.route("/user")
+def user():
+    url = url_for("info")
+    print(url)
+    return redirect(url)
+```
+
+
+
+## 重定向到带有路径参数的视图函数
+
+在 url_for 函数中传入参数
+
+```python
+from flask import Flask, redirect, url_for
+
+# 应用实例对象
+app = Flask(__name__)
+
+@app.route("/demo/<int:mob>")
+def mobile(mob):
+    print(mob)
+    return f"mobile={mob}"
+
+@app.route("/sms")
+def sms():
+    """携带路径参数进行站内跳转"""
+    # url_for("视图方法名", 路由路径参数)
+    url = url_for("mobile", mob=13312345678)
+    print(url)
+    return redirect(url)
+
+if __name__ == '__main__':
+    # 启动项目的web应用程序
+    app.run(host="0.0.0.0", port=5000, debug=True)
+```
+
+# 自定义状态码和响应头
+
+在 Flask 中，可以很方便的返回自定义状态码，以实现不符合 http 协议的状态码，例如：status code: 666
+
+```python
+from flask import Flask, redirect, url_for, make_response, Response
+
+# 应用实例对象
+app = Flask(__name__)
+
+@app.route("/rep")
+def rep():
+    """常用以下写法"""
+    return "ok", 201, {"Company":"python-35"}
+
+    # """原理"""
+    # response = make_response("ok", 201, {"Company": "python-35"})
+    # return response
+    #
+    # """原理"""
+    # response = Response("ok")
+    # response.headers["Company"] = "oldboy" # 自定义响应头
+    # response.status_code = 201             # 自定义响应状态码
+    # return response
+
+if __name__ == '__main__':
+    # 启动项目的web应用程序
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+```
+
