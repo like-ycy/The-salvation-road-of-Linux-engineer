@@ -82,7 +82,7 @@ MySQL官方对索引的定义为：索引(Index)是帮助MySQL高效获取数据
     + truncate 表名;  清空表并将自增归位
     + alter table 表明  auto_increment=1;
 
-## 2、常规索引
+## 2、常规索引（普通索引）
 
 + 概述
 
@@ -175,9 +175,9 @@ MySQL官方对索引的定义为：索引(Index)是帮助MySQL高效获取数据
 
 ## 4、常规索引和唯一索引的区别
 
-这俩个索引在查询能力上是没有区别的，如果考虑对于更新性能的影响，建议使用普通索引
+这俩个索引在查询能力上是没有区别的，如果考虑对于更新性能的影响，建议使用常规索引
 
-**普通索引：**将数据页从磁盘读出到内存更新数据页
+**常规索引：**将数据页从磁盘读出到内存更新数据页
 
 **唯一索引：**将数据页从磁盘读出到内存，判断是否唯一，再更新数据页
 
@@ -201,7 +201,7 @@ MySQL官方对索引的定义为：索引(Index)是帮助MySQL高效获取数据
 
 + 开启mysql运行时间监控
 
-  set profiling = 1;   [ˈproʊfa
+  set profiling = 1;   
 
 + 开启查询
 
@@ -275,7 +275,7 @@ mysql> CREATE TABLE tb_dept1
 
 创建数据表 tb_emp6，并在表 tb_emp6 上创建外键约束，让它的键 deptId 作为外键关联到表 tb_dept1 的主键 id，SQL 语句和运行结果如下所示。
 
-```
+```sql
 mysql> CREATE TABLE tb_emp6
     -> (
     -> id INT(11) PRIMARY KEY,
@@ -316,7 +316,7 @@ FOREIGN KEY(<列名>) REFERENCES <主表名> (<列名>);
 
 修改数据表 tb_emp2，将字段 deptId 设置为外键，与数据表 tb_dept1 的主键 id 进行关联，SQL 语句和运行结果如下所示。
 
-```
+```sql
 mysql> ALTER TABLE tb_emp2
     -> ADD CONSTRAINT fk_tb_dept1
     -> FOREIGN KEY(deptId)
@@ -353,7 +353,7 @@ ALTER TABLE <表名> DROP FOREIGN KEY <外键约束名>;
 
 删除数据表 tb_emp2 中的外键约束 fk_tb_dept1，SQL 语句和运行结果如下所示。
 
-```
+```sql
 mysql> ALTER TABLE tb_emp2
     -> DROP FOREIGN KEY fk_tb_dept1;
 Query OK, 0 rows affected (0.19 sec)
