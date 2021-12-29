@@ -162,11 +162,16 @@
   * [Flask请求钩子](/docs/Python/12Flask/6flask请求钩子.md)
   * [异常抛出和捕获](/docs/Python/12Flask/7异常抛出和捕获.md)
   * [上下文管理](/docs/Python/12Flask/8上下文管理.md)
+  * [终端命令](/docs/Python/12Flask/9终端命令.md)
+  * [Jinja2模板](/docs/Python/12Flask/10jinja2模板.md)
+  * [flask-sqlalchemy](/docs/Python/12Flask/11flaskORM.md)
 
 ## FastAPI
 
   * [FastAPI介绍](/docs/Python/13FastAPI/1FastAPI介绍.md)
-
+  * [FastAPI快速入手](/docs/Python/13FastAPI/2快速入手.md)
+  * [路径参数](/docs/Python/13FastAPI/3路径参数.md)
+  * [查询参数](/docs/Python/13FastAPI/4查询参数.md)
 
 
 ## 实例
