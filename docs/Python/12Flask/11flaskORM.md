@@ -319,7 +319,7 @@ class Student(db.Model):
     # 2. 企业没有DBA，比较坑爹：
     #    2.1 开发人员，自己手撸SQL语句，手动建库建表。
     #    2.2 开发人员，编写模型，使用数据迁移，手动建库和数据迁移建表。
-    
+
     # 原生SQL语句
     create table db_student(
       id int primary key auto_increment comment "主键",
@@ -469,7 +469,7 @@ class Student(db.Model):
         # 2. 企业没有DBA，比较坑爹：
         #    2.1 开发人员，自己手撸SQL语句，手动建库建表。
         #    2.2 开发人员，编写模型，使用数据迁移或者ORM提供建表方法，手动建库和数据迁移建表。
-    
+
         # 原生SQL语句
         create table db_student(
           id int primary key auto_increment comment "主键",
@@ -559,5 +559,1181 @@ def drop_table():
 if __name__ == '__main__':
     app.run()
 
+```
+
+
+
+# 数据操作
+
+添加一条数据
+
+```python
+# 添加一条数据
+student = Student(name="小明", age=17, email="xiaoming@qq.com", money=100) # 实例化模型对象
+db.session.add(student) # 把模型对象添加数据库session会话对象中。db.session是SQLAlchemy中内置的会话管理对象sessionSM的成员
+db.session.commit()     # 提交会话
+
+# 再次插入一条数据
+student2 = Student(name='小红', sex=False, age=13, email="16565666@qq.com", money=600)
+db.session.add(student2)
+db.session.commit()     # 提交会话
+```
+
+
+
+一次插入多条数据
+
+```python
+# 1. 先实例化要创建的模型对象
+student = Student(name="小红", age=17, email="xiaohong@qq.com", money=200)
+# 2. 把实例对象添加到连接会话
+db.session.add(student)
+# 1. 先实例化要创建的模型对象
+student = Student(name="小花", age=16, email="xiaohua@qq.com", money=200)
+# 2. 把实例对象添加到连接会话
+db.session.add(student)
+# 3. 只需要在结束的时候提交事务即可
+db.session.commit()
+```
+
+```python
+# 1. 先创建的列表要添加的实例化模型对象列表
+student_list = [
+    Student(name='wang', email='wang@163.com', age=20),
+    Student(name='zhang', email='zhang@189.com', age=21),
+    Student(name='chen', email='chen@126.com', age=19),
+    Student(name='zhou', email='zhou@163.com', age=18),
+    Student(name='tang', email='tang@163.com', age=16),
+    Student(name='wu', email='wu@gmail.com', age=20),
+    Student(name='qian', email='qian@gmail.com', age=21),
+    Student(name='liu', email='liu@163.com', age=21),
+    Student(name='li', email='li@163.com', age=18),
+    Student(name='sun', email='sun@163.com', age=17),
+]
+
+# 2. 一次性添加到连接会话中
+db.session.add_all(student_list)
+db.session.commit()
+```
+
+
+
+删除数据
+
+```python
+# 方法1[先查询后删除，2条语句完成删除操作]
+# 先查询出来
+student = Student.query.first()
+print(student)
+# 再进行删除
+db.session.delete(student)
+db.session.commit()
+
+# 方法2【1条语句完成删除操作，性能更好更高效】
+# 类似乐观锁，在数据改动时添加条件并判断条件成立以后才进行数据操作，这种用法就是乐观锁
+Student.query.filter(Student.id == 5).delete()
+db.session.commit()
+
+
+"""
+悲观锁，是属于数据库中的一种锁机制，但是乐观锁并非真正的数据库锁。
+2种锁都是数据库在应对并发操作时，防止出现资源抢夺的，基于不同人生观所实现2种解决方案。
+悲观锁的基本使用：
+    >>> 数据库终端开始
+
+    begin;  -- 开启事务
+    select * from db_student where student_id = 5 for update; -- 添加一把更新锁【悲观锁】
+    ....    -- 在事务提交之前，任何第三方连接都不能修改 student_id = 5这条数据
+    commit; -- 提交事务
+
+    <<< 数据库终端开始
+
+悲观锁的问题：
+1. 提前锁定数据，形成串行化，形成阻塞，不利于性能发挥，不适用高并发场景。
+2. 悲观锁只能保证数据的一致性，不能保证脏数据的出现
+
+乐观锁的出现就是为了解决悲观锁的问题。
+举例：双11活动，商城里面id=5的商品的库存=10了，现在我们要基于乐观锁和悲观锁来解决下单过程中，出现的资源抢夺现象，避免出现超卖（商品数量不能为负数）。
+
+乐观锁：
+---> begin;  开启事务
+---> 先查看库存，记录当前库存 num=10
+---> 进行下单操作，买6件
+---> 付款
+---> 扣除库存 update goods set num=num-6 where num=10 and id=5;  # 增加更新条件，判断库存是否还是原来
+---> 如果执行成功，则表示没有人抢，购买成功
+     如果执行事变，则表示已经有人先抢购
+---> commit;
+
+悲观锁：
+---> begin; 开启事务
+---> 先给id=5的数据，加锁
+     select * from goods where id=5 for update;
+---> 进行下单操作，买6件
+---> 付款
+---> 扣除库存  update goods set num=num-6 where id=5
+---> 执行成功解锁
+---- commit;  提交事务
+"""
+```
+
+
+
+更新数据
+
+```python
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+
+class Student(db.Model):
+    """学生管理"""
+    __tablename__ = "db_student" # 表名
+    # 属性名 = db.Column(字段类型, 字段列约束选项)
+    # 如果SQL语句中的字段名在python中是关键字/保留字，则建议改写绑定字段名
+    # 属性名 = db.Column("字段名", 字段类型, 字段列约束选项)
+    id = db.Column("student_id", db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(15), index=True, comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.SmallInteger, comment="性别")
+    email = db.Column(db.String(255), unique=True, comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+
+    # repr()方法类似于django的__str__，用于打印模型对象时显示的字符串信息
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+# 所有的模型必须直接或间接继承于db.Model
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "db_course"
+    """
+    # 原生SQL语句
+    create table db_course (
+        id int primary key auto_increment comment "主键",
+        name varchar(64) comment "课程",
+        price NUMERIC(7,2) comment "价格",
+        unique (name)
+    );
+    # 字段根据SQL语句来声明
+    """
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2), comment="价格")
+    # repr()方法类似于django的__str__，用于打印模型对象时显示的字符串信息
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+class Teacher(db.Model):
+    """老师数据模型"""
+    __tablename__ = "db_teacher"
+    """
+    # 原生SQL语句
+    create table db_teacher (
+        id int primary key auto_increment comment "主键",
+        name varchar(64) comment "姓名",
+        option enum("讲师", "助教", "班主任") comment "职位",
+        unique (`name`)
+    );
+    # 字段根据SQL语句来声明
+    """
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="姓名")
+    option = db.Column(db.Enum("讲师", "助教", "班主任"), default="讲师")
+
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/create")
+def create_table():
+    db.create_all() # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()   # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+"""一次添加一条数据"""
+@app.route("/add")
+def add_student():
+    # 1. 先实例化要创建的模型对象
+    student = Student(name="小明", age=17, email="xiaoming@qq.com", money=100)  # 实例化模型对象
+    # 2. 把实例对象添加到连接会话
+    db.session.add(student)
+    # 3. 提交事务
+    db.session.commit()
+    return "ok"
+
+
+"""一次添加多条数据"""
+@app.route("/madd")
+def multi_add():
+    # 1. 先实例化要创建的模型对象
+    student = Student(name="小红", age=17, email="xiaohong@qq.com", money=200)
+    # 2. 把实例对象添加到连接会话
+    db.session.add(student)
+    # 1. 先实例化要创建的模型对象
+    student = Student(name="小花", age=16, email="xiaohua@qq.com", money=200)
+    # 2. 把实例对象添加到连接会话
+    db.session.add(student)
+    # 3. 只需要在结束的时候提交事务即可
+    db.session.commit()
+    return "ok"
+
+
+@app.route("/madd2")
+def multi_add2():
+    # 1. 先创建的列表要添加的实例化模型对象列表
+    student_list = [
+        Student(name='wang', email='wang@163.com', age=20),
+        Student(name='zhang', email='zhang@189.com', age=21),
+        Student(name='chen', email='chen@126.com', age=19),
+        Student(name='zhou', email='zhou@163.com', age=18),
+        Student(name='tang', email='tang@163.com', age=16),
+        Student(name='wu', email='wu@gmail.com', age=20),
+        Student(name='qian', email='qian@gmail.com', age=21),
+        Student(name='liu', email='liu@163.com', age=21),
+        Student(name='li', email='li@163.com', age=18),
+        Student(name='sun', email='sun@163.com', age=17),
+    ]
+
+    # 2. 一次性添加到连接会话中
+    db.session.add_all(student_list)
+    db.session.commit()
+
+    return "ok"
+
+
+
+@app.route("/del")
+def delete_student():
+    """删除一条数据"""
+    # 先查询出来
+    student = Student.query.first()
+    # student = db.session.query(Student).first()
+    # 再进行删除
+    db.session.delete(student)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/mdel")
+def multi_delete_student():
+    """按条件删除多条数据"""
+    Student.query.filter(Student.id > 5).delete()
+    # db.session.query(Student).filter(Student.id > 5).delete()
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/update")
+def update():
+    """更新一条"""
+    # 先查询出来
+    student = Student.query.filter(Student.id == 4).first()
+    student.name = "小白"
+    db.session.commit()
+    return "ok"
+
+
+@app.route("/update2")
+def update2():
+    """直接根据条件更新一条或多条数据"""
+    Student.query.filter(Student.name == 'zhang', Student.money == -99.00).update({'money': 1998})
+    db.session.commit()
+    return "ok"
+
+
+@app.route("/update3")
+def update3():
+    # 字段引用[利用当前一条数据的字典值进行辅助操作,实现类似django里面F函数的效果]
+    # 每次自增100
+    Student.query.filter(Student.name == "小花").update({"money": Student.money + 100})
+    db.session.commit()
+    return "ok"
+
+
+@app.route("/update4")
+def update4():
+    # 字段引用[利用当前一条数据的字典值进行辅助操作,实现类似django里面F函数的效果]
+    # 在原有money的基础上按age补贴1000*age
+    Student.query.filter(Student.name == "zhang").update({"money": Student.money + 1000 * Student.age})
+    db.session.commit()
+    return "ok"
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+
+## 基本查询
+
+### SQLAlchemy常用的查询过滤器
+
+| 过滤器         | 说明                                                         |
+| :------------- | :----------------------------------------------------------- |
+| **filter()**   | 把过滤器添加到原查询上，返回一个新查询                       |
+| filter_by()    | 把等值过滤器添加到原查询上，返回一个新查询                   |
+| **limit()**    | 使用指定的值限定原查询返回的**结果数量**                     |
+| **offset()**   | 设置结果范围的**开始位置**，偏移原查询返回的结果，返回一个新查询 |
+| **order_by()** | 根据指定条件对原查询结果进行**排序**，返回一个新查询         |
+| **group_by()** | 根据指定条件对原查询结果进行**分组**，返回一个新查询         |
+
+### SQLAlchemy常用的查询结果方法
+
+| 方法           | 说明                                                         |
+| :------------- | :----------------------------------------------------------- |
+| **all()**      | 以**列表形式**返回查询的所有结果                             |
+| **first()**    | 返回查询的第一个结果，**模型对象**，如果未查到，返回**None** |
+| first_or_404() | 返回查询的第一个结果，**模型对象**，如果未查到，通过abort 返回404异常 |
+| **get()**      | 返回**指定主键**对应的**模型对象**，如不存在，返回None       |
+| get_or_404()   | 返回指定主键对应的行，如不存在，abort 返回404                |
+| **count()**    | 返回查询结果的**数量**                                       |
+| **paginate()** | 返回一个Paginate**分页器对象**，它包含指定范围内的结果       |
+| **having()**   | 返回结果中符合条件的数据，**必须跟在group by后面**，其他地方无法使用。 |
+
+
+
+get():参数为主键，表示根据主键查询数据，如果主键不存在返回None
+
+```python
+@app.route("/get")
+def get():
+    """按主键获取一条"""
+    # student = Student.query.get({"id": 5})
+    # student = Student.query.get((5,))
+    # student = db.session.query(Student).get(5)
+    student = Student.query.get(5)
+    print(student)
+    return "ok"
+
+```
+
+代码：
+
+```python
+# 前面代码省略
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/create")
+def create_table():
+    db.create_all() # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()   # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+@app.route("/query")
+def query():
+    query1 = Student.query   # 简写操作
+    query2 = db.session.query(Student)
+    print(type(query1), query1)
+    print(type(query2), query2)
+    return "ok"
+
+
+@app.route("/get")
+def get():
+    """get根据主键获取数据"""
+    # student1 = Student.query.get({"id":10})
+    student1 = Student.query.get(30)
+    # student2 = db.session.query(Student).get({"id":10})
+    student2 = db.session.query(Student).get(30)
+    # 结果是模型对象
+    print(type(student1), student1)
+    print(type(student2), student2)
+    # 查询不到结果，则返回值为None
+    if student1:
+        print(student1.name, student1.age)
+    if student2:
+        print(student2.name, student2.age)
+    return "ok"
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+
+
+all()返回查询到的所有对象
+
+```python
+模型类.query.all()
+
+"""获取多个数据"""
+student = Student.query.all()
+print(student) # [dong<Student>, 小红<Student>, wang<Student>, chen<Student>, zhou<Student>, tang<Student>, wu<Student>, qian<Student>, liu<Student>, li<Student>, sun<Student>]
+
+student = Student.query.filter(Student.id<5).all()  # 没有结果返回空列表[]
+print(student) # [dong<Student>, 小红<Student>, wang<Student>]
+
+# all()的返回值是一个python列表，可以直接使用切片，与django的QuerySet完全不是一回事。
+student = Student.query.filter(Student.id < 5).all()[:-1]  # 没有结果返回空列表[]
+print(student) # [dong<Student>, 小红<Student>]
+```
+
+
+
+count 返回结果的数量
+
+```python
+# 返回结果的数量
+ret = Student.query.filter(Student.id < 5).count()
+print(f"ret={ret}")
+```
+
+
+
+first()返回查询到的第一个对象【first获取一条数据,all获取多条数据】
+
+```python
+模型类.query.first()
+
+"""获取第一个数据"""
+student = Student.query.first()
+print(student)
+
+student = Student.query.filter(Student.id==5).first() # 没有结果返回None
+print(student)
+```
+
+
+
+filter条件查询，支持各种运算符和查询方法或者模糊查询方法。
+
+返回名字结尾字符为g的所有数据。
+
+```python
+# 模糊查询
+# 使用163邮箱的所有用户
+student_list = Student.query.filter(Student.email.endswith("@163.com")).all()
+print(student_list)
+
+# 姓名以"zh"开头的
+student_list = Student.query.filter(Student.name.startswith("zh")).all()
+print(student_list)
+
+# 名字中带有"a"字母的数据
+student_list = Student.query.filter(Student.name.contains("a")).all()
+print(student_list)
+
+"""单条件比较"""
+# 则需要指定条件格式为: filter(模型.字段 比较运算符 值)。
+# 运算符可以是: ==表示相等, !=不相等，> 表示大于  < 表示小于，>=大于等于，<=小于等于
+# student_list = Student.query.filter(Student.age > 18).all()
+# print(student_list) # [wang<Student>, chen<Student>, zhou<Student>,...]
+
+"""多条件比较"""
+# 要求多个条件都要满足，相当于逻辑查询中的 并且(and)！！
+student_list = Student.query.filter(Student.age > 18, Student.sex == True).all()
+print(student_list) # [wang<Student>, chen<Student>, qian<Student>, liu<Student>]
+```
+
+
+
+filter_by精确条件查询
+
+filter_by 只支持字段的**值是否相等**的情况，对于大于、等于、等等其他条件是不支持的。
+
+例如：返回age等于22的学生
+
+```python
+# 单条件
+student_list = Student.query.filter_by(age=22).all()  # 字段添加不需要附带模型类
+print(student_list)
+
+# 多条件
+student_list = Student.query.filter_by(age=22,sex=True).all()
+print(student_list)
+```
+
+
+
+练习：
+
+```python
+查询所有男生[Student.sex==True]数据
+
+查询id为4的学生[3种方式]
+
+查询年龄等于22的所有学生数据
+
+查询name为小白的学生数据
+
+查询20岁的男生
+```
+
+
+
+代码：
+
+```python
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class Student(db.Model):
+    """学生管理"""
+    __tablename__ = "db_student" # 表名
+    # 属性名 = db.Column(字段类型, 字段列约束选项)
+    # 如果SQL语句中的字段名在python中是关键字/保留字，则建议改写绑定字段名
+    # 属性名 = db.Column("字段名", 字段类型, 字段列约束选项)
+    id = db.Column("student_id", db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(15), index=True, comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.SmallInteger, comment="性别")
+    email = db.Column(db.String(255), unique=True, comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+
+    # repr()方法类似于django的__str__，用于打印模型对象时显示的字符串信息
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.name}>"
+
+
+# 所有的模型必须直接或间接继承于db.Model
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "db_course"
+    """
+    # 原生SQL语句
+    create table db_course (
+        id int primary key auto_increment comment "主键",
+        name varchar(64) comment "课程",
+        price NUMERIC(7,2) comment "价格",
+        unique (name)
+    );
+    # 字段根据SQL语句来声明
+    """
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2), comment="价格")
+    # repr()方法类似于django的__str__，用于打印模型对象时显示的字符串信息
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+class Teacher(db.Model):
+    """老师数据模型"""
+    __tablename__ = "db_teacher"
+    """
+    # 原生SQL语句
+    create table db_teacher (
+        id int primary key auto_increment comment "主键",
+        name varchar(64) comment "姓名",
+        option enum("讲师", "助教", "班主任") comment "职位",
+        unique (`name`)
+    );
+    # 字段根据SQL语句来声明
+    """
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="姓名")
+    option = db.Column(db.Enum("讲师", "助教", "班主任"), default="讲师")
+
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/create")
+def create_table():
+    db.create_all() # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()   # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+@app.route("/exam")
+def exam():
+    # 查询所有男生[Student.sex == True]数据
+    # student_list = Student.query.filter(Student.sex == True).all()
+    # print(student_list)
+
+    # 查询id为4的学生[3种方式]
+    # 1. get
+    # student = Student.query.get(4)
+    # print(student)
+
+    # 2. filter+first
+    # student = Student.query.filter(Student.id == 4).first()
+    # print(student)
+
+    # 3. filter_by + first
+    # student = Student.query.filter_by(id=4).first()
+    # print(student)
+
+    # 查询年龄等于20的所有学生数据
+    # student_list = Student.query.filter(Student.age == 20).all()
+    # print(student_list)
+
+    # 查询name为小白的学生数据
+    # student = Student.query.filter(Student.name == "小白").first()
+    # print(student)
+
+    # 查询20岁的男生
+    student_list = Student.query.filter(Student.age == 20, Student.sex == True).all()
+    print(student_list)
+
+    return "ok"
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+
+
+### 多条件查询
+
+逻辑与，需要导入`and_`，返回`and_()`条件满足的所有数据
+
+```python
+from sqlalchemy import and_
+Student.query.filter(and_(Student.name!='wang',Student.email.endswith('163.com'))).all()
+
+
+# # and_(条件1,条件2,....)  等价于  filter(条件1,条件2,.....)
+# # age > 18 and email like "%163.com"
+# # student_list = Student.query.filter(Student.age > 18, Student.email.endswith("163.com")).all()
+#
+# student_list = Student.query.filter(
+#     and_(
+#         Student.age > 18,
+#         Student.email.endswith("163.com")
+#     )
+# ).all()
+```
+
+
+
+逻辑或，需要导入or_
+
+```python
+from sqlalchemy import or_
+Student.query.filter(or_(Student.name!='wang',Student.email.endswith('163.com'))).all()
+
+# 查询年龄在20岁，使用的邮箱是qq或者163邮箱的
+student_list = Student.query.filter(
+    Student.age == 20,
+    or_(
+        Student.email.endswith("qq.com"),
+        Student.email.endswith("163.com")
+    )
+).all()
+
+
+# 复合条件的查询情况
+# 查询年龄>17岁的女生或者年龄>18岁的男生
+student_list = Student.query.filter(
+    or_(
+        and_(Student.age > 17, Student.sex == False),
+        and_(Student.age > 18, Student.sex == True),
+    )
+).all()
+print(student_list)
+
+print(student_list)
+```
+
+
+
+逻辑非，返回名字不等于"小白"的所有数据
+
+```python
+Student.query.filter(Student.name!='小白').all()
+```
+
+not_ 相当于取反
+
+```python
+from sqlalchemy import not_
+Student.query.filter(not_(Student.name=='小白')).all()
+
+# # 查询年龄不等于22
+# student_list = Student.query.filter(Student.age != 22).all()
+# print(student_list)
+# student_list = Student.query.filter(not_(Student.age==22)).all()
+# print(student_list)
+```
+
+
+
+in_范围查询
+
+```python
+# 查询id是 5, 7, 10 的学生信息
+student_list = Student.query.filter(Student.id.in_([5, 7, 10])).all()
+print(student_list)
+
+# 查询id不是 1 3 5 的学生信息
+student_list = Student.query.filter(not_(Student.id.in_([1, 3, 5]))).all()
+print( student_list )
+```
+
+is_判断值查询
+
+```python
+    """判断值查询"""
+    student_list = Student.query.filter(Student.email.is_(None)).all()
+    print(student_list)
+
+    student_list = Student.query.filter(Student.email == None).all()
+    print(student_list)
+```
+
+
+
+order_by 排序
+
+```python
+# 倒序[值从大到小]
+student_list = Student.query.order_by(Student.id.desc()).all()
+# 升序[值从小到大]
+student_list = Student.query.order_by(Student.id.asc()).all()
+
+# 多字段排序[第一个字段值一样时，比较第二个字段，进行排序]
+student_list = Student.query.order_by(Student.money.asc(), Student.age.asc(), Student.id.asc()).all()
+print(student_list)
+```
+
+
+
+count统计
+
+```python
+# 查询age>=19的男生的数量
+from sqlalchemy import and_
+# ret = Student.query.filter( and_(Student.age>=19,Student.sex==True) ).count()
+ret = Student.query.filter( Student.age>=19, Student.sex==True ).count()
+```
+
+
+
+对结果进行偏移量和数量的限制
+
+```python
+# 查询年龄最大的3个学生
+student_list = Student.query.order_by(Student.age.desc()).limit(3).all()
+print(student_list)
+
+# 查询年龄排第4到第7名的学生
+student_list = Student.query.order_by(Student.age.desc()).offset(3).limit(4).all()
+print(student_list)
+
+# 查询年龄最小的3个人
+student_list = Student.query.order_by(Student.age.asc()).limit(3).all()
+print(student_list)
+```
+
+SQL
+
+```sql
+# 查询年龄最大的3个学生
+# select * from db_student order by age desc limit 3;
+
+# 查询年龄排第4到第7名的学生
+select * from db_student order by age desc limit 3, 4;
+# select * from db_student order by age desc limit 4 offset 3;
+
+# 查询年龄最小的3个人
+# select * from db_student order by age asc limit 3;
+```
+
+
+
+练习
+
+```python
+# 查询age是18 或者 使用163邮箱的所有学生
+Student.query.filter(or_(Student.age==18,Student.email.endswith("163.com"))).all()
+# 查询id为 [1, 3, 5, 7, 9] 的学生列表
+student_list = Student.query.filter(Student.id.in_([1, 3, 5, 7, 9])).all()
+print(student_list)
+```
+
+
+
+### 分页器
+
+manage.py，代码：
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+class Config(object):
+    DEBUG = True
+    # 数据库链接配置 = 数据库名称://登录账号:登录密码@数据库主机IP:数据库访问端口/数据库名称?charset=编码类型
+    SQLALCHEMY_DATABASE_URI = "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # ORM运行时会显示ORM生成的原始SQL语句[调试]
+    SQLALCHEMY_ECHO = True
+
+app.config.from_object(Config)
+
+
+"""模型类定义"""
+db = SQLAlchemy(app=app)
+
+class Student(db.Model):
+    """学生信息模型"""
+    # 声明与当前模型绑定的数据表名称
+    __tablename__ = "db_student"
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    name = db.Column(db.String(15), index=True, comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    email = db.Column(db.String(128), unique=True, comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+
+    def __repr__(self): # 相当于django的__str__
+        return f"{self.name}<{self.__class__.__name__}>"
+
+
+# 所有的模型必须直接或间接继承于db.Model
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "db_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2), comment="价格")
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+class Teacher(db.Model):
+    """老师数据模型"""
+    __tablename__ = "db_teacher"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="姓名")
+    option = db.Column(db.Enum("讲师", "助教", "班主任"), default="讲师")
+
+    def __repr__(self):
+        return f"{self.name}<{self.__class__.__name__}>"
+
+from flask import request,render_template
+
+@app.route("/")
+def index():
+    # 分页器
+    page  = int(request.args.get("page", 1))
+    size = int(request.args.get("size", 3))
+    pagination = Student.query.paginate(page, size)
+    print(pagination)
+    """
+    from flask_sqlalchemy import Pagination
+    # 常用属性
+    total  总数据量
+    items  每一页数据项列表
+    pages  总页码===> math.ceil( total/per_page )
+
+    # 常用方法
+    prev      上一页分页对象
+    prev_num  上一页页码
+    has_prev  是否有上一页
+
+    next      下一页分页对象
+    next_num  下一页页码
+    has_next  是否有下一页
+    """
+    print(pagination.items)  # 当前页的数据项列表
+    print(pagination.total)  # 总数据量
+    print(pagination.pages)  # 总页码数量
+    print(pagination.prev_num)  # 上一页页码
+    print(pagination.next_num)  # 下一页页码
+    print(pagination.has_prev)  # 是否有上一页
+    print(pagination.has_next)  # 是否有下一页
+    print(pagination.prev())    # 上一页的分页对象
+    print(pagination.next())    # 下一页的分页对象
+
+    # """前后端分离"""
+    # data = {
+    #     "page": pagination.page, # 当前页码
+    #     "pages": pagination.pages, # 总页码
+    #     "has_prev": pagination.has_prev, # 是否有上一页
+    #     "prev_num": pagination.prev_num, # 上一页页码
+    #     "has_next": pagination.has_next, # 是否有下一页
+    #     "next_num": pagination.next_num, # 下一页页码
+    #     "items": [{
+    #         "id": item.id,
+    #         "name": item.name,
+    #         "age": item.age,
+    #         "sex": item.sex,
+    #         "money": item.money,
+    #     } for item in pagination.items]
+    # }
+    # return data
+
+
+    """前后端不分离"""
+    return render_template("list.html",**locals())
+
+
+
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run()
+```
+
+list.html，代码：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+    .page a,.page span{
+        padding: 2px 6px;
+        color: #fff;
+        background: #6666ff;
+        text-decoration: none;
+    }
+    .page span{
+        color: #fff;
+        background: orange;
+    }
+
+    </style>
+</head>
+<body>
+    <table border="1" align="center" width="600">
+        <tr>
+           <th>ID</th>
+           <th>age</th>
+           <th>name</th>
+           <th>sex</th>
+           <th>money</th>
+        </tr>
+        {% for student in pagination.items %}
+        <tr>
+           <td>{{ student.id }}</td>
+           <td>{{ student.age }}</td>
+           <td>{{ student.name }}</td>
+           <td>{{ "男" if student.sex else "女" }}</td>
+           <td>{{ student.money }}</td>
+        </tr>
+        {% endfor %}
+        <tr align="center">
+            <td colspan="5" class="page">
+                {% if pagination.has_prev %}
+                <a href="?page=1">首  页</a>
+                <a href="?page={{ pagination.page-1 }}">上一页</a>
+                <a href="?page={{ pagination.page-1 }}">{{ pagination.page-1 }}</a>
+                {% endif %}
+                <span>{{ pagination.page }}</span>
+                {% if pagination.has_next %}
+                <a href="?page={{ pagination.page+1 }}">{{ pagination.page+1 }}</a>
+                <a href="?page={{ pagination.page+1 }}">下一页</a>
+                <a href="?page={{ pagination.pages }}">尾  页</a>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+```
+
+
+
+### 聚合分组
+
+分组查询和分组查询结果过滤
+
+一般分组都会结合**聚合函数**来一起使用。SQLAlchemy中所有的聚合函数都在`func`模块中声明的。
+
+```python
+from sqlalchemy import func
+```
+
+| 函数名     | 说明     |      |
+| ---------- | -------- | ---- |
+| func.count | 统计总数 |      |
+| func.avg   | 平均值   |      |
+| func.min   | 最小值   |      |
+| func.max   | 最大值   |      |
+| func.sum   | 求和     |      |
+
+代码：
+
+```python
+"""聚合函数"""
+from sqlalchemy import func
+# 获取所有学生的money总数
+# SELECT sum(db_student.money) AS sum_1 FROM db_student LIMIT %s
+# ret = db.session.query(func.sum(Student.money)).first()[0]
+# print(ret) # 3998.0
+# # 查询女生的数量
+# ret = db.session.query(func.count(Student.id)).filter(Student.sex==False).first()[0]
+# print(ret) # 7
+# # 查询所有学生的平均年龄
+# ret = db.session.query(func.avg(Student.age)).first()[0]
+# print(ret) # 18.2727
+
+"""
+聚合分组
+在聚合分组的情况下，db.session.query中的参数只能是被分组的字段或者是被聚合的数据
+"""
+# # 查询当前所有男生女生的数量
+# ret = db.session.query(Student.sex,func.count(Student.id)).group_by(Student.sex).all()
+# print(ret) # [(False, 7), (True, 4)]
+
+# # 查询各个年龄段的学生数量
+# ret = db.session.query(Student.age, func.count(Student.id)).group_by(Student.age).all()
+# print(ret) # [(15, 2), (13, 1), (22, 4), (19, 1), (18, 1), (16, 1), (17, 1)]
+#
+# # 查看当前男生女生的平均年龄
+# ret = db.session.query(Student.sex, func.avg(Student.age)).group_by(Student.sex).all()
+# ret = [{"sex":"男" if item[0] else "女","age":float(item[1])} for item in ret]
+# print(ret) # [{'sex': '女', 'age': 18.0}, {'sex': '男', 'age': 18.75}]
+
+# # 分组后的过滤操作 having
+# # 在所有学生中，找出各个年龄中拥有最多钱的同学，并在这些同学里面筛选出money > 500的数据
+# subquery = func.max(Student.money)
+# print(subquery) # max(db_student.money)
+# ret = db.session.query(Student.age, subquery).group_by(Student.age).having(subquery > 500).all()
+# print(ret)  # [(18, Decimal('1000.00')), (22, Decimal('26000.00')), (23, Decimal('1998.00'))]
+
+"""
+多字段分组
+    字段1   字段2
+    1      3
+    2      4
+
+    分组如下：
+    13
+    14
+    23
+    24
+"""
+# 各个年龄里，男生和女生的money总数
+subquery = func.sum(Student.money)
+ret = db.session.query(Student.sex, Student.age, subquery).group_by(Student.sex, Student.age).all()
+print(ret) # [(False, 15, 1000.0), (False, 13, 600.0), (True, 15, 0.0), (True, 22, 1998.0), (False, 19, 0.0), (False, 22, 400.0), (False, 18, 0.0), (True, 16, 0.0), (False, 17, 0.0)]
+```
+
+
+
+SQL方法中的关键字顺序：
+
+```python
+模型.query.   // db.session.query.
+filter/ filter_by
+group by
+having
+order_by
+limit  offset
+all / get / first / count / paginate
+```
+
+
+
+### 执行原生SQL语句
+
+```python
+"""执行原生SQL语句"""
+# # 查询多条数据
+# ret = db.session.execute("select * from db_student").fetchall()
+# print(ret)
+# # 查询一条数据
+# ret = db.session.execute("select * from db_student").fetchone()
+# print(ret)
+
+"""
+    name  age  achievement
+               80
+    小明   17   81
+               83
+
+    group_concat 逗号合并
+    小明   17   80,81,83
+
+    concat  字符串拼接
+    小明   17   808183
+    """
+
+# # 添加数据
+# db.session.execute("insert db_student (name,age,sex,email,money) select name,age,sex,concat(now(),email),money from db_student")
+# db.session.commit()
+
+# # # 更新/删除
+# db.session.execute("UPDATE db_student SET money=(db_student.money + %s) WHERE db_student.age = %s" % (200, 22))
+# db.session.commit()
+
+
+"""分组合并"""
+# 统计各个年龄段的学生人数，并记录对应年龄段的学生ID
+ret = db.session.execute("select age,count(id),group_concat(id) from db_student group by age").fetchall()
+print(ret)
+return "ok"
 ```
 
