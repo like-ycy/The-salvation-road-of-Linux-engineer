@@ -1737,3 +1737,1211 @@ print(ret)
 return "ok"
 ```
 
+## 关联查询
+
+### 常用的SQLAlchemy关系选项
+
+| 选项名         | 说明                                                         |
+| :------------- | :----------------------------------------------------------- |
+| backref        | 在关系的另一模型中添加**反向引用**,用于设置外键名称,在1查多的 |
+| primary join   | 明确指定两个模型之间使用的连表条件, 用于1对1 或者1对多连表中 |
+| lazy           | 指定如何加载关联模型数据的方式，用于1对1或1对多链表中。参数值:<br>select（立即加载，查询所有相关数据显示，相当于lazy=True）<br>subquery（立即加载，但使用子查询）<br>dynamic（不立即加载，但提供加载记录的查询对象） |
+| uselist        | 指定1对1或1对多连表时，返回的数据结果是模型对象还是模型列表，如果为False，不使用列表，而使用模型对象。<br>1对1或多对1关系中，需要设置relationship中的uselist=Flase，1对多或多对多关系中，需要设置relationshio中的uselist=True。 |
+| secondary      | 指定多对多关系中关系表的名字。<br>多对多关系中，需建立关系表，设置 secondary=关系表 |
+| secondary join | 在SQLAlchemy中无法自行决定时，指定多对多关系中的二级连表条件，绑定主外键。 |
+
+范式理论：一套提供给数据库开发者设置标准、规范的数据库的理论。
+
+```
+1NF. 数据不可再分，必须保证原子性。数据的值保证可以方便存储，不可再分。
+2NF. 数据不能重复，必须保证唯一性。必须使用主键来进行区分每一行数据。
+3NF. 数据不能冗余，必须保证关联性。冗余的数据必须使用另外的数据表存放，并与当前表进行关联。
+
+基于实际业务的角度出发，设计出违背了范式理论的表结构。
+逆范式：以空间换时间
+
+class table:
+    id   name      teacher      
+    1    301班      李老师       
+    2    302班      王老师      
+
+student table:
+    id   name        class_id
+    1    xiaoming    1
+    2    xiaohong    2
+    3    xiaohui     3
+    
+    
+
+```
+
+
+
+三范式+逆范式
+
+第三范式：数据不能冗余，把关联性不强的数据可以移除到另一个表中。使用外键进行管理。
+
+```python
+1对1：把主表的主键放到附加表中作为外键存在。
+
+      商品信息表
+      id   name        price   image    描述    售后   配置    包装
+      1    PC-1-gr      100    1.png    
+      2    PC-1-re      100    1.png
+      3    PC-1-he      100    1.png
+      4    PC-1-bu      100    1.png
+
+1对多：把主表(1) 的主键放到附加表(多)作为外键存在。
+     订单信息表        订单详情表
+     1个订单     ----> 多个商品
+
+多对多：把主表(多)的主键和附加表的(多)主键，放到第三方表(关系表)中作为外键。
+     用户表            课程表
+      1  xiaoming      1   python
+      2  xiaohong      2   django
+      3  xiaolong      3   flask
+                
+     用户与课程的购买关系表
+     user_id   course
+     1          1
+     1          2
+     1          3
+```
+
+
+
+### 模型之间的关联
+
+#### 一对一
+
+常见的业务：主表和详情表（用户、会员、学生、商品、文章、主机）
+
+```python
+class Student(db.Model):
+    """个人信息主表"""
+	....
+    # 关联属性，这个不会被视作表字段，只是模型对象的属性。
+    # 因为StudentInfo和Student是一对一的关系，所以uselist=False表示关联一个数据
+    info = db.relationship("StudentInfo", uselist=False, backref="own")
+
+
+class StudentInfo(db.Model):
+    """个人信息附加表"""
+
+    # 外键，
+    # 如果是一对一，则外键放在附加表对应的模型中
+    # 如果是一对多，则外键放在多的表对象的模型中
+    # sid = db.Column(db.Integer, db.ForeignKey(Student.id),comment="外键")
+    sid = db.Column(db.Integer, db.ForeignKey("student表名.主键"),comment="外键")
+```
+
+
+
+##### 关联属性声明在主模型中【最常用】
+
+代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class Student(db.Model):
+    """学生管理"""
+    __tablename__ = "tb_student"  # 表名
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(15), index=True, comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.SmallInteger, comment="性别")
+    email = db.Column(db.String(255), unique=True, comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+    # 模型的关联属性，不会在数据表创建字段
+    # 因为StudentInfo和Student是一对一的关系，所以uselist=False表示关联一个数据
+    info = db.relationship("StudentInfo", uselist=False, backref="student")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "sex": self.sex,
+            "email": self.email,
+            "money": float(self.money),
+        }
+
+
+class StudentInfo(db.Model):
+    __tablename__ = "tb_student_info"  # 表名
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    # 附加表的外键，就是主表的主键
+    # 如果是一对一，则外键放在附加表对应的模型中
+    # 如果是一对多，则外键放在多的附加表对应的模型中
+    sid = db.Column(db.Integer, db.ForeignKey("tb_student.id"), comment="外键")  # mysql字段
+    # student = db.relationship("Student", uselist=False, backref="info")     # ORM关联属性
+    mobile = db.Column(db.String(15), index=True, comment="手机号码")
+    address = db.Column(db.String(255), nullable=True, comment="家庭地址")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "sid": self.sid,
+            "mobile": self.mobile,
+            "address": self.address,
+        }
+
+
+@app.route("/create")
+def create_table():
+    db.create_all() # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()   # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/a1")
+def a1():
+    """添加操作"""
+    # 添加主表信息的时候通过关联属性db.relationship同步添加附件表信息
+    student = Student(
+        name="xiaolan01",
+        age=16,
+        sex=False,
+        money=10000,
+        email="xiaolan01@qq.com",
+        info=StudentInfo(
+            address="北京市昌平区百沙路203号",
+            mobile="13312345672"
+        )
+    )
+
+    db.session.add(student)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/a2")
+def a2():
+    """添加操作"""
+    # 假设已经存在主表信息，后面再补充附加表信息
+    # student = Student(
+    #     name="xiaolan03",
+    #     age=16,
+    #     sex=False,
+    #     money=10000,
+    #     email="xiaolan03@qq.com",
+    # )
+    #
+    # db.session.add(student)
+    # db.session.commit()
+
+    # 上面代码先执行了，现有1个学生没有附加信息的，我们可以在后续代码通过查询主表的主键，补充附加表数据
+    student = Student.query.get(3)
+    if not student.info:
+        """添加附加表数据"""
+        """方式1"""
+        # student.info = StudentInfo(mobile=13300010002, address="北京市昌平区百沙路205号",)
+        # db.session.commit()
+
+        """方式2"""
+        # info = StudentInfo(
+        #     student=student,  # 关联属性
+        #     mobile=13300010002,
+        #     address="北京市昌平区百沙路205号",
+        # )
+        #
+        # db.session.add(info)
+        # db.session.commit()
+
+        """方式3"""
+        info = StudentInfo(
+            sid=student.id,  # 外键
+            mobile=13300010002,
+            address="北京市昌平区百沙路205号",
+        )
+
+        db.session.add(info)
+        db.session.commit()
+
+    return "ok"
+
+
+@app.route("/a3")
+def a3():
+    """添加操作"""
+    # 添加附加模型数据的同时，把主模型也进行添加
+    info = StudentInfo(
+        mobile=13300010003,
+        address="北京市昌平区百沙路206号",
+        student=Student(
+            name="xiaolan04",
+            age=17,
+            sex=False,
+            money=10000,
+            email="xiaolan04@qq.com",
+        ),
+    )
+
+    db.session.add(info)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/g1")
+def g1():
+    """查询操作"""
+    # # 正向关联----> 从主模型查询外键模型
+    # student = Student.query.get(2)
+    # print(student.name)          # xiaolan01
+    # # 如果主模型没有调用关联属性查询附加模型对象，则ORM不会执行查询关联模型的SQL语句
+    # print(student.info)          # {"id": 2, "sid": 2, "mobile": "13312345672", "address": "北京市昌平区百沙路203号"}
+    # print(student.info.address)  # 北京市昌平区百沙路203号
+
+    # 反向关联----> 从外键模型查询主模型
+    student_info = StudentInfo.query.filter(StudentInfo.mobile == "15012345678").first()
+    print(student_info.address)       # 北京市昌平区百沙路206号
+    # 如果附加模型没有调用关联属性查询主模型对象，则ORM不会执行查询主模型的SQL语句
+    print(student_info.student)       # {"id": 4, "name": "xiaolan04", "age": 17, "sex": 0, "email": "xiaolan04@qq.com", "money": 10000.0}
+    print(student_info.student.name)  # xiaolan04
+    print(student_info.sid)           # 4
+
+    return "ok"
+
+
+@app.route("/u1")
+def u1():
+    """修改数据"""
+    # # 通过主模型使用关联属性修改附加模型的数据
+    # student = Student.query.get(2)
+    # student.info.address = "广州市天河区天河东路103号"
+    # db.session.commit()
+
+    # 也可以通过附加模型直接修改主模型的数据
+    student_info = StudentInfo.query.filter(StudentInfo.mobile == "13312345678").first()
+    # 如果要修改的数据，与数据表的没有改动，则不会执行更新的SQL语句
+    student_info.student.age = 23
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/d1")
+def d1():
+    """删除数据"""
+
+    # # 1. 如果删除主模型数据，则会先将附加模型的外键设置为null，然后才会删除主模型对象
+    # student = Student.query.get(4)
+    # db.session.delete(student)
+    # db.session.commit()
+
+    # 2. 如果删除附加模型数据，则直接删除，不会修改主模型数据
+    StudentInfo.query.filter(StudentInfo.mobile == "13312345678").delete()
+    db.session.commit()
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+
+##### 在外键模型中声明关联属性
+
+代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class Student(db.Model):
+    """学生管理"""
+    __tablename__ = "tb_student"  # 表名
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(15), index=True, comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.SmallInteger, comment="性别")
+    email = db.Column(db.String(255), unique=True, comment="邮箱地址")
+    money = db.Column(db.Numeric(10, 2), default=0.0, comment="钱包")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "sex": self.sex,
+            "email": self.email,
+            "money": float(self.money),
+        }
+
+
+class StudentInfo(db.Model):
+    __tablename__ = "tb_student_info"  # 表名
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    # 附加表的外键，就是主表的主键
+    # 如果是一对一，则外键放在附加表对应的模型中
+    # 如果是一对多，则外键放在多的附加表对应的模型中
+    sid = db.Column(db.Integer, db.ForeignKey("tb_student.id"), comment="外键")  # mysql字段
+    # 模型的关联属性，不会在数据表创建字段
+    # 因为StudentInfo和Student是一对一的关系，所以uselist=False表示关联一个数据
+    student = db.relationship("Student", uselist=False, backref=backref("info", uselist=False))  # ORM关联属性
+    mobile = db.Column(db.String(15), index=True, comment="手机号码")
+    address = db.Column(db.String(255), nullable=True, comment="家庭地址")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "sid": self.sid,
+            "mobile": self.mobile,
+            "address": self.address,
+        }
+
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/a1")
+def a1():
+    """添加操作"""
+    # 添加主表信息的时候通过关联属性db.relationship同步添加附件表信息
+    student = Student(
+        name="xiaolan01",
+        age=16,
+        sex=False,
+        money=10000,
+        email="xiaolan01@qq.com",
+        info=StudentInfo(
+            address="北京市昌平区百沙路203号",
+            mobile="13312345672"
+        )
+    )
+
+    db.session.add(student)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/a2")
+def a2():
+    """添加操作"""
+    # 假设已经存在主表信息，后面再补充附加表信息
+    # student = Student(
+    #     name="xiaolan03",
+    #     age=16,
+    #     sex=False,
+    #     money=10000,
+    #     email="xiaolan03@qq.com",
+    # )
+    #
+    # db.session.add(student)
+    # db.session.commit()
+
+    # 上面代码先执行了，现有1个学生没有附加信息的，我们可以在后续代码通过查询主表的主键，补充附加表数据
+    student = Student.query.get(2)
+    if student and not student.info:
+        """添加附加表数据"""
+        """方式1"""
+        # student.info = StudentInfo(mobile=13300010002, address="北京市昌平区百沙路205号",)
+        # db.session.commit()
+
+        """方式2"""
+        # info = StudentInfo(
+        #     student=student,  # 关联属性
+        #     mobile=13300010002,
+        #     address="北京市昌平区百沙路205号",
+        # )
+        #
+        # db.session.add(info)
+        # db.session.commit()
+
+        """方式3"""
+        info = StudentInfo(
+            sid=student.id,  # 外键
+            mobile=13300010002,
+            address="北京市昌平区百沙路205号",
+        )
+
+        db.session.add(info)
+        db.session.commit()
+
+    return "ok"
+
+
+@app.route("/a3")
+def a3():
+    """添加操作"""
+    # 添加附加模型数据的同时，把主模型也进行添加
+    info = StudentInfo(
+        mobile=13300010003,
+        address="北京市昌平区百沙路206号",
+        student=Student(
+            name="xiaolan04",
+            age=17,
+            sex=False,
+            money=10000,
+            email="xiaolan04@qq.com",
+        ),
+    )
+
+    db.session.add(info)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/g1")
+def g1():
+    """查询操作"""
+    # # 正向关联----> 从主模型查询外键模型
+    # student = Student.query.get(2)
+    # print(student.name)          # xiaolan01
+    # # 如果主模型没有调用关联属性查询附加模型对象，则ORM不会执行查询关联模型的SQL语句
+    # print(student.info)          # {"id": 2, "sid": 2, "mobile": "13312345672", "address": "北京市昌平区百沙路203号"}
+    # print(student.info.address)  # 北京市昌平区百沙路203号
+
+    # 反向关联----> 从外键模型查询主模型
+    student_info = StudentInfo.query.filter(StudentInfo.mobile == "13300010003").first()
+    print(student_info.address)  # 北京市昌平区百沙路206号
+    # 如果附加模型没有调用关联属性查询主模型对象，则ORM不会执行查询主模型的SQL语句
+    print(
+        student_info.student)  # {"id": 3, "name": "xiaolan04", "age": 17, "sex": 0, "email": "xiaolan04@qq.com", "money": 10000.0}
+    print(student_info.student.name)  # xiaolan04
+    print(student_info.sid)  # 3
+
+    return "ok"
+
+
+@app.route("/u1")
+def u1():
+    """修改数据"""
+    # 通过主模型使用关联属性修改附加模型的数据
+    student = Student.query.get(2)
+    student.info.address = "广州市天河区天河东路103号"
+    db.session.commit()
+
+    # # 也可以通过附加模型直接修改主模型的数据
+    # student_info = StudentInfo.query.filter(StudentInfo.mobile == "13312345672").first()
+    # # 如果要修改的数据，与数据表的没有改动，则不会执行更新的SQL语句
+    # student_info.student.age = 23
+    # db.session.commit()
+
+    return "ok"
+
+
+@app.route("/d1")
+def d1():
+    """删除数据"""
+
+    # # 1. 如果删除主模型数据，则会先将附加模型的外键设置为null，然后才会删除主模型对象
+    student = Student.query.get(2)
+    db.session.delete(student)
+    db.session.commit()
+
+    # 2. 如果删除附加模型数据，则直接删除，不会修改主模型数据
+    # StudentInfo.query.filter(StudentInfo.mobile == "13312345672").delete()
+    # db.session.commit()
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+
+
+#### 一对多
+
+常见业务：商品分类和商品、文章分类和商品、班级与学生、部分与员工、角色与会员、订单与订单详情、用户与收货地址。。。
+
+```python
+class User(db.Model):
+	...
+    # 关联属性，一的一方添加模型关联属性
+    address_list = db.relationship("UserAddress", uselist=True, backref="user", lazy='dynamic')
+   
+class UsertAddress(db.Model):
+	...
+    # 外键，多的一方模型中添加外间
+    user_id = db.Column(db.ForeignKey(User.id))
+```
+
+- 其中realtionship描述了Student和StudentAddress的关系。第1个参数为对应参照的类"StudentAddress"
+- 第3个参数backref为类StudentAddress声明关联属性
+- 第4个参数lazy决定了什么时候SQLALchemy什么时候执行读取关联模型的SQL语句
+  - lazy='subquery'，查询当前数据模型时，采用子查询(subquery)，把外键模型的属性也同时查询出来了。
+  - lazy=True或lazy='select'，查询当前数据模型时，不会把外键模型的数据查询出来，只有操作到外键关联属性时，才进行连表查询数据[执行SQL]
+  - lazy='dynamic'，查询当前数据模型时，不会把外键模型的数据立刻查询出来，只有操作到外键关联属性并操作外键模型具体字段时，才进行连表查询数据[执行SQL]
+- 常用的lazy选项：dynamic和select
+
+课堂代码：
+
+manage.py，代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class User(db.Model):
+    __tablename__ = "tb_user"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    username = db.Column(db.String(50), unique=True, comment="用户名")
+    nickname = db.Column(db.String(50), index=True, comment="昵称")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    money = db.Column(db.Numeric(8,2), default=0.0, comment="钱包余额")
+    address_list = db.relationship("UserAddress", uselist=True, backref="user", lazy="dynamic")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "nickname": self.nickname,
+            "sex": self.sex,
+            "money": float(self.money),
+        }
+
+
+class UserAddress(db.Model):
+    __tablename__ = "tb_user_address"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(50), default="默认", comment="名称")
+    province = db.Column(db.String(50), comment="省份")
+    city = db.Column(db.String(50), comment="城市")
+    area = db.Column(db.String(50), comment="地区")
+    address = db.Column(db.String(500), comment="详细地址")
+    mobile = db.Column(db.String(15), comment="收货人电话")
+    user_id = db.Column(db.Integer, db.ForeignKey("tb_user.id"), comment="外键")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "province": self.province,
+            "city": self.city,
+            "area": self.area,
+            "address": self.address,
+            "mobile": self.mobile,
+            "user_id": self.user_id,
+        }
+
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/a1")
+def a1():
+    """添加数据"""
+    # # 添加主模型的同时也会给附加模型添加数据，这种情况，附加模型的值可以以列表形式进行添加，一次性添加多个附加模型数据进去。
+    # user = User(
+    #     username="xiaolan001",
+    #     nickname="xiaolan001",
+    #     sex=False,
+    #     money=10000,
+    #     address_list=[
+    #         UserAddress(name="公司", province="北京市", city="北京市", area="昌平区", address="百沙路201", mobile="13012345678"),
+    #         UserAddress(name="门口小卖部", province="北京市", city="北京市", area="昌平区", address="百沙路202", mobile="13012345677"),
+    #         UserAddress(name="小区门口", province="北京市", city="北京市", area="昌平区", address="百沙路203", mobile="13012345676"),
+    #     ]
+    # )
+    # db.session.add(user)
+    # db.session.commit()
+
+    # 添加外键模型数据的同时，添加主模型数据
+    address = UserAddress(
+        province="天津市",
+        city="天津市",
+        area="静海区",
+        address="静安路1103号",
+        user=User(
+            username="xiaolan02",
+            nickname="xiaolan02",
+            money=10000,
+            sex=False,
+        )
+    )
+    db.session.add(address)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/q1")
+def q1():
+    # 正向关联----> 从主模型查询外键模型
+    student = User.query.filter(User.username == "xiaolan001").first()
+
+
+    # 观察连表SQL语句的执行
+    """ lazy="select" || lazy=True """
+    # print(student) # 没有查询附加表
+    # print(student.address_list) # 查询了附加表
+
+    """ lazy="subquery" """
+    # print(student)  # 已经查询了附加表，如果没有使用到外键模型的数据，则本次查询存在资源浪费！！
+
+    """ lazy="dynamic" """
+    # print(student)  # 没有查询附加表
+    # student.address_list  # 没有查询附加模型的SQL语句
+    # print( student.address_list ) # 只要访问关联模型的具体字段才真正执行，如果海量数量查询，则本次查询会影响返回数据给客户端的时间
+
+
+    print( student.address_list[0] ) # 获取返回列表的第1个成员
+
+
+    return "ok"
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+
+#### 多对多
+
+```python
+# 关系表[这种表，无法提供给python进行操作的，仅仅用于在数据库中记录两个模型之间的关系]
+# 关系表[这种表，无法提供给python进行操作的，仅仅用于在数据库中记录两个模型之间的关系]
+student_and_course = db.Table(
+    "table_student_course",
+    db.Column("id", db.Integer, primary_key=True, comment="主键ID"),
+    db.Column("sid", db.Integer, db.ForeignKey("table_student.id"), comment="学生"),
+    db.Column("cid", db.Integer, db.ForeignKey("table_course.id"), comment="课程"),
+    db.Column("created_time", db.DateTime, default=datetime.now, comment="购买时间"), # 当前字段无法操作
+)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    ...
+    course_list = db.relationship("Course", secondary=student_and_course, backref="student_list", lazy="dynamic")
+
+class Course(db.Model):
+    ...
+    
+# 关系模型，[关系模型和关系表，任选其一]
+class Achievement(db.Model):
+    ...
+```
+
+
+
+##### 基于第三方关系表构建多对多
+
+代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+from datetime import datetime
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+# 关系表[这种表，无法提供给python进行操作的，仅仅用于在数据库中记录两个模型之间的关系]
+student_and_course = db.Table(
+    "table_student_course",
+    db.Column("id", db.Integer, primary_key=True, comment="主键ID"),
+    db.Column("sid", db.Integer, db.ForeignKey("table_student.id"), comment="学生"),
+    db.Column("cid", db.Integer, db.ForeignKey("table_course.id"), comment="课程"),
+    db.Column("created_time", db.DateTime, default=datetime.now, comment="购买时间"), # 当前字段无法操作
+)
+
+
+class Student(db.Model):
+    """学生信息模型"""
+    # 声明与当前模型绑定的数据表名称
+    __tablename__ = "table_student"
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    name = db.Column(db.String(15), comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    email = db.Column(db.String(128), comment="邮箱地址")
+    money = db.Column(db.Numeric(10, 2), default=0.0, comment="钱包")
+    course_list = db.relationship("Course", secondary=student_and_course, backref="student_list", lazy="dynamic")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "sex": self.sex,
+            "email": self.email,
+            "money": float(self.money),
+        }
+
+
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "table_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2), default=0.0, comment="价格")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+        }
+
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/a1")
+def a1():
+    """添加数据"""
+    """添加其中一个主模型数据时，同时绑定添加另外一个主模型的数据，这个过程中，关系表会自动写入2者的关系数据，绑定2个模型之间的关系"""
+    # student = Student(
+    #     name="xiaozhao",
+    #     age=13,
+    #     sex=False,
+    #     money=30000,
+    #     email="xiaozhao@qq.com",
+    #     course_list=[
+    #         Course(name="python入门", price=99.99),
+    #         Course(name="python初级", price=199.99),
+    #         Course(name="python进阶", price=299.99),
+    #     ]
+    # )
+    # db.session.add(student)
+    # db.session.commit()
+
+    """在学生报读课程的基础上，新增报读课程。"""
+    # student = Student(
+    #     name="xiaohong",
+    #     age=14,
+    #     sex=False,
+    #     money=30000,
+    #     email="300000@qq.com",
+    # )
+    # db.session.add(student)
+    # db.session.commit()
+
+    # student = Student.query.filter(Student.name=="xiaohong").first()
+    # # 直接采用python内置的list方法操作
+    # student.course_list.append(Course.query.get(3)) # 新增已经存在的课程
+    # student.course_list.append(Course(name="python顶级", price=399.99))  # 已有课程，并让当前学生报读该课程
+    # db.session.commit()
+
+    """添加学生报读课程的测试数据"""
+    # student1 = Student.query.get(1)
+    # course_list = Course.query.filter(Course.id.in_([1,2])).all()
+    # student1.course_list.extend(course_list)
+    # db.session.commit()
+
+    student2 = Student.query.get(2)
+    course_list = Course.query.filter(Course.id.in_([3,2])).all()
+    student2.course_list.extend(course_list)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/q1")
+def q1():
+    """查询操作"""
+    # 查询ID=4的学生报读的课程列表
+    # student = Student.query.get(2)
+    # course_list = [{"name":item.name,"price":float(item.price)} for item in student.course_list]
+    # print(course_list)
+
+    # 查询出2号课程，都有那些学生在读？
+    course = Course.query.get(2)
+    student_list = [{"name":item.name,"age":item.age} for item in course.student_list]
+    print(student_list)
+
+    return "ok"
+
+@app.route("/u1")
+def u1():
+    """更新数据"""
+    # # 给报读了3号课程的同学，返现红包200块钱
+    # course = Course.query.get(3)
+    # for student in course.student_list:
+    #     student.money+=200
+    # db.session.commit()
+
+    # db.Table的缺陷: 无法通过主模型直接操作db.Table中的外键之外的其他字段，例如：报读课程的时间
+    course = Course.query.get(3)
+    print(course.student_list)
+
+    # 解决：在声明2个模型是多对多的关联关系时，把关联关系使用第三个模型来创建声明，
+    # 就是不要使用db.Table改成模型来绑定关系，把模型的对多对拆分成2个1对多
+
+    return "ok"
+
+
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+多对多，也可以拆解成3个模型（2个主模型，1个关系模型，关系模型保存了2个主模型的外键），其中tb_achievement作为单独模型存在。
+
+
+
+##### 基于第三方关系模型构建多对多
+
+在SQLAlchemy中，基于db.Table创建的关系表，如果需要新增除了外键以外其他字段，无法操作。所以将来实现多对多的时候，除了上面db.Table方案以外，还可以把关系表声明成模型的方法，如果声明成模型，则原来课程和学生之间的多对多的关系，就会变成远程的1对多了。
+
+代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+from datetime import datetime
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+# 关系表[这种表，无法提供给python进行操作的，仅仅用于在数据库中记录两个模型之间的关系]
+# student_and_course = db.Table(
+#     "demo_student_course",
+#     db.Column("id", db.Integer, primary_key=True, comment="主键ID"),
+#     db.Column("sid", db.Integer, db.ForeignKey("demo_student.id"), comment="学生"),
+#     db.Column("cid", db.Integer, db.ForeignKey("demo_course.id"), comment="课程"),
+#     db.Column("created_time", db.DateTime, default=datetime.now, comment="购买时间"), # 当前字段无法操作
+# )
+
+
+class StudentCourse(db.Model):
+    __tablename__ = "demo_student_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    sid = db.Column(db.Integer, db.ForeignKey("demo_student.id"))
+    cid = db.Column(db.Integer, db.ForeignKey("demo_course.id"))
+    created_time = db.Column(db.DateTime, default=datetime.now, comment="购买时间")
+
+    # 关联属性
+    student = db.relationship("Student", uselist=False, backref=backref("to_relation", uselist=True))
+    course = db.relationship("Course", uselist=False, backref=backref("to_relation", uselist=True))
+
+
+class Student(db.Model):
+    """学生信息模型"""
+    # 声明与当前模型绑定的数据表名称
+    __tablename__ = "demo_student"
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    name = db.Column(db.String(15), comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    email = db.Column(db.String(128), comment="邮箱地址")
+    money = db.Column(db.Numeric(10, 2), default=0.0, comment="钱包")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "sex": self.sex,
+            "email": self.email,
+            "money": float(self.money),
+        }
+
+
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "demo_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2), default=0.0, comment="价格")
+
+    def __repr__(self):
+        return json.dumps(self.__to_dict__, ensure_ascii=False)
+
+    @property
+    def __to_dict__(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+        }
+
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+
+@app.route("/a1")
+def a1():
+    """添加数据"""
+    """添加其中一个主模型数据时，同时绑定添加另外一个主模型的数据"""
+    # student = Student(
+    #     name="xiaozhao",
+    #     age=13,
+    #     sex=False,
+    #     money=30000,
+    #     email="xiaozhao@qq.com",
+    #     to_relation=[
+    #         StudentCourse(
+    #             course=Course(name="python基础", price=99.9)
+    #         )
+    #     ]
+    # )
+    # db.session.add(student)
+    # db.session.commit()
+
+    """在学生报读课程的基础上，新增报读课程。"""
+    # student = Student(
+    #     name="xiaohong",
+    #     age=14,
+    #     sex=False,
+    #     money=30000,
+    #     email="300000@qq.com",
+    # )
+    # db.session.add(student)
+    # db.session.commit()
+
+    # student = Student.query.filter(Student.name == "xiaohong").first()
+    # # 直接采用python内置的list方法操作
+    # student.to_relation.extend([
+    #     StudentCourse(
+    #         course=Course.query.get(1) # 已经存在的课程，给学生报读
+    #     ),
+    #     StudentCourse(
+    #         course=Course(name="python进阶", price=399.99)  # 新增课程，并让当前学生报读该课程
+    #     )
+    # ])
+    #
+    # db.session.commit()
+
+
+    """添加学生报读课程的测试数据"""
+    student1 = Student.query.get(1)
+    course_list = Course.query.filter(Course.id.in_([1,2])).all()
+    student1.to_relation.extend([StudentCourse(course=course) for course in course_list])
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/q1")
+def q1():
+    """查询操作"""
+    # 查询ID=2的学生报读的课程列表
+    # student = Student.query.get(2)
+    # course_list = [{"name":item.course.name,"price":float(item.course.price)} for item in student.to_relation]
+    # print(course_list)
+
+    # 查询出2号课程，都有那些学生在读？
+    course = Course.query.get(2)
+    student_list = [{"name":item.student.name,"age":item.student.age} for item in course.to_relation]
+    print(student_list)
+
+    return "ok"
+
+@app.route("/u1")
+def u1():
+    """更新数据"""
+    # # 给报读了2号课程的同学，返现红包200块钱
+    # course = Course.query.get(2)
+    # for relation in course.to_relation:
+    #     relation.student.money += 200
+    # db.session.commit()
+
+    # 获取中间的关系模型的字段
+    course = Course.query.get(2)
+    for relation in course.to_relation:
+        print(relation.created_time)
+
+    return "ok"
+
+
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+relationship还有一个设置外键级联的属性：cascade="all, delete, delete-orphan"
+
+```
+作业：
+1. 我们现在学习的flask框架集成SQLAlchemy操作数据库使用的是flask-SQLAlchemy模块。如果原生的python下面应该如何使用SQLAlchemy进行初始化数据库连接和声明模型并实现模型的基本操作[增删查改，关联查询]？
+
+2. flask中的SQLAlchemy如何进行自关联查询？ 这里自己写一个关于行政区划的自关联操作。
+```
+
