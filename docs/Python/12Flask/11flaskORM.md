@@ -596,6 +596,8 @@ db.session.add(student)
 db.session.commit()
 ```
 
+
+
 ```python
 # 1. 先创建的列表要添加的实例化模型对象列表
 student_list = [
@@ -629,7 +631,7 @@ print(student)
 db.session.delete(student)
 db.session.commit()
 
-# 方法2【1条语句完成删除操作，性能更好更高效】
+# 方法2【1条语句完成删除操作，性能更好更高效】     
 # 类似乐观锁，在数据改动时添加条件并判断条件成立以后才进行数据操作，这种用法就是乐观锁
 Student.query.filter(Student.id == 5).delete()
 db.session.commit()
@@ -643,7 +645,7 @@ db.session.commit()
 
     begin;  -- 开启事务
     select * from db_student where student_id = 5 for update; -- 添加一把更新锁【悲观锁】
-    ....    -- 在事务提交之前，任何第三方连接都不能修改 student_id = 5这条数据
+    ....    -- 在事务提交之前，任何第三方连接都不能修改 student_id = 5这条数据 
     commit; -- 提交事务
 
     <<< 数据库终端开始
@@ -898,6 +900,8 @@ if __name__ == '__main__':
 
 
 
+
+
 ## 基本查询
 
 ### SQLAlchemy常用的查询过滤器
@@ -910,6 +914,8 @@ if __name__ == '__main__':
 | **offset()**   | 设置结果范围的**开始位置**，偏移原查询返回的结果，返回一个新查询 |
 | **order_by()** | 根据指定条件对原查询结果进行**排序**，返回一个新查询         |
 | **group_by()** | 根据指定条件对原查询结果进行**分组**，返回一个新查询         |
+
+
 
 ### SQLAlchemy常用的查询结果方法
 
@@ -924,7 +930,7 @@ if __name__ == '__main__':
 | **paginate()** | 返回一个Paginate**分页器对象**，它包含指定范围内的结果       |
 | **having()**   | 返回结果中符合条件的数据，**必须跟在group by后面**，其他地方无法使用。 |
 
-
+ 
 
 get():参数为主键，表示根据主键查询数据，如果主键不存在返回None
 
@@ -941,7 +947,7 @@ def get():
 
 ```
 
-代码：
+课堂代码：
 
 ```python
 # 前面代码省略
@@ -974,7 +980,7 @@ def query():
 
 @app.route("/get")
 def get():
-    """get根据主键获取数据"""
+    """get根据主键获取数据"""    
     # student1 = Student.query.get({"id":10})
     student1 = Student.query.get(30)
     # student2 = db.session.query(Student).get({"id":10})
@@ -1096,7 +1102,7 @@ print(student_list)
 查询所有男生[Student.sex==True]数据
 
 查询id为4的学生[3种方式]
-
+ 
 查询年龄等于22的所有学生数据
 
 查询name为小白的学生数据
@@ -1259,7 +1265,7 @@ Student.query.filter(and_(Student.name!='wang',Student.email.endswith('163.com')
 # # and_(条件1,条件2,....)  等价于  filter(条件1,条件2,.....)
 # # age > 18 and email like "%163.com"
 # # student_list = Student.query.filter(Student.age > 18, Student.email.endswith("163.com")).all()
-#
+# 
 # student_list = Student.query.filter(
 #     and_(
 #         Student.age > 18,
@@ -1389,7 +1395,7 @@ student_list = Student.query.order_by(Student.age.asc()).limit(3).all()
 print(student_list)
 ```
 
-SQL
+SQL 
 
 ```sql
 # 查询年龄最大的3个学生
@@ -1491,12 +1497,12 @@ def index():
     total  总数据量
     items  每一页数据项列表
     pages  总页码===> math.ceil( total/per_page )
-
+    
     # 常用方法
     prev      上一页分页对象
     prev_num  上一页页码
     has_prev  是否有上一页
-
+    
     next      下一页分页对象
     next_num  下一页页码
     has_next  是否有下一页
@@ -1736,6 +1742,8 @@ ret = db.session.execute("select age,count(id),group_concat(id) from db_student 
 print(ret)
 return "ok"
 ```
+
+
 
 ## 关联查询
 
@@ -2322,7 +2330,7 @@ if __name__ == '__main__':
 
 #### 一对多
 
-常见业务：商品分类和商品、文章分类和商品、班级与学生、部分与员工、角色与会员、订单与订单详情、用户与收货地址。。。
+常见业务：商品分类和商品、文章分类和文章、班级与学生、部门与员工、角色与会员、订单与订单详情、用户与收货地址。。。
 
 ```python
 class User(db.Model):
@@ -2509,6 +2517,8 @@ if __name__ == '__main__':
 
 
 #### 多对多
+
+常见业务：用户收藏文章、用户与用户之间的好友关系、点赞、评论、关注、用户浏览商品的历史记录、订阅文章、专题与商品/文章的关系、活动与商品。。。。。
 
 ```python
 # 关系表[这种表，无法提供给python进行操作的，仅仅用于在数据库中记录两个模型之间的关系]
@@ -2943,5 +2953,564 @@ relationship还有一个设置外键级联的属性：cascade="all, delete, dele
 1. 我们现在学习的flask框架集成SQLAlchemy操作数据库使用的是flask-SQLAlchemy模块。如果原生的python下面应该如何使用SQLAlchemy进行初始化数据库连接和声明模型并实现模型的基本操作[增删查改，关联查询]？
 
 2. flask中的SQLAlchemy如何进行自关联查询？ 这里自己写一个关于行政区划的自关联操作。
+```
+
+
+
+## 逻辑外键
+
+也叫虚拟外键。主要就是在开发中为了减少数据库的性能消耗，提升系统运行效率，一般项目中如果单表数据太大[千万级别]就不会使用数据库本身维护的物理外键，而是采用由ORM或者我们逻辑代码进行查询关联的逻辑外键。
+
+SQLAlchemy设置外键模型的虚拟外键，有2种方案：
+
+方案1，查询数据时**临时指定逻辑外键**的映射关系：
+
+```python
+模型类.query.join(模型类,主模型.主键==外键模型.外键).join(模型类,主模型.主键==外键模型.外键).with_entities(字段1,字段2.label("字段别名"),....).all()
+```
+
+方案2，在**模型声明时指定逻辑外键的映射关系**(最常用，这种设置方案，在操作模型时与原来默认设置的物理外键的关联操作是一模一样的写法)：
+
+```python
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    # 虚拟外键，原有参数不变，新增2个表达关联关系的属性：
+    # primaryjoin, 指定2个模型之间的主外键关系，相当于原生SQL语句中的join
+    # foreign_keys，指定外键
+    address_list = db.relationship("StudentAddress", uselist=True, backref="student", lazy="subquery", primaryjoin="Student.id==StudentAddress.student_id", foreign_keys="StudentAddress.student_id")
+
+class StudentAddress(db.Model):
+    # 原来的外键设置为普通索引即可。
+    student_id = db.Column(db.Integer, comment="学生id")
+```
+
+
+
+例1，虚拟外键使用的方案1，代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+from datetime import datetime
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class Student(db.Model):
+    """学生信息模型"""
+    # 声明与当前模型绑定的数据表名称
+    __tablename__ = "td_student"
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    name = db.Column(db.String(15), comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    email = db.Column(db.String(128), comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+
+    def __repr__(self):
+        return f"{self.name}<Student>"
+
+
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "td_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2))
+
+    def __repr__(self):
+        return f'{self.name}<{self.__class__.__name__}>'
+
+
+class StudentCourse(db.Model):
+    """学生和课程之间的关系模型"""
+    __tablename__ = "td_student_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    student_id = db.Column(db.Integer, index=True)
+    course_id = db.Column(db.Integer, index=True)
+    score = db.Column(db.Numeric(4,1), default=0, comment="成绩")
+    time = db.Column(db.DateTime, default=datetime.now, comment="考试时间")
+
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+@app.route("/a1")
+def a1():
+    # 添加测试数据
+    stu0 = Student(name="xiaoming-0",age=15,sex=True,email="xiaoming0@qq.com", money=1000)
+    stu1 = Student(name="xiaoming-1",age=15,sex=True,email="xiaoming1@qq.com", money=1000)
+    stu2 = Student(name="xiaoming-2",age=15,sex=True,email="xiaoming2@qq.com", money=1000)
+    stu3 = Student(name="xiaoming-3",age=15,sex=True,email="xiaoming3@qq.com", money=1000)
+    stu4 = Student(name="xiaoming-4",age=15,sex=True,email="xiaoming4@qq.com", money=1000)
+
+    db.session.add_all([stu0,stu1,stu2,stu3,stu4])
+    course1 = Course(name="python基础第1季", price=1000)
+    course2 = Course(name="python基础第2季", price=1000)
+    course3 = Course(name="python基础第3季", price=1000)
+    course4 = Course(name="python基础第4季", price=1000)
+    course5 = Course(name="python基础第5季", price=1000)
+    db.session.add_all([course1, course2, course3, course4, course5])
+
+    data = [
+        StudentCourse(student_id=1,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=1,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=1,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=2,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=2,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=3,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=3,course_id=4,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=5,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=4,score=60,time=datetime.now()),
+    ]
+    db.session.add_all(data)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/q1")
+def q1():
+    # 使用逻辑外键来查询数据
+    # 主模型.query.join(从模型类名, 关系语句)
+    # 主模型.query.join(从模型类名, 主模型.主键==从模型类名.外键)
+
+    # 课程[python基础第3季]有多少学生在读？
+    # 分2步查询
+    course = Course.query.filter(Course.name == "python基础第3季").first()
+    num = StudentCourse.query.filter(StudentCourse.course_id == course.id).count()
+    print(course, num)
+
+    # 关联查询, 2表关联
+    # data = Course.query.join(
+    #     StudentCourse,
+    #     Course.id==StudentCourse.course_id
+    # ).with_entities(
+    #     Course.id, Course.name, Course.price, StudentCourse.student_id, StudentCourse.score
+    # ).filter(Course.name == "python基础第3季").all()
+    # print(data)
+
+    # 直接统计，不需要任何字段
+    ret = Course.query.join(
+        StudentCourse,
+        Course.id==StudentCourse.course_id
+    ).filter(Course.name == "python基础第3季").count()
+
+    print(ret)
+
+    return "ok"
+
+
+@app.route("/q2")
+def q2():
+    # 查询课程[python基础第3季]有哪些学生在读？3表关联
+    # 正向查询和逆向查询都是通过声明临时外键关系来完成关联查询操作。
+    student_list = Course.query.join(
+        StudentCourse,
+        Course.id == StudentCourse.course_id
+    ).join(
+        Student,
+        Student.id == StudentCourse.student_id
+    ).with_entities(
+        Course.name.label("course_name"), StudentCourse.score.label("score"), Student.name.label("student_name"),
+    ).filter(Course.name == "python基础第3季").all()
+
+    print(student_list)
+
+    return "ok"
+
+
+@app.route("/q3")
+def q3():
+    # xiaoming-2 购买了那些课程？
+    course_list = Student.query.join(
+        StudentCourse,
+        Student.id == StudentCourse.student_id
+    ).join(
+        Course,
+        Course.id == StudentCourse.course_id
+    ).with_entities(
+        Course.name.label("course_name"),
+        StudentCourse.score.label("score")
+    ).filter(Student.name == "xiaoming-2").all()
+
+    print(course_list)
+
+    return "ok"
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+
+
+例2，虚拟外键使用的方案2，代码：
+
+```python
+import json
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
+from datetime import datetime
+
+db = SQLAlchemy()
+app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# 配置
+app.config.update({
+    "DEBUG": True,
+    "SQLALCHEMY_DATABASE_URI": "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4",
+    # 如果使用pymysql，则需要在连接时指定pymysql
+    # "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告，设置False即可
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    # ORM执行SQL查询时是哦否显示原始SQL语句，debug模式下可以开启
+    "SQLALCHEMY_ECHO": True,
+})
+
+db.init_app(app)
+
+
+class Student(db.Model):
+    """学生信息模型"""
+    # 声明与当前模型绑定的数据表名称
+    __tablename__ = "ts_student"
+    id = db.Column(db.Integer, primary_key=True,comment="主键")
+    name = db.Column(db.String(15), comment="姓名")
+    age = db.Column(db.SmallInteger, comment="年龄")
+    sex = db.Column(db.Boolean, default=True, comment="性别")
+    email = db.Column(db.String(128), comment="邮箱地址")
+    money = db.Column(db.Numeric(10,2), default=0.0, comment="钱包")
+
+    def __repr__(self):
+        return f"{self.name}<Student>"
+
+
+class Course(db.Model):
+    """课程数据模型"""
+    __tablename__ = "ts_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    name = db.Column(db.String(64), unique=True, comment="课程")
+    price = db.Column(db.Numeric(7, 2))
+
+    def __repr__(self):
+        return f'{self.name}<{self.__class__.__name__}>'
+
+
+class StudentCourse(db.Model):
+    """学生和课程之间的关系模型"""
+    __tablename__ = "ts_student_course"
+    id = db.Column(db.Integer, primary_key=True, comment="主键")
+    student_id = db.Column(db.Integer, index=True)
+    course_id = db.Column(db.Integer, index=True)
+    score = db.Column(db.Numeric(4,1), default=0, comment="成绩")
+    time = db.Column(db.DateTime, default=datetime.now, comment="考试时间")
+
+    student = db.relationship(
+        "Student",
+        uselist=False,
+        backref=backref("to_course", uselist=True),
+        lazy="subquery",
+        primaryjoin="Student.id==StudentCourse.student_id",
+        foreign_keys="StudentCourse.student_id"
+    )
+
+    course = db.relationship(
+        "Course",
+        uselist=False,
+        backref=backref("to_student", uselist=True),
+        lazy="subquery",
+        primaryjoin="Course.id==StudentCourse.course_id",
+        foreign_keys="StudentCourse.course_id"
+    )
+
+@app.route("/create")
+def create_table():
+    db.create_all()  # 为项目中被识别的所有模型创建数据表
+    return "ok"
+
+
+@app.route("/drop")
+def drop_table():
+    db.drop_all()  # 为项目中被识别的所有模型删除数据表
+    return "ok"
+
+
+@app.route("/")
+def index():
+    return "ok"
+
+@app.route("/a1")
+def a1():
+    # 添加测试数据
+    stu0 = Student(name="xiaoming-0",age=15,sex=True,email="xiaoming0@qq.com", money=1000)
+    stu1 = Student(name="xiaoming-1",age=15,sex=True,email="xiaoming1@qq.com", money=1000)
+    stu2 = Student(name="xiaoming-2",age=15,sex=True,email="xiaoming2@qq.com", money=1000)
+    stu3 = Student(name="xiaoming-3",age=15,sex=True,email="xiaoming3@qq.com", money=1000)
+    stu4 = Student(name="xiaoming-4",age=15,sex=True,email="xiaoming4@qq.com", money=1000)
+
+    db.session.add_all([stu0,stu1,stu2,stu3,stu4])
+    course1 = Course(name="python基础第1季", price=1000)
+    course2 = Course(name="python基础第2季", price=1000)
+    course3 = Course(name="python基础第3季", price=1000)
+    course4 = Course(name="python基础第4季", price=1000)
+    course5 = Course(name="python基础第5季", price=1000)
+    db.session.add_all([course1, course2, course3, course4, course5])
+
+    data = [
+        StudentCourse(student_id=1,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=1,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=1,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=2,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=2,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=3,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=3,course_id=4,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=5,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=4,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=1,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=2,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=3,score=60,time=datetime.now()),
+        StudentCourse(student_id=5,course_id=4,score=60,time=datetime.now()),
+    ]
+    db.session.add_all(data)
+    db.session.commit()
+
+    return "ok"
+
+
+@app.route("/q1")
+def q1():
+    student = Student.query.filter(Student.name == "xiaoming-0").first()
+    # print(student.to_course)
+    # [<StudentCourse 1>, <StudentCourse 2>, <StudentCourse 3>]
+
+    print([{
+        "course_name": item.course.name,
+        "score": item.score,
+        "student_name": item.student.name,
+    } for item in student.to_course])
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+# 数据迁移
+
+- 在开发过程中，需要修改数据库模型，而且还要在修改之后更新数据库。最直接的方式就是删除旧表，但这样会丢失数据，所以往往更常见的方式就是使用alter来改变数据结构，原有数据中的新字段值设置默认值或null=True.
+- 更好的解决办法是使用数据迁移，它可以追踪数据库表结构的变化，然后把变动应用到数据库中。
+- 在Flask中可以使用Flask-Migrate的第三方扩展，来实现数据迁移。并且集成到Flask终端脚本中，所有操作通过flask db 命令就能完成。
+- 为了导出数据库迁移命令，Flask-Migrate提供了一个MigrateCommand类，可以附加到flask框架中。
+
+首先要在虚拟环境中安装Flask-Migrate。
+
+```bash
+pip install Flask-Migrate
+```
+
+官网地址：https://flask-migrate.readthedocs.io/en/latest/
+
+代码文件内容：
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+# 导入数据迁移核心类
+from flask_migrate import Migrate
+
+app = Flask(__name__)
+
+class Config(object):
+    DEBUG = True
+    # 数据库连接配置
+    # SQLALCHEMY_DATABASE_URI = "数据库类型://数据库账号:密码@数据库地址:端口/数据库名称?charset=utf8mb4"
+    SQLALCHEMY_DATABASE_URI = "mysql://root:123@127.0.0.1:3306/flaskdemo?charset=utf8mb4"
+    # 动态追踪修改设置，如未设置只会提示警告
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # 查询时会显示原始SQL语句
+    SQLALCHEMY_ECHO = True
+
+app.config.from_object(Config)
+
+db = SQLAlchemy(app=app)
+
+# 初始化数据迁移
+migrate = Migrate(app, db)
+
+# migrate = Migrate()
+# migrate.init_app(app, db)
+
+"""模型类定义"""
+# 关系表的声明方式
+achieve = db.Table('tb_achievement',
+    db.Column('student_id', db.Integer, db.ForeignKey('tb_student.id')),
+    db.Column('course_id', db.Integer, db.ForeignKey('tb_course.id'))
+)
+
+class Course(db.Model):
+    # 定义表名
+    __tablename__ = 'tb_course'
+    # 定义字段对象
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    price = db.Column(db.Numeric(6,2))
+    teacher_id = db.Column(db.Integer, db.ForeignKey('tb_teacher.id'))
+    students = db.relationship('Student', secondary=achieve, backref='courses', lazy='subquery')
+    # repr()方法类似于django的__str__，用于打印模型对象时显示的字符串信息
+    def __repr__(self):
+        return 'Course:%s'% self.name
+
+class Student(db.Model):
+    __tablename__ = 'tb_student'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(64),unique=True)
+    age = db.Column(db.SmallInteger,nullable=False)
+    sex = db.Column(db.Boolean,default=1)
+
+    def __repr__(self):
+        return 'Student:%s' % self.name
+
+class Teacher(db.Model):
+    __tablename__ = 'tb_teacher'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    # 课程与老师之间的多对一关联
+    courses = db.relationship('Course', backref='teacher', lazy='subquery')
+
+    def __repr__(self):
+        return 'Teacher:%s' % self.name
+
+@app.route("/")
+def index():
+    return "ok"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+## 创建迁移版本仓库
+
+```bash
+# 切换到项目根目录下
+cd ~/Desktop/flaskdemo
+# 设置flask项目的启动脚本位置，例如我们现在的脚本叫manage.py
+export FLASK_APP=manage.py
+# 数据库迁移初始化，这个命令会在当前项目根目录下创建migrations文件夹，将来所有数据表相关的迁移文件都放在里面。
+flask db init
+```
+
+
+
+## 创建迁移版本
+
+- 自动创建迁移版本文件中有两个函数，用于进行数据迁移同步到数据库操作的。
+  - upgrade()：把迁移中的改动代码同步到数据库中。
+  - downgrade()：则将改动代码从数据库中进行还原。
+- 自动创建的迁移脚本会根据模型定义和数据库当前状态的差异，生成upgrade()和downgrade()函数的内容。
+- 生成的迁移文件不一定完全正确，有可能代码中存在细节遗漏导致报错，需要开发者进行检查，特别在多对多的时候
+
+```bash
+# 根据flask项目的模型生成迁移文件 -m的后面你不要使用中文！！
+flask db migrate -m 'initial migration'
+# 这里等同于django里面的 makemigrations，生成迁移版本文件
+# 完成2件事情：
+# 1. 在migrations/versions生成一个数据库迁移文件
+# 2. 如果是首次生成迁移文件的项目，则迁移工具还会在数据库创建一个记录数据库版本的version表
+```
+
+
+
+## 升级版本库的版本
+
+把当前ORM模型中的代码改动同步到数据库。
+
+```bash
+# 从migations目录下的versions中根据迁移文件upgrade方法把数据表的结构同步到数据库中。
+flask db upgrade
+```
+
+## 降级版本库的版本
+
+```bash
+# 从migations目录下的versions中根据迁移文件downgrade把数据表的结构同步到数据库中。
+flask db downgrade
+```
+
+## 版本库的历史管理
+
+可以根据history命令找到版本号,然后传给downgrade命令:
+
+```bash
+flask db history
+
+输出格式：<base> ->  版本号 (head), initial migration
+```
+
+
+
+## 回滚到指定版本
+
+```bash
+flask db downgrade # 默认返回上一个版本
+flask db downgrade 版本号   # 回滚到指定版本号对应的版本
+flask db upgrade 版本号     # 升级到指定版本号对应的版本
+```
+
+
+
+数据迁移的步骤：
+
+```bash
+1. 初始化数据迁移的目录
+export FLASK_APP=4-manage.py
+flask db init
+
+2. 数据库的数据迁移版本初始化，生成迁移文件
+flask db migrate -m 'initial migration'
+
+3. 升级版本[新增一个迁移记录]
+flask db upgrade 
+
+4. 降级版本[回滚一个迁移记录]
+flask db downgrade
 ```
 
