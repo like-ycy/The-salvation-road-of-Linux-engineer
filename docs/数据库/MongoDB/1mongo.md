@@ -512,7 +512,7 @@ mongoimport -d demo -c orders --file /home/moluo/Desktop/backup/orders.json --ty
 db.createUser({
     user: "<用户名>",
     pwd: "<密码>",
-	customData: { <any information> }, // 任意内容，主要是为了表示用户身份的相关介绍
+	customData: { <any information> }, // 任意内容，主要是为了表示用户身份的相关介绍 
 	roles: [ // 角色和权限分配
 		{ role: "<role>", db: "<database>" },  // 也可以直接填写由mongoDB内置的角色，例如: "<role>"
 		...
@@ -533,7 +533,7 @@ db.createUser({
 数据库管理角色：dbAdmin、dbOwner、userAdmin
 集群管理角色：clusterAdmin、clusterManager、clusterMonitor、hostManager
 备份恢复角色：backup、restore
-所有数据库角色：readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase
+所有数据库角色：readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase 
 超级用户角色：root
 // 有几个角色间接或直接提供了系统超级用户的访问权限（dbOwner 、userAdmin、userAdminAnyDatabase、dbAdminAnyDatabase）
 ```
@@ -716,8 +716,10 @@ WriteResult({ "nRemoved" : 1 })  // nRemoved 大于0表示成功删除管理员�
 
 必须切换到对应的数据库下才能给用户修改密码。
 
+所以针对账户管理员或者超级管理员，需要在admin下修改，而其他数据库管理员则必须到对应数据库下才能修改。
+
 ```js
-db.changeUserPassword("账户名", "新密码")
+db.changeUserPassword("账户名", "新密码");
 ```
 
 mongo终端操作：
@@ -725,7 +727,809 @@ mongo终端操作：
 ```javascript
 use mofang
 // 注册必须保证有这个管理员
-db.changeUserPassword("mofang", "123")
+db.changeUserPassword("mofang", "123");
 ```
 
 
+
+#### 开启账户认证
+
+开启账户认证功能，必须要修改配置文件，然后重启mongoDB才能生效。
+
+```javascript
+sudo vim /etc/mongod.conf
+// 找到31行附近的 security，去掉左边注释符号(#)
+security:
+    authorization: enabled
+
+:wq
+// 重启mongdb，配置生效
+sudo systemctl restart mongod
+
+// 开启了账户认证机制以后，再次进入mofang
+mongo
+use mofang
+show users    // 此处会报错如：uncaught exception: Error: command usersInfo requires authentication
+db.auth("mofang","123")   // 此处认证时填写错误密码，报错如下：
+// Error: Authentication failed.
+// 0
+exit
+mongo
+db.auth("mofang","123456")  // 此处认证时填写正确密码，效果如下：
+// 1
+show users    // 此时经过认证以后，当前命令就不会被限制了。 
+
+
+// 注意：如果实现以某个库的账户管理员登录数据库以后，要切换账号操作其他数据库，则必须先退出当前登录状态。
+```
+
+
+
+### 库管理
+
++ 显示所有数据库列表【空数据库不会显示，或者说空数据库已经被mongoDB回收了。】
+
+  ```javascript
+  show dbs
+  show databases
+  ```
+
++ 切换数据库，如果数据库不存在则创建数据库。
+
+  ```javascript
+  use  <database>
+  ```
+
++ 查看当前工作的数据库
+
+  ```javascript
+  db   // 是 db.getName() 的简写
+  ```
+
++ 删除当前数据库，如果数据库不存在，也会返回`{"ok":1}`
+
+  ```javascript
+  use <db>          // 先切换到要删除的数据库中，然后才能删除数据库
+  db.dropDatabase()
+  ```
+
+  
+
++ 查看当前数据库状态
+
+  ```json
+  > db.stats()
+  
+  {
+  	"db" : "mofang",    // 当前数据库名
+  	"collections" : 0,  // 当前数据库中的数据集合数量，相当于mysql的数据表
+  	"views" : 0,        // 当前数据库中的视图数量
+  	"objects" : 0,      // 当前数据库中的文档数据，相当于mysql中的数据记录
+  	"avgObjSize" : 0,   // 当前数据库中的文档平均大小
+  	"dataSize" : 0,     // 当前数据库中的数据总文件大小
+  	"storageSize" : 0,  // 存储引擎占据的文件大小
+  	"totalSize" : 0,    // 数据库中总数据总文件大小
+  	"indexes" : 0,      // 当前数据库中的索引数量
+  	"indexSize" : 0,    // 当前数据库中的索引文件大小
+  	"scaleFactor" : 1,  // 
+  	"fileSize" : 0,
+  	"fsUsedSize" : 0,   // 文件系统空间占用大小
+  	"fsTotalSize" : 0,  // 文件系统的总占用空间大小
+  	"ok" : 1
+  }
+  
+  ```
+
+在mongoDB中，最重要的核心是文档，如果一个库或者一个库下的集合中的文档全部被删除了，则这个库和这个集合就会mongoDB回收删除。
+
+### 集合管理
+
+#### 创建集合
+
+mongoDB中的集合有2种：固定集和动态集。
+
+一般工作中使用的是动态集，但是在mongoDB优化时，可以对部分数据转换成使用固定集来保存，性能更好，查询速度更快。
+
+在mongodb中如果使用的动态集，其实不需要专门创建集合，直接添加文档，mongodb也会自动生成动态集合的。
+
+```javascript
+// name为必填参数，options为可选参数。capped若设置值为true，则size必须也一并设置
+db.createCollection(
+	<集合名称>, 
+	{ 
+		capped : <boolean>,       // 当前创建的集合是否是固定集，固定集指限制固定数据大小的集合，当数据达到最大值会自动覆盖最早添加的文档内容
+		size : <bytes_size>,      // 指定固定集合存储的最大字节数，单位：字节数.
+		max : <collection_size>   // 指定固定集合中包含文档的最大数量，单位：字节数
+	}
+);
+
+// db.createCollection不填写第二个参数则表示创建的是动态集
+// 添加文档到不存在的集合中，mongodb会自动创建动态集合，
+// db.<集合名称>.insert({"name":"python入门","price" : 31.4})
+db.courses.insert({"name":"python入门","price" : 31.4})
+```
+
+
+
+#### 固定集的使用操作
+
+固定集一般用于日志，历史记录中。
+
+```javascript
+// 创建固定集history
+> db.createCollection("history", {capped:true, max: 10, size: 3000});
+{ "ok" : 1 }
+
+// 可以通过show tables 直接查看当前数据库中所有的集合列表
+> show tables;
+history
+orders
+
+// 添加数据到固定集
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+> db.history.insert({"name":"python入门","price" : 31.4})
+WriteResult({ "nInserted" : 1 })
+
+// 上面一共添加了14条数据到固定集，当时因为创建固定时设置了只允许10条数据，
+// 所以固定集中针对旧的数据已经删除，只保留最新的10数据。
+> db.history.find()
+{ "_id" : ObjectId("61d7eb6624402081a70c16fb"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6624402081a70c16fc"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6624402081a70c16fd"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6724402081a70c16fe"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6724402081a70c16ff"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6724402081a70c1700"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6724402081a70c1701"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6824402081a70c1702"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6824402081a70c1703"), "name" : "python入门", "price" : 31.4 }
+{ "_id" : ObjectId("61d7eb6924402081a70c1704"), "name" : "python入门", "price" : 31.4 }
+> 
+
+```
+
+
+
+#### 集合列表
+
+```javascript
+show collections // 或 show tables   或 db.getCollectionNames()
+```
+
+#### 删除集合
+
+```javascript
+db.集合.drop()
+```
+
+#### 查看集合
+
+```javascript
+db.getCollection("集合名称")
+db.集合名称
+```
+
+##### 查看集合创建信息
+
+```javascript
+db.printCollectionStats()
+
+// 运行效果：
+orders
+{
+	"ns" : "demo.orders",  // ns 表示namespace，当前集合的具体名字
+	"size" : 49761760,     // 当前集合的文件大小
+	"count" : 200000,      // 当前集合的文档数量
+	"avgObjSize" : 248,    // 平均每个文档的文件大小
+	"storageSize" : 8900608,  // 当前集合中存储引擎的文件大小
+	"freeStorageSize" : 0,
+	"capped" : false,      // 是否是固定集,false表示当前集合是动态集
+	"wiredTiger" : {       // 存储引擎相关配置
+		
+	},
+	"nindexes" : 1,              // 当前集合的索引数量
+	"indexBuilds" : [ ],   
+	"totalIndexSize" : 2301952, // 当前集合的索引文件大小 
+	"totalSize" : 11202560,     // 当前集合的全部数据
+	"indexSizes" : {            // 当前集合的每个索引的文件大小
+		"_id_" : 2301952
+	},
+	"scaleFactor" : 1,
+	"ok" : 1
+}
+
+```
+
+
+
+### 文档管理
+
+mongodb中，文档也叫 object/document。对应的就是存储的json数据记录，对应的就是python中的字典或者列表。
+
+mongodb中，文档中有各种的自定义字段，，每一个字典对应的数据值也存在不同数据格式，根据不同的格式产生不同的数据类型。
+
+#### 数据类型
+
+| Type               | 描述                                                         |
+| ------------------ | ------------------------------------------------------------ |
+| **ObjectID**       | 用于存储文档的ID,相当于主键，区分文档的唯一字段，mongoDB中就是一个对象的返回值 |
+| **String**         | 字符串是最常用的数据类型，MongoDB中的字符串必须是UTF-8编码。 |
+| **Integer**        | 整数类型用于存储数值。整数可以是32位，也可以是64位，这取决于你的服务器。 |
+| **Double**         | 双精度类型用于存储浮点值,mongodb中没有float浮点数这个说法    |
+| **Boolean**        | 布尔类型用于存储布尔值(true/ false)                          |
+| **Arrays**         | 将数组、列表或多个值存储到一个键，[]                         |
+| **Timestamp**      | 时间戳，用于记录文档何时被修改或创建。Date()，Timestamp()，ISODate() ,默认是ISODate() |
+| **Object**         | 用于嵌入文档, 相当于子属性是另一个json文档而已，这种方式就可以实现嵌套。 [] |
+| **Null**           | 空值,相当于 python的None                                     |
+| Symbol             | 与字符串用法相同，常用于某些使用特殊符号的语言，二进制格式字符串 |
+| Date               | 用于以UNIX时间格式存储当前日期或时间。                       |
+| **Binary data**    | 二进制数据，常用于保存文件的内容，往往是图片，数据本身。     |
+| Code               | 用于将JavaScript代码存储到文档中                             |
+| Regular expression | 正则表达式                                                   |
+
+
+
+#### 添加文档
+
+mongodb中，文档的数据结构和 JSON 基本一样。所有存储在集合中的数据在内部存储的格式都是 BSON 格式。
+
+BSON 是一种类似 JSON 的二进制形式的存储格式，是 Binary JSON 的简称。
+
+```javascript
+// 添加文档
+// 方式1：
+db.<集合名称>.insert(<document>)  // document就是一个json格式的数据
+
+// 方式2
+db.<集合名称>.insertOne(          // 如果文档存在_id主键为更新数据，否则就添加数据。
+   <document>
+)
+
+// 方式3：
+// 一次性添加多个文档, 多次给同一个集合建议使用insertMany比insertOne效率更好
+db.<集合名称>.insertMany([
+    <document>,
+    <document>,
+    ...
+])
+```
+
+操作：
+
+```javascript
+use mofang;
+
+// 添加一条数据[insert是过去版本的MongoDB提供的添加数据方法]
+db.user_list.insert({
+    "name": "laoli",  // string
+    "age":33,         // integer
+    "sex":true,       // boolean
+    "child": {        // opject
+        "name":"xiaohuihui",
+        "age":3
+    }
+});
+// WriteResult({ "nInserted" : 1 })
+
+/*
+// mongoDB原则上内置了js解释引擎，所以支持js语法
+> db.user_list.find()[0]._id
+ObjectId("61552b913ccd8ec29dbf6512")
+> db.user_list.find()[0].name
+laoli
+
+// javascrit总可以通过typeof 来查看数据的类型
+> typeof db.user_list.find()[0].name
+string
+> typeof db.user_list.find()[0]._id
+object
+> typeof db.user_list.find()[0].sex
+boolean
+> typeof db.user_list.find()[0].age
+number
+> typeof db.user_list.find()[0].child
+object
+> typeof db.user_list.find()[0].child.name
+string
+*/
+
+// 添加一条数据
+db.user_list.insertOne({"name":"xiaozhang","age":18,"sex":true, money: 300.50});
+// {
+// 	"acknowledged" : true,
+// 	"insertedId" : ObjectId("605021e6d5c7a55cc95c1cb7")
+// }
+
+
+// 添加多条数据
+document1 = {"name":"xiaolan","age":16}
+document2 = {"name":"xiaoguang","age":16}
+db.user_list.insertMany([document1,document2]);
+
+// {
+// 	"acknowledged" : true,
+// 	"insertedIds" : [
+// 		ObjectId("60502235d5c7a55cc95c1cba"),
+// 		ObjectId("60502235d5c7a55cc95c1cbb")
+// 	]
+// }
+db.user_list.find()
+```
+
+
+
+#### 删除文档
+
+```json
+// 方式1
+db.<集合名称>.remove(
+   <query>,  // removed的条件，一般写法：{"属性":{条件:值}}，如果不填写条件，删除所有文档
+   {
+     justOne: <boolean>,      // 可选删除，是否只删除查询到的第一个文档，默认为false，删除所有
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+
+// 方式2: 删除一条数据
+db.<集合名称>.deleteOne(
+   <query>,  // removed的条件，一般写法：{"属性":{条件:值}}，如果不填写条件，删除所有文档
+   {
+     justOne: <boolean>,      // 可选删除，是否只删除查询到的第一个文档，默认为false，删除所有
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+// 方式3：删除多条数据
+db.<集合名称>.deleteMany(
+   <query>,  // removed的条件，一般写法：{"属性":{条件:值}}，如果不填写条件，删除所有文档
+   {
+     justOne: <boolean>,      // 可选删除，是否只删除查询到的第一个文档，默认为false，删除所有
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+```
+
+操作：
+
+```javascript
+// 添加多条测试数据
+document1 = {"name":"xiaohei","age":16}
+document2 = {"name":"xiaobai","age":16}
+db.user_list.insertMany([document1,document2]);
+
+// 删除满足条件的第一条数据
+// mongoDB中的条件格式: {字段名:{$运算符:值}
+// 条件：{"age":{$eq:16}}   相当于SQL语句的age=16
+// db.user_list.remove({"age":{$eq:16}},{"justOne":true})
+// 删除满足条件的所有数据，条件中$wq可以不写
+// db.user_list.remove({"age":16}); // 等于可以省略不写，相当于 db.user_list.remove({"age":{$eq:16}});
+
+
+// 再次 添加多条测试数据
+document1 = {"name":"xiaolan","age":16}
+document2 = {"name":"xiaoguang","age":16}
+document3 = {"name":"xiaohei","age":16}
+document4 = {"name":"xiaobai","age":16}
+db.user_list.insertMany([document1,document2,document3,document4]);
+
+// 删除一条
+db.user_list.deleteOne({"age":16})
+// db.user_list.deleteOne({"age":{$eq:16}})
+// 删除多条
+db.user_list.deleteMany({"age":16})
+// db.user_list.deleteMany({"age":{$eq:16}})
+```
+
+mongoDB中的条件，不仅用于删除数据的条件，也可以是查询或者更新的条件。
+
+
+
+#### 查询文档
+
+```json
+// 直接显示查询的所有，find和findOne的第二个参数，也是一个json对象，一般称之为字段投影，表示设置是否显示或隐藏指定数据字段。
+
+// 获取一条
+db.集合.findOne(
+	<query>，     // 查询条件，删除、查询、修改都需要条件、条件写法基本一样的。
+    {             // 查询结果的字段投影，用于指定查询结果以后，显示的字段列
+    	<key>: 0, // 隐藏指定字段，例如："_id":0,
+    	<key>: 1, // 显示指定字段，例如："title":1,
+    	....
+    }
+)
+
+// 获取多条
+db.集合.find(
+	<query>,      // 查询条件
+    {
+    	<key>: 0, // 隐藏指定字段，例如："_id":0,
+    	<key>: 1, // 显示指定字段，例如："title":1,
+    	....
+    }
+)
+
+// 以易读的方式来格式化显示读取到的数据，只能在find方法后面使用。
+db.集合.find().pretty()
+```
+
+操作：
+
+```javascript
+// 切换数据库
+use mofang;
+
+// 添加测试数据
+docs = [
+    {"name":"xiaohuang","sex":0,"age":15,"mobile":"13301234568"},
+    {"name":"xiaofei","sex":1,"age":16,"mobile":"1351234568"},
+    {"name":"xiaolong","sex":1,"age":19,"mobile":"15001234568"},
+    {"name":"xiaomianyang","sex":0,"age":13,"mobile":"15001234568"}
+]
+db.user_list.insertMany(docs);
+
+// 查询一条数据
+db.user_list.findOne()    // 获取集合中第一条数据
+db.user_list.findOne({})  // 同上
+db.user_list.findOne({},{_id:0,child:0})    // 获取集合中第一条数据，并隐藏_id 和 child属性的数据
+db.user_list.findOne({},{_id:0,name:1,mobile:1})  // 获取集合中第一条数据，只查询文档的name和mobile属性的数据
+db.user_list.findOne({name:"xiaolong"},{_id:0,name:1,mobile:1})
+db.user_list.findOne({name:"xiaoming", age:18})
+
+// 查询多条数据
+db.user_list.find()    // 获取集合的所有数据
+db.user_list.find({})  // 同上
+db.user_list.find().pretty()
+db.user_list.find({sex:1}) // db.user_list.find({sex:{$eq:1}})
+db.user_list.find({sex:0},{_id:0,name:1,mobile:1})
+```
+
+
+
+##### 条件运算符
+
+mongoDB中，条件运算符也叫查询器，queryter
+
+###### 比较运算
+
+| 操作       | 格式                                     | 语法例子                              | SQL中的类似语句           |
+| :--------- | :--------------------------------------- | :------------------------------------ | :------------------------ |
+| 等于       | `{<key>:<val>`}<br>`{<key>:{$eq:<val>}}` | `db.集合.find({"name":"xiaoming"})`   | `where name = 'xiaoming'` |
+| 小于       | `{<key>:{$lt:<val>}}`                    | `db.集合.find({"age":{$lt:17}})`      | `where age  < 17`         |
+| 小于或等于 | `{<key>:{$lte:<val>}}`                   | `db.集合.find({"age":{$lte:17}})`     | `where age  <= 17`        |
+| 大于       | `{<key>:{$gt:<val>}}`                    | `db.集合.find({"age":{$gt:17}})`      | `where age  > 17`         |
+| 大于或等于 | `{<key>:{$gte:<val>}}`                   | `db.集合.find({"age":{$gte:17}})`     | `where age  >= 17`        |
+| 不等于     | `{<key>:{$ne:<val>}}`                    | `db.集合.find({"age":{$ne:17}})`      | `where age != 17`         |
+| 包含       | `{<key>:{$in:[<val>...]}}`               | `db.集合.find({"age":{$in:[1,2,3]}})` | `where age in (1,2,3)`    |
+
+终端运行
+
+```javascript
+db.user_list.insertOne({"name":"laowang"});
+db.user_list.find({"age":{$lte:18}})    // 注意：没有当前字段的文档是不会被查询出来，因为默认条件不成立
+db.user_list.find({"age":{$gte:18}})
+db.user_list.find({"age":{$in:[16,33]}})
+db.user_list.find({"sex":{$in:[1,true]}})
+
+// 添加测试数据
+db.user_list.insert({"name":"laowang","age":32,"sex":true,"child": {"name":"xiaowang","age":4}});
+db.user_list.insert({"name":"laozhang","age":33,"sex":true,"child": {"name":"xiaozhang","age":5}});
+db.user_list.find({"child.age":{$gte:3}})
+db.user_list.find({"child.age":{$in:[3,5]}})
+
+// 嵌套文档的查询：订单评价, 
+```
+
+
+
+###### 逻辑运算
+
+| 操作                                                         | 语法                                                         | 语法例子                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `$and`                                                       | `{<key>:<val>,<key>:<val>,...}`<br>`{$and: [{key:{$运算符:<val>}},....]}` | db.集合.find({key1:value1, key2:value2})                     |
+| `$or`                                                        | `{$or: [{<key>: {$运算符:<val>}}, ....]}`                    | db.集合.find({$or: [{key1: value1}, {key2:value2}]})         |
+| `$and`和`$or`                                                | `{<key>:<val>, $or: [{<key>: {<$运算符>:<val>}},...]}`<br>`{$and:[{$or:[{<key>:{<$运算符>:<val>}},..]},$or:[{<key>:{<$运算符>:<val>}},..]}]}` | db.集合.find({key1:value1, $or: [{key1: value1}, {key2:value2}]}) |
+| $not          | `{<key>:{$not:{<$运算符>:<val>}}}`                           | db.集合.find({key1:{$not:{$运算符: val1}}}) |                                                              |                                                              |
+
+```javascript
+SQL:
+	class=1 and sex =true  or class=2 and sex=false
+mongo:
+	{$or: [
+        {$and: [{class:1}, {sex:true}]},
+        {$and: [{class:2}, {sex:false}]},
+    ]}
+
+```
+
+
+
+终端操作：
+
+```javascript
+// 查询age=18 并且 sex=true
+db.user_list.find({
+    $and:[
+        {"age":{$eq:18}},
+        {"sex":{$eq:true}}
+    ]
+})
+// 简写：
+db.user_list.find({
+    $and:[
+        {"age":18},
+        {"sex":true}
+    ]
+})
+// 继续简写；
+db.user_list.find({ "age":18, "sex":true })
+
+// 查询age=16或者age=18
+db.user_list.find({
+    $or:[
+        {"age":{$eq:16}},
+        {"age":{$eq:18}}
+    ]
+})
+// 简写：
+db.user_list.find({
+    $or:[
+        {"age":16},
+        {"age":18}
+    ]
+})
+
+// 查询年龄!=16的
+db.user_list.find({"age":{$not:{$eq:16}}})
+// 简写：
+db.user_list.find({"age":{$ne:16}})
+
+
+// 查询age=33的男生 或者 age=18的男生
+db.user_list.find({
+    "sex":true,
+    $or:[
+        {"age":18},
+        {"age":33}
+    ]
+});
+
+db.user_list.find({
+    "sex":true,
+    "age":{
+    	$in:[18,33]
+ 	}
+});
+
+db.user_list.find({
+    $or:[
+        {$and:[{"sex":true},{"age":18}]},
+        {$and:[{"sex":true},{"age":33}]},
+    ]
+});
+
+db.user_list.find({
+    $or:[
+        {"sex":true,"age":18},
+        {"sex":true,"age":33},
+    ]
+});
+
+
+// 查询 age=19,手机号码以150开头 或者 儿子年龄>=4岁的男生，
+// 判断手机以指定字符开头可以使用$regex
+
+db.user_list.find({
+    $or: [
+        {$and: [{age:19}, {mobile:{$regex:/^150/}}]},
+        {$and: [{"child.age":{$gte:4}}, {sex: true}]},
+    ]
+})
+
+
+// 简写
+db.user_list.find({
+	$or: [
+		{$and: [{age:19}, {mobile:{$regex:/^150/}}]},
+		{"child.age":{$gte:4}, sex: true},
+	]
+})
+
+
+// 再次简写
+db.user_list.find({
+     $or: [
+         {age:19, mobile:{$regex:/^150/}},
+         {"child.age":{$gte:4}, sex: true},
+     ]
+})
+
+```
+
+
+
+###### 其他运算符
+
+| 操作    | 格式                                                         | 语法例子                                  | 说明                                                         |
+| ------- | ------------------------------------------------------------ | ----------------------------------------- | ------------------------------------------------------------ |
+| $type   | `{<key>:{$type: <datetype>}}`                                | `db.集合.find({"name":{$type:'string'}})` | 匹配指定键是指定数据类型的文档<br>number 数值型<br>string 字符串<br>bool 布尔类型<br>object json文档对象类型<br>array 数组类型 |
+| $exists | `{<key>:{$exists:<bool>}`                                    | `db.集合.find({"title":{$exists:true}})`  | 匹配具有指定键的文档，存在指定字段的文档                     |
+| $regex  | `{ <key>:/模式/<修正符>}`<br>`{<key>:{$regex:/模式/<修正符>}}` | `db.集合.find({"name":{$regex:/张$/}})`   | 按正则匹配                                                   |
+| $mod    | `{<key>: {$mod: [除数, 余数]}}`                              | `db.集合.find({"age":{$mod:[10,0]}})`     | 算数运算，取模，语法中举例是age除以10==0                     |
+|         |                                                              |                                           |                                                              |
+
+终端操作：
+
+```javascript
+db.user_list.insert({"name":"xiaoming","sex":0,"age":"18"});
+db.user_list.insert({"name":"xiaoming","sex":1,"age":"18"});
+db.user_list.insert({"name":"xiaoming","sex":1,"age":"33"});
+db.user_list.insert({"name":"xiaoming","sex":0,"age":"33"});
+// $type
+db.user_list.find({"sex":{$type:"number"}});
+db.user_list.find({"age":{$type:"string"}});
+
+
+// $exists
+db.user_list.find({"child":{$exists:true}});
+
+// $regex 正则匹配
+db.user_list.insert({"name":"xiaoming","sex":0,"age":"18","mobile":"13301234568"});
+db.user_list.insert({"name":"xiaoming","sex":1,"age":"18","mobile":"1351234568"});
+db.user_list.insert({"name":"xiaoming","sex":1,"age":"33","mobile":"15001234568"});
+db.user_list.insert({"name":"xiaoming","sex":0,"age":"33","mobile":"15001234568"});
+
+// 符合手机格式
+db.user_list.find({"mobile":{$regex: /1[3-9]\d{9}/ }});
+// 不符合手机号码格式的
+db.user_list.find({"mobile":{$not:{$regex: /1[3-9]\d{9}/ }}});
+
+
+// $mod
+db.user_list.find({"age":{$mod: [3,0] }});
+```
+
+
+
+###### 自定义条件函数
+
+慎用！！！效率差
+
+```json
+// 用法1，逻辑比较复杂的情况，可以使用更多的javascript进行运算处理：结果函数结果为true，则当前数据被查询出来。
+db.<集合名称>.find({$where: ()=>{   // this代表的就是查询过程中，被循环的每一条文档数据
+    return <this.字段> <$运算符> <条件值>;
+}}});
+
+// 用法2，相对没那么复杂的，取函数的返回值作为条件值:
+db.集合.find({$where:"<this.字段> <运算符> <条件值>"});
+// db.集合.find({$where:"this.name=='xiaoming'"});
+```
+
+操作：
+
+```javascript
+db.user_list.find({$where: ()=>{
+    return this.name=="xiaoming" && this.age<30;
+}});
+
+// 把字符串作为代码条件执行，当结果为true，则返回当前符合的数据
+db.user_list.find({$where: "this.name=='xiaoming' && this.age>30"});
+```
+
+
+
+##### 排序显示
+
+```json
+db.集合.find().sort({<key>:1})  // 升序，默认为升序
+db.集合.find().sort({<key>:-1}) // 倒序， 
+```
+
+终端操作：
+
+```javascript
+db.user_list.find().sort({age:-1});
+db.user_list.find().sort({age:-1, sex:1});
+```
+
+
+
+##### 字段投影
+
+`find()`方法默认将返回文档的所有数据，但是可以通过设置`find()`的第二个参数projection，设置值查询部分数据。
+
+语法：
+
+```json
+// 获取一条
+db.集合.findOne(
+	<query>，     // 查询条件
+    {
+    	<key>: 0, // 隐藏指定字段，例如："_id":0,
+    	<key>: 1, // 显示指定字段，例如："title":1,
+    	....
+    }
+)
+// 获取多条
+db.集合.find(
+	<query>,      // 查询条件
+    {
+    	<key>: 0, // 隐藏指定字段，例如："_id":0,
+    	<key>: 1, // 显示指定字段，例如："title":1,
+    	....
+    }
+)
+```
+
+操作：
+
+```javascript
+> db.user_list.find({"mobile":{$regex:/^133\d{8}$/}},{"_id":0}).sort({"mobile":-1})
+    { "name" : "xiaoming", "mobile" : "13333355678" }
+    { "name" : "xiaoming", "mobile" : "13333345678" }
+    { "name" : "xiaoming", "mobile" : "13312345678" }
+
+> db.user_list.find({"mobile":{$regex:/^133\d{8}$/}},{"_id":0,"name":0}).sort({"mobile":-1})
+    { "mobile" : "13333355678" }
+    { "mobile" : "13333345678" }
+    { "mobile" : "13312345678" }
+
+> db.user_list.find({"mobile":{$regex:/^133\d{8}$/}},{"name":1}).sort({"mobile":-1})
+    { "_id" : ObjectId("60502fb7d5c7a55cc95c1cc4"), "name" : "xiaoming" }
+    { "_id" : ObjectId("60502fb4d5c7a55cc95c1cc3"), "name" : "xiaoming" }
+    { "_id" : ObjectId("60502fb1d5c7a55cc95c1cc2"), "name" : "xiaoming" }
+
+> db.user_list.find({"mobile":{$regex:/^133\d{8}$/}},{"name":1,"_id":0}).sort({"mobile":-1})
+    { "name" : "xiaoming" }
+    { "name" : "xiaoming" }
+    { "name" : "xiaoming" }
+```
+
+
+
+##### 限制与偏移
+
+`limit`方法用于限制返回结果的数量
+
+`skip`方法用于设置返回结果的开始位置
+
+```json
+db.集合.find(...).limit(结果数量).skip(开始下标)
+```
+
+终端操作：
+
+```javascript
+db.user_list.find({},{"_id":0,"name":1,"age":1}).sort({"age":1}).limit(5);
+db.user_list.find({},{"_id":0,"name":1,"age":1}).sort({"age":1}).limit(5).skip(0);
+
+db.user_list.find({},{"_id":0,"name":1,"age":1}).sort({"age":1}).limit(5).skip(5);
+```
+
+
+
+#### 更新文档
