@@ -1533,3 +1533,717 @@ db.user_list.find({},{"_id":0,"name":1,"age":1}).sort({"age":1}).limit(5).skip(5
 
 
 #### 更新文档
+
+```json
+// 更新数据
+db.集合.update(
+    <query>,
+    <update>,
+    {
+     upsert: <boolean>, // 可选参数，如果文档不存在，是否插入objNew, true为插入，默认是false，不插入
+     multi: <boolean>,  // 可选参数，是否把满足条件的所有数据全部更新，设置更新1条还是多条
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+
+// 更新一条
+db.集合.updateOne(
+   <query>,   // update的查询条件，一般写法：{"属性":{条件:值}}
+   <update>,  // update的更新数据，一般写法 { $set:{"属性":"值",....} } 或者 { $inc:{"属性":"值"} }
+   {
+     upsert: <boolean>, // 可选参数，如果文档不存在，是否插入objNew, true为插入，默认是false，不插入
+     multi: <boolean>,  // 可选参数，是否把满足条件的所有数据全部更新，设置更新1条还是多条
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+
+// 更新多条
+db.集合.updateMany(
+   <query>,   // update的查询条件，一般写法：{"属性":{条件:值}}
+   <update>,  // update的对象，一般写法 { $set:{"属性":"值"} } 或者 { $inc:{"属性":"值"} }
+   {
+     upsert: <boolean>, // 可选参数，如果文档不存在，是否插入objNew, true为插入，默认是false，不插入
+     multi: <boolean>,  // 可选参数，是否把满足条件的所有数据全部更新
+     writeConcern: <document> // 可选参数，抛出异常的级别。
+   }
+)
+```
+
+
+
+##### update更新运算符[修改器]
+
+| 操作       | 语法                                                         |                                                              |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `$inc`     | `db.集合.update({<key1>:<val1>},{$inc:{<key2>:<val2>}})`     | 更新key1=val1的文档中key2的值为val2，类似python的递增递减<br>递减，则`{ $inc:{<key2>:-<val2>} }` |
+| `$set`     | `db.集合.update({<key1>:<val>}, {$set:{<key2>:<val2>}})`     | 更新key1=val1的文档中key2的值为val2，如果key2不存在则新增对应键值对 |
+| `$unset`   | `db.集合.update({<key1>:<val>}, {$unset:{<key2>:<val2>}})`   | 移除key1=val1的文档中key2=val2这个键值对                     |
+| `$push`    | `db.集合.update({<key1>:<val>}, {$push:{<key2>:<val2>}})`    | 给key1=val1的文档中key2列表增加1个数组成员val2。<br>key2必须是数组。 |
+| `$pull`    | `db.集合.update({<key1>:<val>}, {$pull:{<key2>:<val2>}})`    | 与push相反，给key1=val1的文档中key2列表删除1个指定成员val2   |
+| `$pullAll` | db.集合.update({<key1>:<val>}, {$pullAll:{<key2>:[<val2>,<val3>]}}) | 与$pull作用一样，用于删除多个指定成员 |                                                              |
+| `$pop`     | `db.集合.update({<key1>:<val>}, {$pop:{<key2>:<val2>}})`     | 给key1=val1的文档中key2列表移除第一个或最后一个成员。<br>val2只能是1(最后面)或-1(最前面)，与python相反 |
+
+终端操作：
+
+```javascript
+// $inc
+// 把laoli的年龄+10岁
+db.user_list.update({"name":"laoli"},{$inc:{"age":10}}); // 更新一条
+db.user_list.updateMany({"name":"xiaoming"},{$inc:{"age":10}}); // 更新多条
+// 把laoli的孩子年龄+10岁
+db.user_list.update({"name":"laoli"},{$inc:{"child.age":10}});
+
+
+// $set
+// 如果字段不存在，则新增字段的键值对，如果字段存在，则修改字段的值
+//更新laoli的手机号码
+db.user_list.update({"name":"laoli"},{$set:{"mobile":"18012312312"}}); // 更新一条
+// 更新laoli孩子的手机号码
+db.user_list.update({"name":"laoli"},{$set:{"child.mobile":"18012312312"}});
+
+// $unset
+// 移除laoli的性别键值对
+db.user_list.update({"name":"laoli"},{$unset:{"sex":true}});
+
+// $push
+db.user_list.update({"name":"laoli"},{$set:{"lve":["TV","game"]}});
+db.user_list.update({"name":"laoli"},{$push:{"lve":"code"}}); // 往列表属性中追加成员
+
+// $addToSet 结合 $each 把一个数组中每一个成员添加到数组中
+db.user_list.update({"name":"laoli"},{$addToSet:{"lve":{$each:["code","music","TV"]}}});
+
+// $pull
+db.user_list.update({"name":"laoli"},{$pull:{"lve":"TV"}});
+
+// $pullAll
+db.user_list.update({"name":"laoli"},{$pullAll:{"lve":["TV","game"]}});
+
+
+// $pop
+db.user_list.update({"name":"laoli"},{$pop:{"lve":-1}}); // 左边移除列表的第一个成员
+db.user_list.update({"name":"laoli"},{$pop:{"lve":1}}); // 右边移除列表的最后一个成员
+
+// $rename 字段名重命名
+db.user_list.update({"name":"laoli"},{$rename:{"lve":"love"}});
+```
+
+
+
+### 索引操作
+
+前面学习过MySQL，我们知道数据库里给数据构建索引通常能够**极大的提高数据查询的效率**，缩短查询耗时，如果没有索引，数据库在查询数据时必然会扫描数据表中的每个记录并提取那些符合查询条件的记录。同理，在MongoDB中构建索引也可以提高数据的查询效率和缩短查询耗时，没有索引的情况也是一样，MongoDB也会再查询数据时扫描集合中的每个文档并提取符合查询条件的文档。这种扫描全集合的查询效率是无疑是非常低下的，特别在处理大量的集合数据时，查询时间可能会达到几十秒甚至几分钟，这对用户体验来说是非常致命的。
+
+文档：https://docs.mongodb.com/manual/indexes/#default-id-index
+
+#### 准备数据
+
+```javascript
+use demo
+fotmatnumber = (start, end)=>{
+    num = Math.round(Math.random() * (end-start)) + start
+    if(num<10){
+        return "0"+num;
+    }else{
+        return num;
+    }
+}
+
+rand_title = (i)=>{
+    num = Math.round( Math.random() * 10 );
+    num1 = Math.round( Math.random() * 10 );
+    return [
+        "赠送礼品-"+num,
+        "购物狂欢-"+num,
+        "随便买买-"+num,
+        "愉快购物-"+num,
+        "赠送礼物-"+num,
+        "商品购买-"+num,
+        "买多送多-"+num,
+        "买年货-"+num,
+        "买买买买-"+num,
+        "充值会员-"+num
+    ][num1];
+}
+
+for(var i=0; i<200000; i++){  
+    db.orders.insert({
+        "onumber": ( "0000000000000000" + i ).substr( String(i).length ),  
+        "date": "20"+fotmatnumber(0,21)+"-"+fotmatnumber(1,12)+"-"+fotmatnumber(1,31),  
+        "title": rand_title(i),
+        "user_id": parseInt(i/200)+1,
+        "items" :[{ 
+        	"goods_id" : parseInt(i/200)+1,
+        	"goods_attr" : i,  
+        	"price" : 100.0
+        },{ 
+        	"goods_id" : parseInt(i/200)+2,
+        	"goods_attr" : i+1,  
+        	"price" : 80.0
+        }]
+    })
+    if(i%10000==0){
+        print("已经添加了"+parseInt(i/10000)+"万条数据！");
+    }
+}
+```
+
+
+
+#### 注意事项
+
+1. MongoDB的索引是存储在运行内存(RAM)中的，所以必须确保索引的大小不超过内存的限制。
+
+   如果索引的大小超过了运行内存的限制，MongoDB会删除一些索引，这将导致性能下降。
+
+2. MongoDB的索引在部分查询条件下是不会生效的。
+
+   -   正则表达式及非操作符，如 `$nin`,`$not` , 等。
+   -   算术运算符，如 $mod, 等。
+   -   $where自定义查询函数。
+   -   ...
+
+3. 索引会在写入数据（添加、更新和删除）时重排，如果项目如果是写多读少，则建议少使用或者不要使用索引。
+
+4. 一个集合中索引数量不能超过64个。
+
+5. 索引名的长度不能超过128个字符。
+
+6. 一个复合索引最多可以有31个字段。
+
+7. mongodb索引统一在`system.indexes`集合中管理。这个集合只能通过`createIndex`和`dropIndexes`来操作。
+
+#### 查看索引
+
+```javascript
+// 获取当前集合中已经创建的所有索引信息
+db.集合.getIndexes()
+/*
+[{ 
+	"v" : 2,   // 索引版本
+	"key" : {  // 索引的字段及排序方向(1表示升序，-1表示降序)
+		"_id" : 1   // 根据_id字段升序索引
+    }, 
+    "name" : "_id"   // 索引的名称
+}]
+*/
+// 获取当前集合中已经创建的索引总大小，以字节为单位返回结果
+db.集合.totalIndexSize()
+// 获取当前数据库中所有的索引【不会显示默认主键_id】
+db.system.indexes.find()
+```
+
+MongoDB会为插入的文档默认生成`_id`字段（如果文档本身没有指定该字段），`_id`是文档唯一的主键，为了保证能根据文档id快速查询文档，MongoDB默认会为集合创建_id字段的主键索引。
+
+#### 查询分析
+
+与SQL语句类似，MongoDB也提供了一个explain，供开发者进行查询分析，优化查询语句。
+
+explain的使用有3个参数，分别是：queryPlanner、executionStats、allPlansExecution，默认是queryPlanner，开发中常用的是executionStats。
+
+```javascript
+db.orders.find({"title":"愉快购物-6"}).explain("executionStats");
+/*
+{
+	"queryPlanner" : {  # 被查询优化器选择出来的查询计划
+		"plannerVersion" : 1,  # 查询计划版本
+		"namespace" : "test.orders", # 要查询的集合
+		"indexFilterSet" : false,  # 是否了使用索引
+		"parsedQuery" : {  # 查询条件
+			"title" : {
+				"$eq" : "购买商品-19"
+			}
+		},
+		"winningPlan" : {     # 最佳执行计划
+			"stage" : "COLLSCAN", # 扫描类型/扫描阶段
+			"filter" : {     # 过滤条件
+				"title" : {
+					"$eq" : "购买商品-19"
+				}
+			},
+			"direction" : "forward"  # 查询方向，forward为升序，backward表示倒序。
+		},
+		"rejectedPlans" : [ ]   # 拒绝的执行计划
+	},
+	"executionStats" : {  # 最佳执行计划的一些统计信息
+		"executionSuccess" : true,  # 是否执行成功
+		"nReturned" : 1,   # 返回的结果数
+		"executionTimeMillis" : 346,  # 执行耗时
+		"totalKeysExamined" : 0,      # 索引扫描次数
+		"totalDocsExamined" : 1000000,  # 文档扫描次数，所谓的优化无非是让totalDocsExamined和nReturned的值接近。
+		"executionStages" : {     # 执行状态
+			"stage" : "COLLSCAN",  # 扫描方式/扫描阶段
+			"filter" : {
+				"title" : {
+					"$eq" : "购买商品-19"
+				}
+			},
+			"nReturned" : 1,   # 返回的结果数
+			"executionTimeMillisEstimate" : 5,   # 预估耗时
+			"works" : 1000002,   # 工作单元数
+			"advanced" : 1,      # 优先返回的结果数
+			"needTime" : 1000000,
+			"needYield" : 0,
+			"saveState" : 1000,
+			"restoreState" : 1000,
+			"isEOF" : 1,
+			"direction" : "forward",
+			"docsExamined" : 1000000   # 文档检查数目，与totalDocsExamined一致
+		}
+	},
+	"serverInfo" : {   # 服务器信息
+		"host" : "ubuntu",
+		"port" : 27017,
+		"version" : "4.4.2",
+		"gitVersion" : "15e73dc5738d2278b688f8929aee605fe4279b0e"
+	},
+	"ok" : 1
+}
+
+*/
+
+```
+
+stage的扫描类型：
+
+| 类型名称   | 描述                               | 期望  |
+| ---------- | ---------------------------------- | ----- |
+| COLLSCAN   | 全表扫描                           | False |
+| IXSCAN     | 索引扫描                           | True  |
+| FETCH      | 根据索引去检索指定document         | True  |
+| IDHACK     | 针对_id进行查询                    | True  |
+| COUNTSCAN  | count不使用Index进行count时返回    | False |
+| COUNT_SCAN | count使用了Index进行count时返回    | True  |
+| SUBPLA     | 未使用到索引的$or查询时返回        | False |
+| TEXT       | 使用全文索引进行查询时返回         | -     |
+| SORT       | 使用sort排序但是无index时返回      | False |
+| SKIP       | 使用skip跳过但是无index时返回      | False |
+| PROJECTION | 使用limit限定结果但是无index时返回 | False |
+
+
+
+#### 创建索引
+
+MongoDB支持多种类型的索引，包括普通索引(单列索引)、复合索引、多列索引、全文索引、[哈希索引](https://docs.mongodb.org/manual/core/index-hashed/)、[地理位置索引](https://docs.mongodb.org/manual/core/2d/)等，每种类型的索引有不同的使用场合。ttl索引本质上就是普通索引，只是给索引添加一个过期时间而已。另外，MongoDB的全文索引很弱智，如果真要用在开发中，还是建议使用elasticsearch或者Sphinx。
+
+```json
+// 创建索引
+db.集合.createIndex({
+    // 单个字段，则为普通索引，    // sort的值表示排序，值为1表示升序索引，-1表示降序索引
+    "字段名1": <sort|type>,       // type的值可以是text，表示创建全文索引。db.集合.find({$text:{$search:"字符串"}})
+    "字段名2": <sort|type>,       // 多个字段，则为复合索引
+    "字段名3": [<值1>,<值2>,...],  // 多列索引
+    ....
+}, {
+    background: <Boolean>,   // 建索引过程会阻塞数据库的其它操作，background可指定以后台方式创建索引，默认为false
+    unique: <Boolean>,  // 是否建立唯一索引，默认值为false，也叫唯一索引
+    name: <String>,   // 索引的名称，不填写，则MongoDB会通过连接索引的字段名和排序顺序生成一个索引名称 
+    expireAfterSeconds: <integer>, // 设置索引的过期时间，类似redis的expire，也叫TTL索引
+    sparse: <Boolean>,  // 对文档中不存在的字段数据是否不启用索引，默认为False
+});
+
+
+// 单字段索引[普通索引]
+ db.集合.createIndex({
+    "字段名": <sort>,    // sort的值表示排序，值为1表示升序索引，-1表示降序索引
+ }, {
+	....
+ })
+// 普通索引创建： db.orders.createIndex({"title":1})
+// 查询基本使用： db.orders.find({"title":"愉快购物-6"}).explain("executionStats");
+
+
+// 多字段索引，也叫复合索引。[类似mysql里面的联合索引]
+ db.集合.createIndex({
+    "字段名1": <sort>,    // sort的值表示排序，值为1表示升序索引，-1表示降序索引
+    "字段名2": <sort>,    // sort的值表示排序，值为1表示升序索引，-1表示降序索引
+ }, {
+	....
+ })
+
+// 复合索引的使用对单字段条件的查找是没有帮助的，必须多字段[必须包含复合索引的字段]条件使用
+// 复合索引创建：db.orders.createIndex({"date":1,"title":1});
+// 查询基本使用：
+//     db.orders.find({"date":"2014-06-12","title":"买年货-7"}).explain("executionStats");
+//     db.orders.find({"date":"2014-06-12","onumber":"0000000000030014","title":"买年货-7"});
+
+
+// 全文索引
+ db.集合.createIndex({
+    "字段名1": "text",    // type的值只能是text，表示创建全文索引。db.集合.find({$text:{$search:"字符串"}})
+ }, {
+	....
+ })
+
+// 全文索引创建： db.orders.createIndex({"title":"text"})
+// 查询基本使用： db.orders.find({$text:{$search:"商品-19"}}).explain("executionStats")
+
+
+
+// 多列索引[应用的地方是在列表属性]
+ db.集合.createIndex({
+    "字段名3": [<值1>,<值2>,...],
+ }, {
+	....
+ });
+
+// 创建测试数据
+db.doc.drop()
+db.doc.insert({"title":"标题1","tags":["python","django"]})
+db.doc.insert({"title":"标题1","tags":["python","django"]})
+db.doc.insert({"title":"标题1","tags":["python","django"]})
+db.doc.insert({"title":"标题2","tags":["java","mvp"]})
+db.doc.insert({"title":"标题3","tags":["java","mvp"]})
+db.doc.insert({"title":"标题2","tags":["java","mvp"]})
+db.doc.insert({"title":"标题3","tags":["python"]})
+db.doc.insert({"title":"标题4","tags":["python"]})
+db.doc.insert({"title":"标题2","tags":["python","flask"]})
+db.doc.insert({"title":"标题3","tags":["java"]})
+// 创建多列索引： db.doc.createIndex({"tags":1})
+// 查询数据： db.doc.find({"tags":["python"]}).explain("executionStats")
+
+
+
+// 唯一索引
+db.集合.createIndex({
+    "字段名1": <sort>,
+}, {
+    unique: true,     // 是否建立唯一索引，默认值为false，也叫唯一索引
+})
+// 创建唯一索引： db.orders.createIndex({"onumber":1},{unique:true});
+// 查询数据： db.orders.find({"onumber":"0000000000001019"}).explain("executionStats")
+
+
+
+// ttl索引
+// 使用ttl索引，索引关键字段的值类型必须是Date类型，如果该字段不是date类型或者文档中不存在该字段，则文档不会进行过期处理
+// 数据过期的删除工作是在mongoDB中的独立线程内执行的，默认平均60s扫描一次，不会立即删除。
+
+// 例如：在文档创建10秒后删除文档
+db.orders.dropIndex("date_1")
+db.orders.createIndex({"date": 1},{expireAfterSeconds: 10});
+db.orders.insertOne({
+   "date": new Date("2022-01-10 17:30:00"), // 在python中需要通过 utctime
+   "user_id": 2,
+   "username": "xiaohong"
+})
+
+// 在文档创建后，由索引字段值指定的时间删除文档
+// 创建索引：db.tasks.createIndex({"expire_time":1},{expireAfterSeconds:0})
+// 创建测试数据
+db.tasks.insert( {
+   "expire_time": new Date('2022-01-10 17:32:05'), // 在python中需要通过 utctime
+   "user_id": 2,
+   "username": "xiaoming",
+   "onumber": "200003"
+});
+
+db.tasks.insert( {
+   "expire_time": new Date('2022-01-10 17:34:05'), // 在python中需要通过 utctime
+   "user_id": 2,
+   "username": "xiaoming"
+   "onumber": "200004"
+});
+db.tasks.insert( {
+   "expire_time": new Date('2022-01-10 17:35:10'), // 在python中需要通过 utctime
+   "user_id": 2,
+   "username": "xiaoming"
+   "onumber": "200005"
+});
+
+// 重建索引[一般是在长期项目运行下来，索引创建时间太久了，性能下降的时候使用。]
+// !!!!不能在高峰期时运行以下操作
+db.集合.reIndex();
+```
+
+
+
+#### 删除索引
+
+MongoDB给文档主键`_id`默认创建单字段索引是无法删除的。
+
+```json
+// 删除单个索引
+db.集合.dropIndex("索引名称")
+// db.orders.dropIndex("date_1")
+
+// 删除所有索引，慎用
+db.集合.dropIndexes()
+```
+
+
+
+在python当中，一般常用于开发中操作monoDB的模块无非三个：pymongo, mongoengine,  moter
+
+moter是python中基于pymongo实现的异步操作库，类似于aiomysql，aiomysql也是python基于pymysql实现的异步库。
+
+```python
+mysql  pymysql  mysqlDB  aiomysql[基于pymysql实现的异步库]
+redis  pyredis  redis    aioredis[基于pyredis实现的异步库]
+mongo  pymongo  mongoengine[基于pymongo实现的ORM，高仿django的ORM]  moter[基于pymongo实现的异步库]
+```
+
+
+
+## PyMongo
+
+安装：
+
+```bash
+pip install pymongo
+```
+
+### 数据库连接
+
+**数据库连接，无密码**
+
+```python
+import pymongo
+mongo = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+```
+
+**数据库连接，有密码**
+
+```python
+import pymongo
+from urllib.parse import quote_plus
+
+if __name__ == '__main__':
+    # 方式1：
+    username = quote_plus("mofang") # 字符转移，防止出现多字节的字符，例如中文或者特殊符号
+    password = quote_plus("123456")
+    database = quote_plus("mofang")
+    # 获取数据库连接对象
+    mongo = pymongo.MongoClient(f"mongodb://{username}:{password}@127.0.0.1:27017/{database}")
+    print(mongo)
+    # 获取数据库操作对象
+    db = mongo[database]
+    print(db)
+    # 获取集合操作对象
+    collection = db["user_list"]
+    print(collection)
+
+    # 方式2：
+    mongo = pymongo.MongoClient('mongodb://127.0.0.1:27017')
+    db = mongo["mofang"]
+    username = "mofang"
+    password = "123456"
+    db.authenticate(username, password) # 相当于在monogDB终端下的db.auth()
+    print(db)
+    collection = db["user_list"]
+    print(collection)
+```
+
+
+
+### 数据库管理
+
+```python
+import pymongo
+from urllib.parse import quote_plus
+
+if __name__ == '__main__':
+    username = quote_plus("mofang")
+    password = quote_plus("123456")
+    # 获取数据库连接对象
+    mongo = pymongo.MongoClient(f"mongodb://{username}:{password}@127.0.0.1:27017/mofang")
+    print(mongo)
+
+    # 新建一个数据库
+    shop = mongo["shop"]
+    print(shop)
+    # 查看数据库列表[只会列出有文档数据的数据库]
+    print(mongo.list_database_names())  # 上面的 my_db 因为没有内容，所以没有被创建的。
+    print(mongo["mofang"])
+```
+
+
+
+### 集合管理
+
+```python
+import pymongo
+from urllib.parse import quote_plus
+
+if __name__ == '__main__':
+    username = quote_plus("mofang")
+    password = quote_plus("123456")
+    # 获取数据库连接对象
+    mongo = pymongo.MongoClient(f"mongodb://{username}:{password}@127.0.0.1:27017/mofang")
+    print(mongo)
+
+    # 新建一个数据库
+    shop = mongo["shop"]
+    print(shop)
+    # 查看数据库列表[只会列出有文档数据的数据库]
+    print(mongo.list_database_names())  # 上面的 my_db 因为没有内容，所以没有被创建的。
+
+    db = mongo["mofang"]
+    # 新建集合
+    user_list = db["user_list"] # 新建一个集合
+
+    # 查看指定数据的集合列表[只会列出有文档数据的集合]
+    print( db.list_collection_names() )
+
+    # 获取指定名称对应的集合操作对象
+    user_list = db["user_list"]
+    # 删除集合
+    user_list.drop()
+```
+
+
+
+### 文档管理
+
+#### 添加文档
+
+```python
+import pymongo
+mongo = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+mofang = mongo["mofang"]
+user_list = mofang["user_list"]
+
+# 添加一个文档
+document = { "name": "xiaoming", "mobile": "13012345678","age":16}
+ret = user_list.insert_one(document)
+print(ret.inserted_id) # 返回InsertOneResult对象
+# 插入文档时，如果没有指定_id，将自动分配一个唯一的id。
+
+# 添加多个文档
+document_list = [
+  { "name": "xiaoming", "mobile": "13033345678","age":17},
+  { "name": "xiaohong", "mobile": "13044345678","age":18},
+  { "name": "xiaohei",  "mobile": "13612345678","age":18},
+]
+ret = user_list.insert_many(document_list)
+
+# 打印文档_id值列表:
+print(ret.inserted_ids)
+```
+
+
+
+#### 删除文档
+
+```python
+import pymongo
+from urllib.parse import quote_plus
+from bson import ObjectId
+
+if __name__ == '__main__':
+    username = quote_plus("mofang")
+    password = quote_plus("123456")
+    # 获取数据库连接对象
+    mongo = pymongo.MongoClient(f"mongodb://{username}:{password}@127.0.0.1:27017/mofang")
+    mofang = mongo["mofang"]
+    user_list = mofang["user_list"]
+
+    """删除一个文档"""
+    query = {"_id": ObjectId("6157dcdeec192e9a0b7ea0e0")}
+    ret = user_list.delete_one(query)
+    print(ret)
+    print(ret.deleted_count)
+
+
+    """删除多个文档"""
+    query = {"name":"xiaolan"}
+    ret = user_list.delete_many(query)
+    print(ret)
+    print(ret.deleted_count)
+
+    """可以通过删除集合的方式，达到删除所有文档的效果"""
+```
+
+
+
+#### 更新文档
+
+```python
+import pymongo
+from urllib.parse import quote_plus
+from bson import ObjectId
+
+if __name__ == '__main__':
+    username = quote_plus("mofang")
+    password = quote_plus("123456")
+    # 获取数据库连接对象
+    mongo = pymongo.MongoClient(f"mongodb://{username}:{password}@127.0.0.1:27017/mofang")
+    mofang = mongo["mofang"]
+    user_list = mofang["user_list"]
+
+    """更新一条数据"""
+    query = {"name": "小白"}
+    data = {"$set": {"age": 22}}
+    ret = user_list.update_one(query, data)
+
+    print(ret)
+    print(ret.modified_count)
+
+    """更新所有文档"""
+    query = {"mobile": {"$regex": "^13"}}
+    data = {"$inc": {"age": 2}}
+    ret = user_list.update_many(query, data)
+    print(ret)
+    print(ret.modified_count)
+```
+
+
+
+#### 查询文档
+
+```python
+import pymongo
+
+mongo = pymongo.MongoClient("mongodb://127.0.0.1:27017/")
+mofang = mongo["mofang"]
+user_list = mofang["user_list"]
+
+# 查看一个文档
+ret = user_list.find_one()
+print(ret)
+
+# 查看所有文档
+for document in user_list.find():
+	print(document)
+
+# 查看文档部分字段，find和find_one的第二个参数表示控制字段的显示隐藏，1为显示，0为隐藏
+for document in user_list.find({},{ "_id": 0, "name": 1, "mobile": 1 }):
+	print(document)
+
+# 条件查询
+query = { "age": 18 }
+document_list = user_list.find(query)
+for document in document_list:
+	print(document)
+
+# 比较运算符
+query = { "age": {"$gt":17} }
+document_list = user_list.find(query)
+for document in document_list:
+	print(document)
+
+# 排序显示
+# 单个字段排序：
+# 		sort("键", 1) 升序
+# 		sort("键",-1) 降序
+
+# 多个字段排序：
+#       sort([("键1",1),("键2",-1)])
+document_list = user_list.find().sort("age")
+for document in document_list:
+	print(document)
+    
+# 限制查询结果数量
+document_list = user_list.find().limit(3)
+for document in document_list:
+	print(document)
+
+# 偏移、跳过
+#	skip(int)
+document_list = user_list.find().limit(3).skip(3) # 从第3篇文档开始获取3篇文档
+print(document_list)
+
+# 自定义条件函数
+document_list = user_list.find({"$where":"this.age==18"})
+print(document_list)
+```
+
