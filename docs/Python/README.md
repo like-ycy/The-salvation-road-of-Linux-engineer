@@ -6,6 +6,7 @@
   * [初识Python](/docs/Python/1初识Python/2.初识Python.md)
   * [Python是解释型的强类型动态语言](/docs/Python/1初识Python/3.Python是解释型的强类型动态语言.md)
   * [Python的运行方法](/docs/Python/1初识Python/4.Python的运行方法.md)
+  * [PEP484规范](/docs/Python/1初识Python/5PEP484规范.md)
 
 ## Python基础
 
