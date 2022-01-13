@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Sync Github Repos To Gitee
-        uses: Yikun/hub-mirror-action@v1.1
+        uses: Yikun/hub-mirror-action@v1.2
         with:
           src: github/like-ycy
           dst: gitee/like-ycy
