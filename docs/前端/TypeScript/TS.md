@@ -6,8 +6,6 @@
 
 ## 介绍
 
-![typescript](C:/Users/WANG/Desktop/Ts%2520day2/assets/def439ecb1095195a0ffd963e06d6212.png)
-
 TypeScript 是一种**强类型**的编程语言，它起源于使用JavaScript开发的大型项目，由于JavaScript本身属于**弱类型**语言的局限性，难以胜任和维护大型项目的开发工作。因此微软于2012年推出了TypeScript ，使得其能够胜任开发大型项目。
 
 TypeScript通过在JavaScript的基础上添加静态类型定义构建而成，可以编译为 JavaScript代码来执行。它最大特点是强大的类型系统和对ES6规范的支持，TypeScript托管于GitHub上面。
@@ -39,8 +37,6 @@ javascript：ECMA语法，BOM浏览器对象模型和DOM文档对象模型。js�
 
 
 #### JavaScript 与 TypeScript 的关系和区别
-
-​                                   ![img](C:/Users/WANG/Desktop/Ts%2520day2/assets/ts-2020-11-26-2.png)             ![img](C:/Users/WANG/Desktop/Ts%2520day2/assets/ts-2020-11-26-1.png)
 
 TypeScript属于Javascript 的**超集**，扩展了Javascript的语法，现有的Javascript代码可以不经任何改动的情况下在TypeScript环境下运行。同时TypeScript代码，可以通过typescript的编译器转换为纯正的 JavaScript代码，且编译出来的 JavaScript代码能够运行在任何浏览器上。TypeScript 的编译工具也可以运行在任何服务器和任何系统上。
 
@@ -184,8 +180,6 @@ document.body.textContent = main(user);
 ```
 error TS2345: Argument of type 'number[]' is not assignable to parameter of type 'string'.
 ```
-
-![image-20210128030545427](C:/Users/WANG/Desktop/Ts%2520day2/assets/image-20210128030545427.png)
 
 TypeScript告诉你，使用了非期望个数的参数调用了这个函数。在编译过程中，TypeScript提供了静态的代码分析，它可以分析代码结构和提供的类型注解。当然，尽管编译出现了错误，`main.js`文件还是被创建了。 就算你的代码里有错误，你仍然可以使用TypeScript。
 
@@ -503,7 +497,7 @@ Static.desc();       // 调用静态方法
 
 面向对象中的所谓封装，本质上就是把一系列相关的数据(属性/变量/字段)和操作数据的功能方法(方法/函数)集中到一个数据结构中(类)，达到隐藏数据和操作数据的方法，对外暴露有限的操作数据方法。
 
-TypeScript 中，可以使用访问控制符来保护对类、变量、方法和构造方法的访问。TypeScript 支持 3 种不同的访问权限。\
+TypeScript 中，可以使用访问控制符来保护对类、变量、方法和构造方法的访问。TypeScript 支持 3 种不同的访问权限。
 
 -   **public（默认）** : 公有的，可以在任何地方被访问。
 -   **protected** : 受保护，可以被其自身以及其子类和父类访问。
