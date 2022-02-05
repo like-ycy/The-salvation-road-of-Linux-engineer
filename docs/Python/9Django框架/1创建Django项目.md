@@ -2,10 +2,10 @@
 
 ## 创建第一个项目
 
-使用 django-admin 来创建 HelloWorld 项目：
+使用 django-admin 来创建 mysite 项目：
 
 ```
-django-admin startproject HelloWorld
+django-admin startproject mysite
 ```
 
 创建完成后我们可以查看下项目的目录结构：
@@ -44,7 +44,7 @@ python3 manage.py runserver 0.0.0.0:8000
 
 ![img](1%E5%88%9B%E5%BB%BADjango%E9%A1%B9%E7%9B%AE.assets/225A52EA-25EF-4BF1-AA5A-B91490CBF26D.jpg)
 
-## 创建应用
+## 项目下创建应用
 
 一个项目底下可以有多个应用
 
@@ -81,7 +81,7 @@ APP/
 
 ### 启动应用
 
-修改**HelloWorld 项目**下的 settings.py 文件，在 INSTALLED_APPS 中添加应用名称。
+修改**mysite 项目**下的 settings.py 文件，在 INSTALLED_APPS 中添加应用名称。
 
 ```
 INSTALLED_APPS = [

@@ -36,7 +36,7 @@ Django中的路由指的就是urls.py文件，称之为路由层
   re_path(r'^index2/$', views.index, name='index2'),
   ```
 
-  完全匹配  如果不添加`^$` 路由中包含index2就可以访问了
+  完全匹配  如果不添加`^$` ，路由中包含index2就可以访问了
 
   例如：http://127.0.0.1/aaindex 也可以访问到index网页，因为aaindex包含了index
 
@@ -59,9 +59,9 @@ Django中的路由指的就是urls.py文件，称之为路由层
   ]
   ```
 
-### 2、工程和App路由关联（子路由、路由分发）
+### 2、项目和子应用的路由关联（子路由、路由分发）
 
-在工程目录下的urls.py里，使用include进行关联
+在项目目录（mysite项目）下的urls.py里，使用include进行关联
 
 + App/urls.py
 
@@ -75,7 +75,7 @@ Django中的路由指的就是urls.py文件，称之为路由层
   ]
   ```
 
-+ project/urls.py
++ mysite/urls.py
 
   ```python
   from django.contrib import admin

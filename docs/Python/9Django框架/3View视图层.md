@@ -2,7 +2,7 @@
 
 一个视图函数（类），简称视图，是一个Python 函数（类），它接受Web请求并且返回Web响应。
 
-其中，函数view我们称之为FBV（function base views），类view我们称之为CBV（class base views）
+其中，函数视图我们称之为FBV（function base views），类视图我们称之为CBV（class base views）
 
 响应可以是一张网页的HTML内容，一个重定向，一个404错误，一个XML文档，或者一张图片。
 
@@ -16,12 +16,11 @@
 
 ## 创建一个简单的函数视图
 
-- App.views.py
+- App/views.py
 
 ```python
 from django.shortcuts import render, HttpResponse
 
-# Create your views here.
 
 def index(request):
     return HttpResponse('App内的index')
@@ -31,7 +30,7 @@ def index(request):
 
 > 注意：无论当前是否有参数，都必须有一个request参数，接受请求过来的对象
 
-- App.urls.py
+- App/urls.py
 
 ```python
 from django.contrib import admin
@@ -46,7 +45,7 @@ urlpatterns = [
 
 应用内设置路由
 
-- project.urls.py
+- mysite/urls.py
 
 ```python
 from django.contrib import admin
@@ -58,7 +57,7 @@ urlpatterns = [
 ]
 ```
 
-工程内引用子应用的路由
+项目内引用子应用的路由
 
 然后启动项目，浏览器访问，即可在浏览器中看到 《App内的index》
 
@@ -78,7 +77,6 @@ path(r'index/', views.index, name='index1'),
 from django.shortcuts import render, HttpResponse
 
 
-# Create your views here.
 def index(request):
     print(request)
     return HttpResponse('index')
@@ -116,8 +114,6 @@ def index(request):
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.http import require_http_methods
 
-
-# Create your views here.
 
 @require_http_methods(['POST'])
 def index(request):
@@ -162,9 +158,9 @@ def index(request):
 + 目录层级
 
   ```
-  project/
+  mysite/
   	App/
-  	project/
+  	mysite/
   	templates/
   		404.html
   		500.html
@@ -240,6 +236,8 @@ def test_req(req):
     ```python
     path(r'args/<name>/<age>/', views.args, name='args1'),
     path(r'args/<str:name>/<int:age>/', views.args, name='args'),
+    
+    
     def test(req, name, age):
         return HttpResponse('请求对象')
     ```
@@ -262,7 +260,6 @@ def test_req(req):
 
     注意：key不要重名
 
-    key重名的
 
 + get方法
 
@@ -286,7 +283,7 @@ def test_req(req):
       return HttpResponse('请求对象')
   ```
 
-  可以接收同名的key的值 不会发生覆盖
+  可以接收同名的key的值，不会发生覆盖
 
 
 
@@ -331,7 +328,7 @@ def register(req):
 
 + 概述
 
-  请求对象是由框架创建的    响应是由程序员来创建的
+  请求对象是由框架创建的，响应是由程序员来创建的
 
 + 配置
 
@@ -372,8 +369,6 @@ def register(req):
 
   ```python
   def index(request):
-      # print(request)
-      # raise ValueError
       data = render_to_string('register.html')
       print(data)
       return HttpResponse('index')
@@ -443,8 +438,12 @@ def test_reponse(req):
       r. content = '测试响应属性'
       r.status_code = 404
       return r
+  
+  
   def args(req, name, age):
       return HttpResponse('返回多个参数')
+  
+  
   # 重定向视图函数
   def redirect_view(req):
       # return HttpResponse('测试重定向')
@@ -517,7 +516,7 @@ Coimport json
 
 def my_view(request):
     data=['egon','kevin']
-    return HttpResponse(json.dumps(data) )
+    return HttpResponse(json.dumps(data))
 ```
 
 方式二：
@@ -551,7 +550,6 @@ from django.shortcuts import HttpResponse
 from django.views import View   # 导入视图类
 
 
-
 class RestfulApIView(View):
     def get(self, req):
         return HttpResponse('get')
@@ -575,7 +573,6 @@ from .views import index, cbv
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-
     path('', index.index, name='index'),
     path('restful/', csrf_exempt(cbv.RestfulApIView.as_view()), name='RestfulApIView')
 ]
@@ -594,7 +591,7 @@ urlpatterns = [
 ]
 ```
 
-Views.py
+views.py
 
 ```python
 from django.shortcuts import render,HttpResponse
