@@ -19,6 +19,7 @@
   + [DRF框架](/docs/Python/README.md?id=DRF框架)
   + [Flask](/docs/Python/README.md?id=Flask)
   + [FastAPI](/docs/Python/README.md?id=FastAPI)
+  + [Tornado](/docs/Python/README.md?id=Tornado)
   + [实例](/docs/Python/README.md?id=实例)
 
 * 数据库
