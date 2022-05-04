@@ -93,6 +93,7 @@ from tornado import ioloop
 from tornado import web
 from tornado.options import define,options,parse_command_line
 define("port", default=8888, type=int,help="设置监听端口号，默认为8888")
+
 class Home(web.RequestHandler):
     def get(self):
 		# self.write 响应数据
